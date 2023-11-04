@@ -9,6 +9,9 @@ Checks: "
   readability-*,
   concurrency-*,
   misc-*,
+  -modernize-use-nullptr,
+  -cppcoreguidelines-prefer-member-initializer,
+  -cppcoreguidelines-pro-type-vararg,
   "
 
 CheckOptions:

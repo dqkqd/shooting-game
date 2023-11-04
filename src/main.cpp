@@ -3,6 +3,7 @@
 #include "game.h"
 
 auto main() -> int {
-  Game::run();
+  auto game = Game();
+  game.run();
   return 0;
 }
