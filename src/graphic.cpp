@@ -9,6 +9,7 @@
 #include "SDL_render.h"
 #include "SDL_surface.h"
 #include "SDL_video.h"
+#include "components/graphic.h"
 
 Graphic::Graphic(int width, int height, const char* title)
     : width_{width}, height_{height} {
@@ -28,6 +29,8 @@ auto Graphic::load_texture(const char* filename) -> SDL_Texture* {
   return IMG_LoadTexture(renderer_, filename);
 }
 
+void Graphic::render(GraphicComponent& component) {
+  SDL_RenderTexture(renderer_, component.get_texture(), NULL,
+                    &component.get_position());
+}
 void Graphic::update() { SDL_RenderPresent(renderer_); }
-
-auto Graphic::renderer() -> SDL_Renderer* { return renderer_; }

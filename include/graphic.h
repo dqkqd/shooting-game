@@ -6,6 +6,8 @@
 #include "SDL_render.h"
 #include "SDL_video.h"
 
+class GraphicComponent;
+
 class Graphic {
  public:
   Graphic(int width, int height, const char* title);
@@ -16,9 +18,9 @@ class Graphic {
   ~Graphic();
 
   auto load_texture(const char* filename) -> SDL_Texture*;
-  void update();
 
-  auto renderer() -> SDL_Renderer*;
+  void render(GraphicComponent& component);
+  void update();
 
  private:
   int width_;
