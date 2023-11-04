@@ -1,5 +1,6 @@
 set(SOURCE_FILES
     game.cpp
+    graphic.cpp
 )
 
 include(FetchContent)
