@@ -1,5 +1,7 @@
 #include "graphic.h"
 
+#include <error.h>
+
 #include <cstddef>
 
 #include "SDL3_image/SDL_image.h"
@@ -15,7 +17,8 @@ Graphic::Graphic(int width, int height, const char* title)
     : width_{width}, height_{height} {
   if (SDL_CreateWindowAndRenderer(width, height, SDL_WINDOW_OPENGL, &window_,
                                   &renderer_) < 0) {
-    // TODO(khanhdq): throw error
+    throw GameError::from_sdl(
+        "Could not create window and renderer for graphic");
   }
   SDL_SetWindowTitle(window_, title);
 }

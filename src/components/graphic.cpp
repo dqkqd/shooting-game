@@ -1,6 +1,7 @@
 #include "components/graphic.h"
 
 #include <SDL_render.h>
+#include <error.h>
 
 #include "graphic.h"
 
@@ -17,7 +18,8 @@ auto GraphicComponent::from_file(Graphic& graphic, const char* filename)
   int texture_height = 0;
   if (SDL_QueryTexture(texture, NULL, NULL, &texture_width, &texture_height) <
       0) {
-    // TODO(khanhdq): throw error
+    throw GameError::from_sdl(
+        "Could not query texture when loading GraphicComponent from file");
   }
 
   SDL_FRect position{0, 0, static_cast<float>(texture_width),

@@ -1,7 +1,10 @@
 #include "game.h"
 
+#include <error.h>
+
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 
 #include "SDL3_image/SDL_image.h"
 #include "SDL_init.h"
@@ -15,11 +18,11 @@ Game::~Game() { Game::quit(); }
 
 void Game::init() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    // TODO(khanhdq): throw error
+    throw GameError::from_sdl("Could not initialize video for game");
   }
 
   if (IMG_Init(IMG_InitFlags::IMG_INIT_PNG) == 0) {
-    // TODO(khanhdq): throw error
+    throw GameError::from_sdl_img("Could not initialize image for game");
   }
 }
 
