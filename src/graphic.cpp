@@ -8,9 +8,6 @@
 #include "SDL_video.h"
 
 Graphic::Graphic(int width, int height, const char* title) {
-  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-    // TODO(khanhdq): throw error
-  }
   window_ = SDL_CreateWindow(title, width, height, SDL_WINDOW_OPENGL);
   if (window_ == NULL) {
     // TODO(khanhdq): throw error
@@ -18,13 +15,10 @@ Graphic::Graphic(int width, int height, const char* title) {
   SDL_SetWindowTitle(window_, title);
 }
 
+Graphic::~Graphic() { SDL_DestroyWindow(window_); }
+
 auto Graphic::surface() -> SDL_Surface* {
   return SDL_GetWindowSurface(window_);
 }
 
 void Graphic::update_surface() { SDL_UpdateWindowSurface(window_); }
-
-Graphic::~Graphic() {
-  SDL_DestroyWindow(window_);
-  SDL_QuitSubSystem(SDL_INIT_VIDEO);
-}
