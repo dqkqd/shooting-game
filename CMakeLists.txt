@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+
 add_subdirectory(src)
 
 add_executable(shoot_yourself src/main.cpp)

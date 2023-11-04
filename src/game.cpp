@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 
+#include "SDL3_image/SDL_image.h"
 #include "SDL_init.h"
 #include "graphic.h"
 
@@ -11,12 +12,19 @@ Game::Game(std::string title) : title_{std::move(title)} { Game::init(); }
 Game::~Game() { Game::quit(); }
 
 void Game::init() {
-  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    // TODO(khanhdq): throw error
+  }
+
+  if (IMG_Init(IMG_InitFlags::IMG_INIT_PNG) == 0) {
     // TODO(khanhdq): throw error
   }
 }
 
-void Game::quit() { SDL_Quit(); }
+void Game::quit() {
+  IMG_Quit();
+  SDL_Quit();
+}
 
 auto Game::create_graphic() -> std::unique_ptr<Graphic> {
   return std::make_unique<Graphic>(SCREEN_WIDTH, SCREEN_HEIGHT, title_.c_str());
@@ -25,6 +33,7 @@ auto Game::create_graphic() -> std::unique_ptr<Graphic> {
 void Game::run() {
   // TODO(khanhdq): put this into thread
   auto graphic = create_graphic();
+  graphic->add_texture_from_file("assets/ground.png");
 
   SDL_Event event;
 
@@ -41,10 +50,7 @@ void Game::run() {
       }
     }
 
-    auto *surface = graphic->surface();
-    SDL_FillSurfaceRect(surface, NULL,
-                        SDL_MapRGB(surface->format, RED, GREEN, BLUE));
-    graphic->update_surface();
+    graphic->render();
     SDL_Delay(DELAY);
   }
 }

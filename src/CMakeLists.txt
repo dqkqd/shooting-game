@@ -14,9 +14,19 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
     )
+FetchContent_Declare(
+    SDL3_image
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+    EXCLUDE_FROM_ALL
+    )
+
 FetchContent_MakeAvailable(SDL3)
+FetchContent_MakeAvailable(SDL3_image)
 
 add_library(GAME_SOURCE ${SOURCE_FILES})
 
 target_include_directories(GAME_SOURCE PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(GAME_SOURCE PUBLIC SDL3::SDL3)
+target_link_libraries(GAME_SOURCE PUBLIC SDL3::SDL3 SDL3_image::SDL3_image)

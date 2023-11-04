@@ -28,8 +28,8 @@ class Game {
 
   std::string title_;
 
-  static constexpr int SCREEN_WIDTH = 640;
-  static constexpr int SCREEN_HEIGHT = 480;
+  static constexpr int SCREEN_WIDTH = 800;
+  static constexpr int SCREEN_HEIGHT = 600;
 };
 
 #endif
