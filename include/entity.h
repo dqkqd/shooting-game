@@ -11,6 +11,7 @@ class GameEntity {
  public:
   void update(Graphic& graphic);
 
+  // TODO(khanhdq): we might need unique_ptr instead of shared ptr
   static auto create_entity(
       const std::shared_ptr<GraphicComponent>& graphic_component) -> GameEntity;
   static auto from_file(Graphic& graphic, const char* filename) -> GameEntity;
