@@ -5,6 +5,7 @@
 
 #include "SDL3_image/SDL_image.h"
 #include "SDL_init.h"
+#include "components/graphic.h"
 #include "entity.h"
 #include "graphic.h"
 
