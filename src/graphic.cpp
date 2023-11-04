@@ -20,30 +20,14 @@ Graphic::Graphic(int width, int height, const char* title)
 }
 
 Graphic::~Graphic() {
-  for (auto* texture : textures_) {
-    SDL_DestroyTexture(texture);
-  }
   SDL_DestroyRenderer(renderer_);
   SDL_DestroyWindow(window_);
 }
 
-void Graphic::add_texture_from_file(const char* filename) {
-  textures_.push_back(IMG_LoadTexture(renderer_, filename));
+auto Graphic::load_texture(const char* filename) -> SDL_Texture* {
+  return IMG_LoadTexture(renderer_, filename);
 }
 
-void Graphic::render() {
-  for (auto* texture : textures_) {
-    // TODO(khanhdq): this should be created when add_texture
-    int texture_width = 0;
-    int texture_height = 0;
+void Graphic::update() { SDL_RenderPresent(renderer_); }
 
-    SDL_QueryTexture(texture, NULL, NULL, &texture_width, &texture_height);
-
-    SDL_FRect dest_rect{0, static_cast<float>(height_ - texture_height),
-                        static_cast<float>(texture_width),
-                        static_cast<float>(texture_height)};
-
-    SDL_RenderTexture(renderer_, texture, NULL, &dest_rect);
-  }
-  SDL_RenderPresent(renderer_);
-}
+auto Graphic::renderer() -> SDL_Renderer* { return renderer_; }

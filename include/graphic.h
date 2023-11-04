@@ -15,17 +15,16 @@ class Graphic {
   auto operator=(Graphic&&) -> Graphic& = delete;
   ~Graphic();
 
-  void add_texture_from_file(const char* filename);
-  void render();
+  auto load_texture(const char* filename) -> SDL_Texture*;
+  void update();
+
+  auto renderer() -> SDL_Renderer*;
 
  private:
   int width_;
   int height_;
   SDL_Window* window_ = NULL;
   SDL_Renderer* renderer_ = NULL;
-
-  // TODO(khanhdq): use array, apply free list data structure
-  std::vector<SDL_Texture*> textures_;
 };
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "SDL3_image/SDL_image.h"
 #include "SDL_init.h"
+#include "entity.h"
 #include "graphic.h"
 
 Game::Game(std::string title) : title_{std::move(title)} { Game::init(); }
@@ -33,7 +34,7 @@ auto Game::create_graphic() -> std::unique_ptr<Graphic> {
 void Game::run() {
   // TODO(khanhdq): put this into thread
   auto graphic = create_graphic();
-  graphic->add_texture_from_file("assets/ground.png");
+  auto background = GameEntity::from_file(*graphic, "assets/ground.png");
 
   SDL_Event event;
 
@@ -50,7 +51,9 @@ void Game::run() {
       }
     }
 
-    graphic->render();
+    background.update(*graphic);
+    graphic->update();
+
     SDL_Delay(DELAY);
   }
 }
