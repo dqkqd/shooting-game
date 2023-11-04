@@ -1,6 +1,8 @@
-#include <cstdio>
+#include <iostream>
 
-int main() {
-  printf("Hello world\n");
+#include "game.h"
+
+auto main() -> int {
+  Game::run();
   return 0;
 }
