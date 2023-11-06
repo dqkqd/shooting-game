@@ -1,0 +1,29 @@
+include(FetchContent)
+set(FETCHCONTENT_QUIET FALSE)
+
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.14.0
+)
+
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
+add_executable(
+    test 
+    ecs/test_column.cpp
+    )
+
+target_include_directories(test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(
+    test 
+    PRIVATE GTest::gtest_main
+    PRIVATE GAME_SOURCE
+)
+
+include(GoogleTest)
+gtest_discover_tests(test)
