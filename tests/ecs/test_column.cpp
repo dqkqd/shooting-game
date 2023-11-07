@@ -40,3 +40,15 @@ TEST(Column, AddTooManyElement) {
     EXPECT_EQ(int_column.get_data_unchecked<int>(i), i);
   }
 }
+
+TEST(Column, ReassignElement) {
+  auto int_column = Column::create_column<int>();
+  int_column.push(10);
+  int_column.push(20);
+
+  int_column.get_data_unchecked<int>(0) = 30;
+  int_column.get_data_unchecked<int>(1) = 40;
+
+  EXPECT_EQ(int_column.get_data_unchecked<int>(0), 30);
+  EXPECT_EQ(int_column.get_data_unchecked<int>(1), 40);
+}
