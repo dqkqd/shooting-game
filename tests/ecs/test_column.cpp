@@ -52,3 +52,14 @@ TEST(Column, ReassignElement) {
   EXPECT_EQ(int_column.get_data_unchecked<int>(0), 30);
   EXPECT_EQ(int_column.get_data_unchecked<int>(1), 40);
 }
+
+TEST(Column, MoveConstruct) {
+  auto int_column = Column::create_column<int>();
+  int_column.push(10);
+  int_column.push(20);
+
+  auto moved_op_column = std::move(int_column);
+  EXPECT_EQ(moved_op_column.get_data_unchecked<int>(0), 10);
+  EXPECT_EQ(moved_op_column.get_data_unchecked<int>(1), 20);
+  EXPECT_FALSE(int_column.is_valid());
+}

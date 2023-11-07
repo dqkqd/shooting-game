@@ -1,9 +1,27 @@
 #include "ecs/column.h"
 
+#include <utility>
+
+Column::Column(Column &&column) noexcept
+    : layout_{std::exchange(column.layout_, {})},
+      data_{std::exchange(column.data_, nullptr)},
+      size_{std::exchange(column.size_, 0)},
+      capacity_{std ::exchange(column.capacity_, 0)} {}
+
+auto Column::operator=(Column &&column) noexcept -> Column & {
+  layout_ = std::exchange(column.layout_, {});
+  data_ = std::exchange(column.data_, nullptr);
+  size_ = std::exchange(column.size_, 0);
+  capacity_ = std ::exchange(column.capacity_, 0);
+  return *this;
+};
+
 Column::Column(Layout layout) : layout_(layout), capacity_{INITIAL_CAPACITY} {
   reserve(capacity_);
 }
 Column::~Column() { free(data_); }  // NOLINT
+
+auto Column::is_valid() const -> bool { return capacity_ > 0; }
 auto Column::size() const -> size_t { return size_; }
 auto Column::capacity() const -> size_t { return capacity_; }
 

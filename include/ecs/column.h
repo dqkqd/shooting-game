@@ -14,9 +14,9 @@ class Column {
   explicit Column(Layout layout = {});
 
   Column(const Column &) = delete;
-  Column(Column &&) = delete;
+  Column(Column &&column) noexcept;
   auto operator=(const Column &) -> Column & = delete;
-  auto operator=(Column &&) -> Column & = delete;
+  auto operator=(Column &&column) noexcept -> Column &;
 
   ~Column();
 
@@ -47,6 +47,7 @@ class Column {
     ++size_;
   }
 
+  [[nodiscard]] auto is_valid() const -> bool;
   [[nodiscard]] auto size() const -> size_t;
   [[nodiscard]] auto capacity() const -> size_t;
 
