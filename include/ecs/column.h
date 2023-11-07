@@ -4,8 +4,15 @@
 #include <format>
 #include <typeinfo>
 
+struct Layout {
+  std::size_t id_{};
+  int size_{};
+};
+
 class Column {
  public:
+  explicit Column(Layout layout = {});
+
   Column(const Column &) = delete;
   Column(Column &&) = delete;
   auto operator=(const Column &) -> Column & = delete;
@@ -59,13 +66,6 @@ class Column {
   }
 
  private:
-  struct Layout {
-    std::size_t id_;
-    int size_;
-  };
-
-  explicit Column(Layout layout);
-
   void reserve(size_t capacity);
   void grow();
   void shrink();
