@@ -30,6 +30,11 @@ class Column {
           std::format("Could not add type {} into column", typeid(T).name())
               .c_str());
     }
+    push_unchecked(item);
+  }
+
+  template <class T>
+  void push_unchecked(T item) {
     grow();
     get_data_unchecked<T>(size_) = std::move(item);
     ++size_;
