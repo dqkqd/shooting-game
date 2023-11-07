@@ -43,7 +43,8 @@ class Column {
   template <class T>
   void push_unchecked(T item) {
     grow();
-    get_data_unchecked<T>(size_) = std::move(item);
+    // placement new
+    new (get_ptr_at(size_)) T{std::move(item)};
     ++size_;
   }
 
@@ -53,8 +54,7 @@ class Column {
 
   template <class T>
   auto get_data_unchecked(size_t row) -> T & {
-    auto ptr = reinterpret_cast<T *>(data_);
-    return ptr[row];
+    return *reinterpret_cast<T *>(get_ptr_at(row));
   }
 
   template <class T>
@@ -67,6 +67,9 @@ class Column {
   }
 
  private:
+  [[nodiscard]] auto offset(size_t row) const -> size_t;
+  auto get_ptr_at(size_t row) -> void *;
+
   void reserve(size_t capacity);
   void grow();
   void shrink();

@@ -11,6 +11,7 @@ Checks: "
   misc-*,
   -modernize-use-nullptr,
   -cppcoreguidelines-prefer-member-initializer,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-vararg,
   -cppcoreguidelines-pro-type-reinterpret-cast,
   -cppcoreguidelines-avoid-magic-numbers,

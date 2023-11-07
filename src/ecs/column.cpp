@@ -1,5 +1,6 @@
 #include "ecs/column.h"
 
+#include <cstdint>
 #include <utility>
 
 Column::Column(Column &&column) noexcept
@@ -19,11 +20,20 @@ auto Column::operator=(Column &&column) noexcept -> Column & {
 Column::Column(Layout layout) : layout_(layout), capacity_{INITIAL_CAPACITY} {
   reserve(capacity_);
 }
-Column::~Column() { free(data_); }  // NOLINT
+Column::~Column() {
+  std::destroy_n(reinterpret_cast<std::uintptr_t *>(data_), offset(capacity_));
+  free(data_);  // NOLINT
+}
 
 auto Column::is_valid() const -> bool { return capacity_ > 0; }
 auto Column::size() const -> size_t { return size_; }
 auto Column::capacity() const -> size_t { return capacity_; }
+
+auto Column::offset(size_t row) const -> size_t { return row * layout_.size_; }
+auto Column::get_ptr_at(size_t row) -> void * {
+  auto ptr = reinterpret_cast<std::uintptr_t>(data_);
+  return reinterpret_cast<void *>(ptr + offset(row));  // NOLINT
+}
 
 void Column::reserve(size_t capacity) {
   auto temp_data = std::realloc(data_, capacity * layout_.size_);  // NOLINT
