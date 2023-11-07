@@ -69,6 +69,8 @@ class Column {
   void *data_{};
   size_t size_{};
   size_t capacity_{};
+
+  static constexpr size_t INITIAL_CAPACITY = 4;
 };
 
 #endif

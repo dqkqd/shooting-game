@@ -1,6 +1,7 @@
 #include "ecs/column.h"
 
-Column::Column(Column::Layout layout) : layout_(layout), capacity_{4} {
+Column::Column(Column::Layout layout)
+    : layout_(layout), capacity_{INITIAL_CAPACITY} {
   reserve(capacity_);
 }
 Column::~Column() { free(data_); }  // NOLINT
