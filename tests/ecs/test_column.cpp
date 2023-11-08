@@ -13,9 +13,9 @@ TEST(Column, BasicConstruct) {
 TEST(Column, AddElement) {
   auto int_column = Column::create_column<int>();
 
-  int_column.push(15);
-  int_column.push(45);
-  int_column.push(30);
+  int_column.push<int>(15);
+  int_column.push<int>(45);
+  int_column.push<int>(30);
   EXPECT_EQ(int_column.size(), 3);
 
   EXPECT_EQ(int_column.get_data_unchecked<int>(0), 15);
@@ -26,15 +26,15 @@ TEST(Column, AddElement) {
   EXPECT_EQ(int_column.get_data<int>(2)->get(), 30);  // NOLINT
 
   // add non integer element
-  EXPECT_ANY_THROW(int_column.push(1.5));
-  EXPECT_ANY_THROW(int_column.push("hello"));
-  EXPECT_ANY_THROW(int_column.push(static_cast<size_t>(1)));
+  EXPECT_ANY_THROW(int_column.push<float>(1.5));
+  EXPECT_ANY_THROW(int_column.push<std::string>("hello"));
+  EXPECT_ANY_THROW(int_column.push<size_t>(1));
 }
 
 TEST(Column, AddTooManyElement) {
   auto int_column = Column::create_column<int>();
   for (int i = 0; i < 1000; ++i) {
-    int_column.push(i);
+    int_column.push<int>(static_cast<int>(i));
   }
   for (int i = 0; i < 1000; ++i) {
     EXPECT_EQ(int_column.get_data_unchecked<int>(i), i);
@@ -43,8 +43,8 @@ TEST(Column, AddTooManyElement) {
 
 TEST(Column, ReassignElement) {
   auto int_column = Column::create_column<int>();
-  int_column.push(10);
-  int_column.push(20);
+  int_column.push<int>(10);
+  int_column.push<int>(20);
 
   int_column.get_data_unchecked<int>(0) = 30;
   int_column.get_data_unchecked<int>(1) = 40;
@@ -55,11 +55,37 @@ TEST(Column, ReassignElement) {
 
 TEST(Column, MoveConstruct) {
   auto int_column = Column::create_column<int>();
-  int_column.push(10);
-  int_column.push(20);
+  int_column.push<int>(10);
+  int_column.push<int>(20);
 
   auto moved_op_column = std::move(int_column);
   EXPECT_EQ(moved_op_column.get_data_unchecked<int>(0), 10);
   EXPECT_EQ(moved_op_column.get_data_unchecked<int>(1), 20);
   EXPECT_FALSE(int_column.is_valid());
+}
+
+TEST(Column, ColumnForString) {
+  auto column = Column::create_column<std::string>();
+  column.push<std::string>("Hello");
+  column.push_unchecked<std::string>("World");
+  EXPECT_EQ(column.get_data_unchecked<std::string>(0), "Hello");
+  EXPECT_EQ(column.get_data_unchecked<std::string>(1), "World");
+}
+
+TEST(Column, ColumnForStruct) {
+  struct TestStruct {
+   public:
+    explicit TestStruct(std::string word) : word_{std::move(word)} {}
+    auto run() -> std::string { return word_; }
+
+   private:
+    std::string word_;
+  };
+
+  auto column = Column::create_column<TestStruct>();
+  column.push<TestStruct>(TestStruct("Hello"));
+  column.push_unchecked<TestStruct>(TestStruct("World"));
+
+  EXPECT_EQ(column.get_data_unchecked<TestStruct>(0).run(), "Hello");
+  EXPECT_EQ(column.get_data_unchecked<TestStruct>(1).run(), "World");
 }

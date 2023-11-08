@@ -31,13 +31,13 @@ class Column {
   }
 
   template <class T>
-  void push(T item) {
+  void push(T &&item) {
     if (!is<T>()) {
       throw std::runtime_error(
           std::format("Could not add type {} into column", typeid(T).name())
               .c_str());
     }
-    push_unchecked(item);
+    push_unchecked<T>(std::forward<T>(item));
   }
 
   template <class T>
@@ -53,8 +53,8 @@ class Column {
   [[nodiscard]] auto capacity() const -> size_t;
 
   template <class T>
-  auto get_data_unchecked(size_t row) -> T & {
-    return *reinterpret_cast<T *>(get_ptr_at(row));
+  auto get_data_unchecked(size_t row) -> std::decay_t<T> & {
+    return *std::launder(reinterpret_cast<std::decay_t<T> *>(get_ptr_at(row)));
   }
 
   template <class T>
