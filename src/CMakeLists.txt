@@ -4,6 +4,7 @@ set(SOURCE_FILES
     entity.cpp
     components/graphic.cpp
     ecs/column.cpp
+    ecs/table.cpp
     error.cpp
 )
 

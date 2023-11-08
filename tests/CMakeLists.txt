@@ -16,6 +16,7 @@ enable_testing()
 add_executable(
     test 
     ecs/test_column.cpp
+    ecs/test_table.cpp
     )
 
 target_include_directories(test PRIVATE ${PROJECT_SOURCE_DIR}/include)
