@@ -4,14 +4,12 @@
 #include <format>
 #include <typeinfo>
 
-struct Layout {
-  std::size_t id_{};
-  int size_{};
-};
+#include "ecs/primitive.h"
 
 class Column {
  public:
-  explicit Column(Layout layout = {});
+  explicit Column(int layout = INVALID_LAYOUT,
+                  ComponentId component_id = INVALID_COMPONENT_ID);
 
   Column(const Column &) = delete;
   Column(Column &&column) noexcept;
@@ -22,12 +20,12 @@ class Column {
 
   template <class T>
   static auto create_column() -> Column {
-    return Column{Layout{typeid(T).hash_code(), sizeof(T)}};
+    return Column{sizeof(T), ComponentIdCounter::get<T>()};
   }
 
   template <class T>
   auto is() -> bool {
-    return typeid(T).hash_code() == layout_.id_;
+    return ComponentIdCounter::get<T>() == component_id_;
   }
 
   template <class T>
@@ -74,12 +72,15 @@ class Column {
   void grow();
   void shrink();
 
-  Layout layout_;
+  int layout_;
+  ComponentId component_id_;
+
   void *data_{};
   size_t size_{};
   size_t capacity_{};
 
   static constexpr size_t INITIAL_CAPACITY = 4;
+  static constexpr int INVALID_LAYOUT = 0;
 };
 
 #endif

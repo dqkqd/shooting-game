@@ -3,6 +3,8 @@
 
 using ComponentId = int;
 
+constexpr ComponentId INVALID_COMPONENT_ID = 0;
+
 class ComponentIdCounter {
  private:
   static int counter_;  // NOLINT
