@@ -4,8 +4,7 @@
 #include <unordered_map>
 
 #include "ecs/column.h"
-
-using ComponentId = int;
+#include "ecs/primitive.h"
 
 class Table {
  public:

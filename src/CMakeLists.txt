@@ -5,6 +5,7 @@ set(SOURCE_FILES
     components/graphic.cpp
     ecs/column.cpp
     ecs/table.cpp
+    ecs/primitive.cpp
     error.cpp
 )
 
