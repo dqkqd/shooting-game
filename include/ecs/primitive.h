@@ -23,6 +23,9 @@ std::atomic<int> Counter<T>::counter_{INVALID_COUNTER_ID};
 using ComponentId = int;
 constexpr ComponentId INVALID_COMPONENT_ID = INVALID_COUNTER_ID;
 
+using ColumnId = ComponentId;
+constexpr ColumnId INVALID_COLUMN_ID = INVALID_COMPONENT_ID;
+
 using TableId = int;
 constexpr TableId INVALID_TABLE_ID = INVALID_COUNTER_ID;
 
