@@ -4,7 +4,8 @@
 #include "ecs/table.h"
 
 TEST(Table, AddColumnToTable) {
-  auto table = Table();
+  auto table = Table(1);
+
   auto column1 = Column::create_column<int>();
   column1.push<int>(10);
   column1.push<int>(20);

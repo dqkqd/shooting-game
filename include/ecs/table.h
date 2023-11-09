@@ -8,7 +8,9 @@
 
 class Table {
  public:
-  Table() = default;
+  using TableCounter = Counter<Table>;
+
+  explicit Table(TableId table = INVALID_TABLE_ID);
 
   void add_column(ComponentId component_id, Column column);
   [[nodiscard]] auto has_column(ComponentId component_id) const -> bool;
@@ -20,6 +22,7 @@ class Table {
   }
 
  private:
+  TableId table_id_;
   std::unordered_map<ComponentId, Column> columns_{};
 };
 
