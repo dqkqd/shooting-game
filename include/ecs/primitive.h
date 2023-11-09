@@ -23,4 +23,13 @@ std::atomic<int> Counter<T>::counter_{INVALID_COUNTER_ID};
 using ComponentId = int;
 constexpr ComponentId INVALID_COMPONENT_ID = INVALID_COUNTER_ID;
 
+using TableId = int;
+constexpr TableId INVALID_TABLE_ID = INVALID_COUNTER_ID;
+
+using ArchetypeId = int;
+constexpr ArchetypeId INVALID_ARCHETYPE_ID = INVALID_COUNTER_ID;
+
+using EntityId = int;
+constexpr EntityId INVALID_ENTITY_ID = INVALID_COUNTER_ID;
+
 #endif
