@@ -8,6 +8,8 @@
 
 class Column {
  public:
+  using ColumnCounter = Counter<Column>;
+
   explicit Column(int layout = INVALID_LAYOUT,
                   ComponentId component_id = INVALID_COMPONENT_ID);
 
@@ -20,12 +22,12 @@ class Column {
 
   template <class T>
   static auto create_column() -> Column {
-    return Column{sizeof(T), ComponentIdCounter::get<T>()};
+    return Column{sizeof(T), ColumnCounter::id<T>()};
   }
 
   template <class T>
   auto is() -> bool {
-    return ComponentIdCounter::get<T>() == component_id_;
+    return ColumnCounter::id<T>() == component_id_;
   }
 
   template <class T>
