@@ -13,10 +13,18 @@ class Table {
  public:
   explicit Table(TableId table = INVALID_TABLE_ID);
 
-  static auto create_table() -> Table;
-  [[nodiscard]] auto table_id() const -> TableId;
+  Table(const Table &) = delete;
+  Table(Table &&Table) noexcept;
+  auto operator=(const Table &) -> Table & = delete;
+  auto operator=(Table &&table) noexcept -> Table &;
+  ~Table() = default;
 
-  void add_column(Column&& column);
+  static auto create_table() -> Table;
+
+  [[nodiscard]] auto table_id() const -> TableId;
+  [[nodiscard]] auto is_valid() const -> bool;
+
+  void add_column(Column &&column);
 
   template <class T>
   [[nodiscard]] auto has_component() const -> bool {
@@ -25,13 +33,13 @@ class Table {
   [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
 
   template <class T>
-  auto get_column_unchecked() -> Column& {
+  auto get_column_unchecked() -> Column & {
     return get_column_unchecked(ComponentCounter::id<T>());
   }
-  auto get_column_unchecked(ComponentId component_id) -> Column&;
+  auto get_column_unchecked(ComponentId component_id) -> Column &;
 
   template <class T>
-  auto get_data_unchecked(size_t row) -> T& {
+  auto get_data_unchecked(size_t row) -> T & {
     return columns_[ComponentCounter::id<T>()].template get_data_unchecked<T>(
         row);
   }

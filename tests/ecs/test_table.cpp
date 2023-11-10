@@ -3,6 +3,13 @@
 #include "ecs/column.h"
 #include "ecs/table.h"
 
+TEST(Table, InvalidAfterMoved) {
+  auto table1 = Table::create_table();
+  auto table2 = std::move(table1);
+  EXPECT_TRUE(table2.is_valid());
+  EXPECT_FALSE(table1.is_valid());
+}
+
 TEST(Table, ShouldHaveDifferentId) {
   auto table1 = Table::create_table();
   auto table2 = Table::create_table();
