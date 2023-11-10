@@ -21,6 +21,10 @@ class Table {
   }
   [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
 
+  template <class T>
+  auto get_column_unchecked() -> Column& {
+    return get_column_unchecked(ComponentCounter::id<T>());
+  }
   auto get_column_unchecked(ComponentId component_id) -> Column&;
 
   template <class T>
