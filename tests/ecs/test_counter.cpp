@@ -53,7 +53,7 @@ TEST(Counter, CounterShouldBeThreadSafe) {
 
   using IntCounter = Counter<std::size_t>;
   {
-    std::vector<std::jthread> pool;
+    std::vector<std::thread> pool;
     pool.emplace_back([]() { IntCounter::id<A1>(); });
     pool.emplace_back([]() { IntCounter::id<A2>(); });
     pool.emplace_back([]() { IntCounter::id<A3>(); });
@@ -64,6 +64,9 @@ TEST(Counter, CounterShouldBeThreadSafe) {
     pool.emplace_back([]() { IntCounter::id<A8>(); });
     pool.emplace_back([]() { IntCounter::id<A9>(); });
     pool.emplace_back([]() { IntCounter::id<A10>(); });
+    for (auto& thread : pool) {
+      thread.join();
+    }
   }
 
   EXPECT_EQ(IntCounter::id<A11>(), 10);
@@ -98,7 +101,7 @@ TEST(InstanceCounter, ShouldBeThreadSafe) {
 
   using ACounter = InstanceCounter<A>;
   {
-    std::vector<std::jthread> pool;
+    std::vector<std::thread> pool;
     pool.reserve(10);
     for (int i = 0; i < 10; ++i) {
       pool.emplace_back([]() {
@@ -106,6 +109,9 @@ TEST(InstanceCounter, ShouldBeThreadSafe) {
           ACounter::id();
         }
       });
+    }
+    for (auto& thread : pool) {
+      thread.join();
     }
   }
 

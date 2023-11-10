@@ -1,6 +1,7 @@
 #include "ecs/column.h"
 
 #include <cstdint>
+#include <memory>
 #include <utility>
 
 #include "ecs/primitive.h"

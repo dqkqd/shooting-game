@@ -1,7 +1,10 @@
 #ifndef ECS_COLUMN_H
 #define ECS_COLUMN_H
 
-#include <format>
+#include <cstddef>
+#include <optional>
+#include <sstream>
+#include <stdexcept>
 #include <typeinfo>
 
 #include "ecs/counter.h"
@@ -38,9 +41,10 @@ class Column {
   template <class T>
   void push(T &&item) {
     if (!is<T>()) {
-      throw std::runtime_error(
-          std::format("Could not add type {} into column", typeid(T).name())
-              .c_str());
+      std::ostringstream error_msg;
+      error_msg << "Could not add type " << typeid(T).name() << " to column"
+                << std::endl;
+      throw std::runtime_error(error_msg.str());
     }
     push_unchecked<T>(std::forward<T>(item));
   }
