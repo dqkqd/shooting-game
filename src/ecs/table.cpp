@@ -9,7 +9,7 @@ void Table::add_column(Column&& column) {
   columns_[column.component_id()] = std::move(column);
 }
 
-auto Table::has_column(ComponentId component_id) const -> bool {
+auto Table::has_component(ComponentId component_id) const -> bool {
   return columns_.find(component_id) != columns_.end();
 }
 

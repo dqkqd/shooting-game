@@ -14,7 +14,7 @@ class Table {
   explicit Table(TableId table = INVALID_TABLE_ID);
 
   void add_column(Column&& column);
-  [[nodiscard]] auto has_column(ComponentId component_id) const -> bool;
+  [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
   auto get_column_unchecked(ComponentId component_id) -> Column&;
 
   template <class T>
