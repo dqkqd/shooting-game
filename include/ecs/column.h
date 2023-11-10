@@ -4,6 +4,7 @@
 #include <format>
 #include <typeinfo>
 
+#include "ecs/counter.h"
 #include "ecs/primitive.h"
 
 class Column;

@@ -2,7 +2,7 @@
 
 #include <thread>
 
-#include "ecs/primitive.h"
+#include "ecs/counter.h"
 
 TEST(Counter, CounterShouldEqualEveryCall) {
   using IntCounter = Counter<int>;
