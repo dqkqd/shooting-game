@@ -69,3 +69,46 @@ TEST(Counter, CounterShouldBeThreadSafe) {
   EXPECT_EQ(IntCounter::id<A11>(), 10);
   EXPECT_EQ(IntCounter::id<A12>(), 11);
 }
+
+TEST(InstanceCounter, IdDifferentBetweenInstance) {
+  struct A {};
+  using ACounter = InstanceCounter<int>;
+  auto instance1 = ACounter::id();
+  auto instance2 = ACounter::id();
+  EXPECT_NE(instance1, instance2);
+}
+
+TEST(InstanceCounter, IdSameBetweenType) {
+  struct A {};
+  struct B {};
+  using ACounter = InstanceCounter<A>;
+  using BCounter = InstanceCounter<B>;
+
+  auto a_instance1 = ACounter::id();
+  auto a_instance2 = ACounter::id();
+  auto b_instance1 = BCounter::id();
+  auto b_instance2 = BCounter::id();
+
+  EXPECT_EQ(a_instance1, b_instance1);
+  EXPECT_EQ(a_instance2, b_instance2);
+}
+
+TEST(InstanceCounter, ShouldBeThreadSafe) {
+  struct A {};
+
+  using ACounter = InstanceCounter<A>;
+  {
+    std::vector<std::jthread> pool;
+    pool.reserve(10);
+    for (int i = 0; i < 10; ++i) {
+      pool.emplace_back([]() {
+        for (int j = 0; j < 1000; ++j) {
+          ACounter::id();
+        }
+      });
+    }
+  }
+
+  EXPECT_EQ(ACounter::id(), 10 * 1000);
+  EXPECT_EQ(ACounter::id(), 10 * 1000 + 1);
+}
