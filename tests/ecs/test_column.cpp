@@ -102,3 +102,28 @@ TEST(Column, ColumnForStruct) {
   EXPECT_EQ(column.get_data_unchecked<TestStruct>(0).run(), "Hello");
   EXPECT_EQ(column.get_data_unchecked<TestStruct>(1).run(), "World");
 }
+
+TEST(Column, Iterator) {
+  struct TestStruct {
+   public:
+    explicit TestStruct(std::string &&item) : item_{item} {}
+    [[nodiscard]] auto item() const -> std::string { return item_; };
+
+   private:
+    std::string item_;
+  };
+
+  auto column = Column::create_column<TestStruct>();
+  column.push_unchecked<TestStruct>(TestStruct{"Hello"});
+  column.push_unchecked<TestStruct>(TestStruct{" from"});
+  column.push_unchecked<TestStruct>(TestStruct{" the"});
+  column.push_unchecked<TestStruct>(TestStruct{" other"});
+  column.push_unchecked<TestStruct>(TestStruct{" side"});
+
+  std::string items;
+  for (auto &iter : column.iter<TestStruct>()) {
+    items += iter.item();
+  }
+
+  EXPECT_EQ(items, "Hello from the other side");
+}

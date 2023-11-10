@@ -71,6 +71,67 @@ class Column {
     return std::move(data);
   }
 
+  template <class T>
+  class Iterator {
+   public:
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = T;
+    using pointer = T *;
+    using reference = T &;
+
+    explicit Iterator(pointer ptr) : ptr_{ptr} {}
+
+    auto operator*() const -> reference { return *ptr_; }
+    auto operator->() -> pointer { return ptr_; }
+    auto operator++() -> Iterator & {
+      ptr_++;
+      return *this;
+    }
+    auto operator++(int) -> Iterator {
+      Iterator tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+    friend auto operator==(const Iterator &lhs, const Iterator &rhs) -> bool {
+      return lhs.ptr_ == rhs.ptr_;
+    };
+    friend auto operator!=(const Iterator &lhs, const Iterator &rhs) -> bool {
+      return lhs.ptr_ != rhs.ptr_;
+    };
+
+   private:
+    pointer ptr_;
+  };
+
+  template <class T>
+  class IteratorWrapper {
+   public:
+    IteratorWrapper(Iterator<T> begin, Iterator<T> end)
+        : begin_{begin}, end_{end} {}
+    auto begin() -> Iterator<T> { return begin_; }
+    auto end() -> Iterator<T> { return end_; }
+
+   private:
+    Iterator<T> begin_;
+    Iterator<T> end_;
+  };
+
+  template <class T>
+  auto iter() -> IteratorWrapper<T> {
+    return {begin<T>(), end<T>()};
+  }
+
+  template <class T>
+  auto begin() -> Iterator<T> {
+    return Iterator<T>(static_cast<T *>(data_));
+  }
+
+  template <class T>
+  auto end() -> Iterator<T> {
+    return Iterator<T>(static_cast<T *>(data_) + size_);
+  }
+
  private:
   [[nodiscard]] auto offset(size_t row) const -> size_t;
   auto get_ptr_at(size_t row) -> void *;
