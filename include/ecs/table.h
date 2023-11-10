@@ -13,7 +13,7 @@ class Table {
  public:
   explicit Table(TableId table = INVALID_TABLE_ID);
 
-  void add_column(ComponentId component_id, Column column);
+  void add_column(Column&& column);
   [[nodiscard]] auto has_column(ComponentId component_id) const -> bool;
   auto get_column_unchecked(ComponentId component_id) -> Column&;
 

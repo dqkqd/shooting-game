@@ -14,15 +14,19 @@ TEST(Table, AddColumnToTable) {
   column2.push<std::string>("Hello");
   column2.push<std::string>("World");
 
-  table.add_column(0, std::move(column1));
-  table.add_column(1, std::move(column2));
+  table.add_column(std::move(column1));
+  table.add_column(std::move(column2));
 
-  EXPECT_TRUE(table.has_column(0));
-  EXPECT_TRUE(table.has_column(1));
-  EXPECT_FALSE(table.has_column(2));
+  EXPECT_TRUE(table.has_column(ColumnCounter::id<int>()));
+  EXPECT_TRUE(table.has_column(ColumnCounter::id<std::string>()));
+  EXPECT_FALSE(table.has_column(ColumnCounter::id<float>()));
 
-  EXPECT_EQ(table.get_data_unchecked<int>(0, 0), 10);
-  EXPECT_EQ(table.get_data_unchecked<int>(0, 1), 20);
-  EXPECT_EQ(table.get_data_unchecked<std::string>(1, 0), "Hello");
-  EXPECT_EQ(table.get_data_unchecked<std::string>(1, 1), "World");
+  EXPECT_EQ(table.get_data_unchecked<int>(ColumnCounter::id<int>(), 0), 10);
+  EXPECT_EQ(table.get_data_unchecked<int>(ColumnCounter::id<int>(), 1), 20);
+  EXPECT_EQ(table.get_data_unchecked<std::string>(
+                ColumnCounter::id<std::string>(), 0),
+            "Hello");
+  EXPECT_EQ(table.get_data_unchecked<std::string>(
+                ColumnCounter::id<std::string>(), 1),
+            "World");
 }
