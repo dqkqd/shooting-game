@@ -5,6 +5,10 @@
 
 Table::Table(TableId table) : table_id_{table} {}
 
+auto Table::create_table() -> Table { return Table(TableCounter::id()); }
+
+auto Table::table_id() const -> TableId { return table_id_; }
+
 void Table::add_column(Column&& column) {
   columns_[column.component_id()] = std::move(column);
 }

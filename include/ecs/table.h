@@ -7,11 +7,14 @@
 #include "ecs/primitive.h"
 
 class Table;
-using TableCounter = Counter<Table>;
+using TableCounter = InstanceCounter<Table>;
 
 class Table {
  public:
   explicit Table(TableId table = INVALID_TABLE_ID);
+
+  static auto create_table() -> Table;
+  [[nodiscard]] auto table_id() const -> TableId;
 
   void add_column(Column&& column);
 

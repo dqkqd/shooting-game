@@ -3,8 +3,14 @@
 #include "ecs/column.h"
 #include "ecs/table.h"
 
+TEST(Table, ShouldHaveDifferentId) {
+  auto table1 = Table::create_table();
+  auto table2 = Table::create_table();
+  EXPECT_NE(table1.table_id(), table2.table_id());
+}
+
 TEST(Table, AddColumn) {
-  auto table = Table(1);
+  auto table = Table::create_table();
 
   auto column1 = Column::create_column<int>();
   column1.push<int>(10);
@@ -23,7 +29,7 @@ TEST(Table, AddColumn) {
 }
 
 TEST(Table, GetColumn) {
-  auto table = Table(1);
+  auto table = Table::create_table();
 
   auto column2 = Column::create_column<std::string>();
   column2.push<std::string>("Hello");
@@ -48,7 +54,7 @@ TEST(Table, GetColumn) {
 }
 
 TEST(Table, GetData) {
-  auto table = Table(1);
+  auto table = Table::create_table();
 
   auto column2 = Column::create_column<std::string>();
   column2.push<std::string>("Hello");
