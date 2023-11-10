@@ -46,3 +46,16 @@ TEST(Table, GetColumn) {
           1),
       "World");
 }
+
+TEST(Table, GetData) {
+  auto table = Table(1);
+
+  auto column2 = Column::create_column<std::string>();
+  column2.push<std::string>("Hello");
+  column2.push<std::string>("World");
+
+  table.add_column(std::move(column2));
+
+  EXPECT_EQ(table.get_data_unchecked<std::string>(0), "Hello");
+  EXPECT_EQ(table.get_data_unchecked<std::string>(1), "World");
+}

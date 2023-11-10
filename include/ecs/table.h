@@ -28,8 +28,9 @@ class Table {
   auto get_column_unchecked(ComponentId component_id) -> Column&;
 
   template <class T>
-  auto get_data_unchecked(ComponentId component_id, size_t row) -> T& {
-    return columns_[component_id].get_data_unchecked<T>(row);
+  auto get_data_unchecked(size_t row) -> T& {
+    return columns_[ComponentCounter::id<T>()].template get_data_unchecked<T>(
+        row);
   }
 
  private:
