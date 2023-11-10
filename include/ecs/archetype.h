@@ -11,10 +11,11 @@ struct ArchetypeEntity {
   size_t row;
 };
 
+class Archetype;
+using ArchetypeCounter = Counter<Archetype>;
+
 class Archetype {
  public:
-  using ArchetypeCounter = Counter<Archetype>;
-
   explicit Archetype(TableId table) : table_(table) {}
   [[nodiscard]] auto entities() const -> std::vector<ArchetypeEntity> &;
   [[nodiscard]] auto components() const -> std::vector<ComponentId> &;

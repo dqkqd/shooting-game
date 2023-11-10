@@ -6,10 +6,11 @@
 #include "ecs/column.h"
 #include "ecs/primitive.h"
 
+class Table;
+using TableCounter = Counter<Table>;
+
 class Table {
  public:
-  using TableCounter = Counter<Table>;
-
   explicit Table(TableId table = INVALID_TABLE_ID);
 
   void add_column(ComponentId component_id, Column column);

@@ -6,10 +6,12 @@
 
 #include "ecs/primitive.h"
 
+class Column;
+using ColumnCounter = Counter<Column>;
+using ComponentCounter = ColumnCounter;
+
 class Column {
  public:
-  using ColumnCounter = Counter<Column>;
-
   explicit Column(int layout = INVALID_LAYOUT,
                   ComponentId component_id = INVALID_COMPONENT_ID);
 
