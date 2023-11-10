@@ -22,6 +22,8 @@ class Column {
 
   ~Column();
 
+  [[nodiscard]] auto component_id() const -> ComponentId;
+
   template <class T>
   static auto create_column() -> Column {
     return Column{sizeof(T), ColumnCounter::id<T>()};

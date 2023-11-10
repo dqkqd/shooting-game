@@ -8,6 +8,11 @@ TEST(Column, BasicConstruct) {
   EXPECT_FALSE(int_column.is<float>());
   EXPECT_FALSE(int_column.is<std::string>());
   EXPECT_FALSE(int_column.is<size_t>());
+
+  EXPECT_EQ(int_column.component_id(), ColumnCounter::id<int>());
+  EXPECT_NE(int_column.component_id(), ColumnCounter::id<float>());
+  EXPECT_NE(int_column.component_id(), ColumnCounter::id<std::string>());
+  EXPECT_NE(int_column.component_id(), ColumnCounter::id<size_t>());
 }
 
 TEST(Column, AddElement) {
