@@ -14,7 +14,13 @@ class Table {
   explicit Table(TableId table = INVALID_TABLE_ID);
 
   void add_column(Column&& column);
+
+  template <class T>
+  [[nodiscard]] auto has_component() const -> bool {
+    return has_component(ComponentCounter::id<T>());
+  }
   [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
+
   auto get_column_unchecked(ComponentId component_id) -> Column&;
 
   template <class T>
