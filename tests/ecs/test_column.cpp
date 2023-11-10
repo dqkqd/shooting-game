@@ -15,6 +15,14 @@ TEST(Column, BasicConstruct) {
   EXPECT_NE(int_column.component_id(), ColumnCounter::id<size_t>());
 }
 
+TEST(Column, ColumnInvalidAfterMoved) {
+  auto column1 = Column::create_column<int>();
+  EXPECT_TRUE(column1.is_valid());
+  auto column2 = std::move(column1);
+  EXPECT_TRUE(column2.is_valid());
+  EXPECT_FALSE(column1.is_valid());
+}
+
 TEST(Column, AddElement) {
   auto int_column = Column::create_column<int>();
 

@@ -32,7 +32,9 @@ Column::~Column() {
 }
 
 auto Column::component_id() const -> ComponentId { return component_id_; }
-auto Column::is_valid() const -> bool { return capacity_ > 0; }
+auto Column::is_valid() const -> bool {
+  return layout_ != INVALID_LAYOUT && component_id_ != INVALID_COMPONENT_ID;
+}
 auto Column::size() const -> size_t { return size_; }
 auto Column::capacity() const -> size_t { return capacity_; }
 
