@@ -26,8 +26,6 @@ class Column {
 
   ~Column();
 
-  [[nodiscard]] auto component_id() const -> ComponentId;
-
   template <class T>
   static auto create_column() -> Column {
     return Column{sizeof(T), ColumnCounter::id<T>()};
@@ -57,6 +55,7 @@ class Column {
     ++size_;
   }
 
+  [[nodiscard]] auto component_id() const -> ComponentId;
   [[nodiscard]] auto is_valid() const -> bool;
   [[nodiscard]] auto size() const -> size_t;
   [[nodiscard]] auto capacity() const -> size_t;
