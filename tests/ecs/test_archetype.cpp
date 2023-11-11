@@ -38,20 +38,32 @@ TEST(Archetype, ComponentsMustBeSorted) {
   EXPECT_EQ(archetype.components(), expected);
 }
 
+TEST(Archetype, AddEntity) {
+  auto archetype = Archetype::create_archetype<int, float>();
+  auto location = archetype.add_entity<int, float>(1, 2.0);
+  EXPECT_EQ(location.archetype_id, archetype.archetype_id());
+  EXPECT_EQ(location.table_id, archetype.table_id());
+  EXPECT_EQ(location.row, 0);
+}
+
 TEST(Archetype, MoveConstructor) {
   auto archetype1 = Archetype::create_archetype<int, float>();
+  archetype1.add_entity<int, float>(1, 2.0);
+  archetype1.add_entity<int, float>(2, 3.0);
 
-  // TODO(khanhdq) check empty after implementing add entities
   auto archetype2 = std::move(archetype1);
+  EXPECT_FALSE(archetype2.is_empty());
   EXPECT_TRUE((archetype2.has_components<int, float>()));
   EXPECT_NE(archetype2.archetype_id(), INVALID_ARCHETYPE_ID);
+  EXPECT_TRUE(archetype1.is_empty());
   EXPECT_FALSE((archetype1.has_components<int, float>()));
   EXPECT_EQ(archetype1.archetype_id(), INVALID_ARCHETYPE_ID);
 
-  // TODO(khanhdq) check empty after implementing add entities
   Archetype archetype3{std::move(archetype2)};
+  EXPECT_FALSE(archetype3.is_empty());
   EXPECT_TRUE((archetype3.has_components<int, float>()));
   EXPECT_NE(archetype3.archetype_id(), INVALID_ARCHETYPE_ID);
+  EXPECT_TRUE(archetype2.is_empty());
   EXPECT_FALSE((archetype2.has_components<int, float>()));
   EXPECT_EQ(archetype2.archetype_id(), INVALID_ARCHETYPE_ID);
 }

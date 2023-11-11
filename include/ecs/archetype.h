@@ -7,8 +7,9 @@
 #include "ecs/primitive.h"
 #include "ecs/table.h"
 
-struct ArchetypeEntity {
-  EntityId entity;
+struct EntityLocation {
+  ArchetypeId archetype_id;
+  TableId table_id;
   size_t row;
 };
 
@@ -47,11 +48,20 @@ class Archetype {
     return contains(ComponentCounter::id<T>());
   }
 
+  template <typename... Args>
+  auto add_entity(Args &&...components) -> EntityLocation {
+    auto row = table_.add_row<Args...>(std::forward<Args>(components)...);
+    locations_.emplace_back<EntityLocation>(
+        {.archetype_id = archetype_id(), .table_id = table_id(), .row = row});
+    return locations_.back();
+  }
+
  private:
   explicit Archetype(Table &&table);
 
   ArchetypeId archetype_id_;
   Table table_;
+  std::vector<EntityLocation> locations_;
   std::vector<ComponentId> components_;
 };
 
