@@ -185,3 +185,33 @@ TEST(Table, AddRow) {
   // mismatch width
   EXPECT_ANY_THROW((table.add_row<int>(0)));
 }
+
+TEST(Table, RemoveRow) {
+  struct A {
+   public:
+    explicit A(std::string&& item) : item_{std::move(item)} {}
+    auto run() -> std::string { return item_; }
+
+   private:
+    std::string item_;
+  };
+
+  auto table = Table();
+  table.add_column(Column::create_column<int>());
+  table.add_column(Column::create_column<std::string>());
+  table.add_column(Column::create_column<A>());
+
+  table.add_row<int, std::string, A>(10, "Hello", A("Hello"));
+  table.add_row<int, std::string, A>(20, "from", A("from"));
+  table.add_row<int, std::string, A>(30, "the", A("the"));
+  table.add_row<int, std::string, A>(40, "other", A("other"));
+  table.add_row<int, std::string, A>(50, "side", A("side"));
+
+  EXPECT_EQ(table.height(), 5);
+
+  EXPECT_TRUE(table.remove_row(2));
+  EXPECT_EQ(table.height(), 4);
+  EXPECT_EQ(table.get_data_unchecked<int>(2), 50);
+  EXPECT_EQ(table.get_data_unchecked<std::string>(2), "side");
+  EXPECT_EQ(table.get_data_unchecked<A>(2).run(), "side");
+}

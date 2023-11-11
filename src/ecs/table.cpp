@@ -40,6 +40,16 @@ void Table::add_column(Column&& column) {
     ++width_;
   }
 }
+auto Table::remove_row(size_t row) -> bool {
+  if (row >= height_) {
+    return false;
+  }
+  for (auto& [_, column] : columns_) {
+    column.remove(row);
+  }
+  --height_;
+  return true;
+}
 
 auto Table::components() const -> std::vector<ComponentId> {
   std::vector<ComponentId> component_ids;

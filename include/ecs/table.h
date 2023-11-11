@@ -80,6 +80,8 @@ class Table {
     return row_index;
   }
 
+  auto remove_row(size_t row) -> bool;
+
  private:
   TableId table_id_;
   std::unordered_map<ComponentId, Column> columns_{};
