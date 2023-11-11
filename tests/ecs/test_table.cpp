@@ -141,3 +141,89 @@ TEST(Table, RemoveRow) {
   // no height mismatch
   EXPECT_TRUE(table.is_valid());
 }
+
+TEST(Table, MoveRowToOtherSameComponentTypes) {
+  auto table = Table::create_table<int, float>();
+  table.add_row<int, float>(1, 2.0);
+  table.add_row<int, float>(3, 4.0);
+  table.add_row<int, float>(5, 6.0);
+  table.add_row<int, float>(7, 8.0);
+
+  auto other = Table::create_table<int, float>();
+  table.move_row_to_other(1, other);
+
+  // since other receive all the components, they must all be valid
+  EXPECT_EQ(other.height(), 1);
+  EXPECT_EQ(table.height(), 3);
+  EXPECT_TRUE(table.is_valid());
+  EXPECT_TRUE(other.is_valid());
+
+  EXPECT_EQ(other.get_data_unchecked<int>(0), 3);
+  EXPECT_EQ(other.get_data_unchecked<float>(0), 4.0);
+
+  EXPECT_EQ(table.get_data_unchecked<int>(0), 1);
+  EXPECT_EQ(table.get_data_unchecked<float>(0), 2.0);
+  EXPECT_EQ(table.get_data_unchecked<int>(1), 7);
+  EXPECT_EQ(table.get_data_unchecked<float>(1), 8.0);
+  EXPECT_EQ(table.get_data_unchecked<int>(2), 5);
+  EXPECT_EQ(table.get_data_unchecked<float>(2), 6.0);
+}
+
+TEST(Table, MoveRowToOtherHasFewerComponentTypes) {
+  auto table = Table::create_table<int, float>();
+  table.add_row<int, float>(1, 2.0);
+  table.add_row<int, float>(3, 4.0);
+  table.add_row<int, float>(5, 6.0);
+  table.add_row<int, float>(7, 8.0);
+
+  auto other = Table::create_table<int>();
+  table.move_row_to_other(1, other);
+
+  // since other receive enough components, they must all be valid
+  EXPECT_EQ(other.height(), 1);
+  EXPECT_EQ(table.height(), 3);
+  EXPECT_TRUE(table.is_valid());
+  EXPECT_TRUE(other.is_valid());
+
+  EXPECT_EQ(other.get_data_unchecked<int>(0), 3);
+
+  EXPECT_EQ(table.get_data_unchecked<int>(0), 1);
+  EXPECT_EQ(table.get_data_unchecked<float>(0), 2.0);
+  EXPECT_EQ(table.get_data_unchecked<int>(1), 7);
+  EXPECT_EQ(table.get_data_unchecked<float>(1), 8.0);
+  EXPECT_EQ(table.get_data_unchecked<int>(2), 5);
+  EXPECT_EQ(table.get_data_unchecked<float>(2), 6.0);
+}
+
+TEST(Table, MoveRowToOtherHasDifferentComponentTypes) {
+  auto table = Table::create_table<int, float>();
+  table.add_row<int, float>(1, 2.0);
+  table.add_row<int, float>(3, 4.0);
+  table.add_row<int, float>(5, 6.0);
+  table.add_row<int, float>(7, 8.0);
+
+  auto other = Table::create_table<std::string>();
+  table.move_row_to_other(1, other);
+
+  // since other did not receive any component, they must all be valid
+  EXPECT_EQ(other.height(), 0);
+  EXPECT_EQ(table.height(), 3);
+  EXPECT_TRUE(table.is_valid());
+  EXPECT_TRUE(other.is_valid());
+}
+
+TEST(Table, MoveRowToOtherHasSomeTableComponentTypes) {
+  auto table = Table::create_table<int, float>();
+  table.add_row<int, float>(1, 2.0);
+  table.add_row<int, float>(3, 4.0);
+  table.add_row<int, float>(5, 6.0);
+  table.add_row<int, float>(7, 8.0);
+
+  auto other = Table::create_table<int, std::string>();
+  table.move_row_to_other(1, other);
+
+  // since other has some of table's component types, other must not be valid
+  EXPECT_FALSE(other.is_valid());
+  EXPECT_EQ(table.height(), 3);
+  EXPECT_TRUE(table.is_valid());
+}

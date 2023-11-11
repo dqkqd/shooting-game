@@ -1,6 +1,7 @@
 
 #include "ecs/table.h"
 
+#include <limits>
 #include <stdexcept>
 #include <utility>
 
@@ -70,4 +71,43 @@ auto Table::add_component(ComponentId component_id, void* item) -> size_t {
   auto& column = get_column(component_id);
   column.push_unknown(item);
   return column.size();
+}
+
+auto Table::move_row_to_other(size_t row, Table& other)
+    -> std::optional<size_t> {
+  if (row >= height_) {
+    return {};
+  }
+
+  size_t height = other.height();
+  bool at_least_one_column_is_moved = false;
+  for (auto& [component_id, column] : columns_) {
+    if (other.has_component_id(component_id)) {
+      height = other.add_component(component_id, column.get_ptr_at(row));
+    }
+  }
+
+  other.reset_height();
+
+  remove_row(row);
+  return height;
+}
+
+void Table::reset_height() {
+  if (columns_.empty()) {
+    return;
+  }
+
+  size_t min_height = std::numeric_limits<size_t>::max();
+  size_t max_height = std::numeric_limits<size_t>::min();
+
+  for (auto& [_, column] : columns_) {
+    min_height = std::min(min_height, column.size());
+    max_height = std::max(max_height, column.size());
+  }
+
+  if (min_height == max_height) {
+    height_ = min_height;
+    all_heights_equal_ = true;
+  }
 }

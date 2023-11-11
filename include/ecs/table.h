@@ -1,6 +1,7 @@
 #ifndef ECS_TABLE_H
 #define ECS_TABLE_H
 
+#include <optional>
 #include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
@@ -108,6 +109,8 @@ class Table {
   }
 
   auto remove_row(size_t row) -> bool;
+  auto move_row_to_other(size_t row, Table &other) -> std::optional<size_t>;
+  void reset_height();
 
  private:
   TableId table_id_;
