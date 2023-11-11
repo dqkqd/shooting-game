@@ -40,12 +40,6 @@ class Archetype {
 
   [[nodiscard]] auto components() const -> std::vector<ComponentId>;
 
-  [[nodiscard]] auto contains(ComponentId component_id) const -> bool;
-  template <class T>
-  [[nodiscard]] auto contains() const -> bool {
-    return contains(ComponentCounter::id<T>());
-  }
-
   template <typename... Args>
   auto add_entity(Args &&...components) -> EntityLocation {
     auto row = table_.add_row<Args...>(std::forward<Args>(components)...);
