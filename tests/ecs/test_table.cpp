@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "ecs/column.h"
+#include "ecs/primitive.h"
 #include "ecs/table.h"
 
 TEST(Table, InvalidAfterMoved) {
@@ -59,6 +60,20 @@ TEST(Table, GetColumn) {
           1),
       "World");
 }
+
+TEST(Table, GetAllComponents) {
+  auto table = Table::create_table();
+  table.add_column(Column::create_column<int>());
+  table.add_column(Column::create_column<float>());
+  table.add_column(Column::create_column<std::string>());
+  std::set<ComponentId> expected{ColumnCounter::id<int>(),
+                                 ColumnCounter::id<float>(),
+                                 ColumnCounter::id<std::string>()};
+  EXPECT_EQ(table.components().size(), 3);
+  for (auto component_id : table.components()) {
+    EXPECT_TRUE(expected.find(component_id) != expected.end());
+  }
+};
 
 TEST(Table, GetData) {
   auto table = Table::create_table();

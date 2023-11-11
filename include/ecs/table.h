@@ -2,6 +2,7 @@
 #define ECS_TABLE_H
 
 #include <unordered_map>
+#include <vector>
 
 #include "ecs/column.h"
 #include "ecs/primitive.h"
@@ -25,6 +26,7 @@ class Table {
   [[nodiscard]] auto is_valid() const -> bool;
 
   void add_column(Column &&column);
+  [[nodiscard]] auto components() const -> std::vector<ComponentId>;
 
   template <class T>
   [[nodiscard]] auto has_component() const -> bool {

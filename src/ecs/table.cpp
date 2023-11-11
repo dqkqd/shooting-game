@@ -26,6 +26,15 @@ void Table::add_column(Column&& column) {
   columns_[column.component_id()] = std::move(column);
 }
 
+auto Table::components() const -> std::vector<ComponentId> {
+  std::vector<ComponentId> component_ids;
+  component_ids.reserve(columns_.size());
+  for (const auto& it : columns_) {
+    component_ids.push_back(it.first);
+  }
+  return component_ids;
+}
+
 auto Table::has_component(ComponentId component_id) const -> bool {
   return columns_.find(component_id) != columns_.end();
 }
