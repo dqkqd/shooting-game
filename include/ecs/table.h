@@ -82,7 +82,7 @@ class Table {
       throw std::runtime_error(error_msg.str());
     }
     static_assert(all_types_are_different<Args...>(),
-                  "All the types in must be pairwise different");
+                  "All column types must be pairwise different");
     (
         [&] {
           Column &column = get_column<Args>();
