@@ -2,6 +2,7 @@
 #define ECS_ARCHETYPE_H
 
 #include <optional>
+#include <stdexcept>
 #include <unordered_map>
 #include <vector>
 
@@ -52,8 +53,50 @@ class Archetype {
     return location;
   }
 
-  auto move_entity_to_other(EntityId entity_id, Archetype &other)
-      -> std::optional<EntityLocation>;
+  template <typename... Args>
+  auto move_entity_to_other(EntityId entity_id, Archetype &other,
+                            Args &&...components)
+      -> std::optional<EntityLocation> {
+    auto entity_location = location(entity_id);
+    if (!entity_location.has_value()) {
+      return {};
+    }
+
+    if (other.location(entity_id).has_value()) {
+      std::ostringstream error_msg;
+      error_msg << "Archetype " << other.archetype_id()
+                << " already has entity " << entity_id << std::endl;
+      throw std::runtime_error(error_msg.str().c_str());
+    }
+
+    auto old_height = other.table_.height();
+    table_.move_row_to_other(entity_location->row, other.table_);
+    if (sizeof...(Args) > 0) {
+      other.table_.add_components<Args...>(std::move(components)...);
+    }
+
+    locations_.erase(entity_id);
+    other.table_.reset_height();
+    auto new_height = other.table_.height();
+
+    if (!other.is_valid() || old_height + 1 != new_height) {
+      std::ostringstream error_msg;
+      error_msg << "Could move entity " << entity_id << " from archetype "
+                << archetype_id_ << " into archetype " << other.archetype_id()
+                << std::endl;
+      throw std::runtime_error(error_msg.str().c_str());
+    }
+
+    if (other.is_empty()) {
+      return {};
+    }
+
+    auto location = EntityLocation{.archetype_id = other.archetype_id(),
+                                   .table_id = other.table_id(),
+                                   .row = other.table_.height() - 1};
+    other.locations_[entity_id] = location;
+    return location;
+  }
 
   [[nodiscard]] auto location(EntityId entity_id) const
       -> std::optional<EntityLocation>;

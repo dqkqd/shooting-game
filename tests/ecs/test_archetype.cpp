@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <stdexcept>
+
 #include "ecs/archetype.h"
 #include "ecs/column.h"
 #include "ecs/primitive.h"
@@ -98,23 +100,16 @@ TEST(Archetype, MoveEntitySuccessful) {
   EXPECT_TRUE(other.is_valid());
 }
 
-TEST(Archetype, MoveEntityDidNotMatchType) {
+TEST(Archetype, MoveEntityIsNotOverlappedWithoutEnoughArguments) {
   auto archetype = Archetype::create_archetype<int, float>();
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
   auto other = Archetype::create_archetype<std::string>();
-  auto location = archetype.move_entity_to_other(10, other);
-
-  EXPECT_TRUE(!location.has_value());  // NOLINT
-  EXPECT_FALSE(archetype.location(10).has_value());
-  EXPECT_TRUE(other.is_empty());
-
-  EXPECT_TRUE(archetype.is_valid());
-  EXPECT_TRUE(other.is_valid());
+  EXPECT_THROW(archetype.move_entity_to_other(10, other), std::runtime_error);
 }
 
-TEST(Archetype, MoveEntityMatchSubsetType) {
+TEST(Archetype, MoveEntitySubset) {
   auto archetype = Archetype::create_archetype<int, float>();
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
@@ -130,13 +125,13 @@ TEST(Archetype, MoveEntityMatchSubsetType) {
   EXPECT_TRUE(other.is_valid());
 }
 
-TEST(Archetype, MoveEntityDidNotMatchSubsetType) {
+TEST(Archetype, MoveEntityOverlappedWithAdditionalArguments) {
   auto archetype = Archetype::create_archetype<int, float>();
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
   auto other = Archetype::create_archetype<int, double>();
-  auto location = archetype.move_entity_to_other(10, other);
+  auto location = archetype.move_entity_to_other<double>(10, other, 5.0);
 
   EXPECT_EQ(location->row, 0);  // NOLINT
   EXPECT_FALSE(archetype.location(10).has_value());
@@ -144,6 +139,6 @@ TEST(Archetype, MoveEntityDidNotMatchSubsetType) {
 
   EXPECT_TRUE(archetype.is_valid());
 
-  // double component is not added
-  EXPECT_FALSE(other.is_valid());
+  // double component is added
+  EXPECT_TRUE(other.is_valid());
 }
