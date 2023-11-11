@@ -1,6 +1,7 @@
 #include "ecs/column.h"
 
 #include <cstdint>
+#include <cstring>
 #include <memory>
 #include <utility>
 
@@ -31,6 +32,16 @@ Column::Column(int layout, ComponentId component_id)  // NOLINT
 Column::~Column() {
   std::destroy_n(reinterpret_cast<std::uintptr_t *>(data_), offset(capacity_));
   free(data_);  // NOLINT
+}
+
+auto Column::remove(size_t row) -> bool {
+  if (row >= size_) {
+    return false;
+  }
+  std::memcpy(get_ptr_at(row), get_ptr_at(size_ - 1), layout_);
+  --size_;
+  shrink();
+  return true;
 }
 
 auto Column::component_id() const -> ComponentId { return component_id_; }

@@ -55,6 +55,8 @@ class Column {
     ++size_;
   }
 
+  auto remove(size_t row) -> bool;
+
   [[nodiscard]] auto component_id() const -> ComponentId;
   [[nodiscard]] auto is_valid() const -> bool;
   [[nodiscard]] auto size() const -> size_t;

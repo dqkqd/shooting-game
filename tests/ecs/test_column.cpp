@@ -94,6 +94,42 @@ TEST(Column, ReassignElement) {
   EXPECT_EQ(int_column.get_data<int>(1), 40);
 }
 
+TEST(Column, RemoveElement) {
+  auto int_column = Column::create_column<int>();
+  int_column.push<int>(10);
+  int_column.push<int>(20);
+  int_column.push<int>(30);
+  int_column.push<int>(40);
+
+  EXPECT_TRUE(int_column.remove(1));
+  EXPECT_EQ(int_column.get_data<int>(0), 10);
+  EXPECT_EQ(int_column.get_data<int>(1), 40);
+  EXPECT_EQ(int_column.get_data<int>(2), 30);
+  EXPECT_EQ(int_column.size(), 3);
+
+  EXPECT_FALSE(int_column.remove(3));
+
+  EXPECT_TRUE(int_column.remove(0));
+  EXPECT_EQ(int_column.get_data<int>(0), 30);
+  EXPECT_EQ(int_column.get_data<int>(1), 40);
+  EXPECT_EQ(int_column.size(), 2);
+
+  EXPECT_TRUE(int_column.remove(1));
+  EXPECT_EQ(int_column.get_data<int>(0), 30);
+  EXPECT_EQ(int_column.size(), 1);
+}
+
+TEST(Column, RemoveManyElements) {
+  auto int_column = Column::create_column<int>();
+  for (int i = 0; i < 1000; ++i) {
+    int_column.push<int>(static_cast<int>(i));
+  }
+  for (int i = 0; i < 900; ++i) {
+    EXPECT_TRUE(int_column.remove(88));
+  }
+  EXPECT_EQ(int_column.size(), 100);
+}
+
 TEST(Column, ColumnForString) {
   auto column = Column::create_column<std::string>();
   column.push<std::string>("Hello");
