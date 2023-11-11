@@ -48,15 +48,14 @@ class Table {
   }
 
   template <class T>
-  auto get_column_unchecked() -> Column & {
-    return get_column_unchecked(ComponentCounter::id<T>());
+  auto get_column() -> Column & {
+    return get_column(ComponentCounter::id<T>());
   }
-  auto get_column_unchecked(ComponentId component_id) -> Column &;
+  auto get_column(ComponentId component_id) -> Column &;
 
   template <class T>
   auto get_data_unchecked(size_t row) -> T & {
-    return columns_[ComponentCounter::id<T>()].template get_data_unchecked<T>(
-        row);
+    return get_column<T>().template get_data_unchecked<T>(row);
   }
 
   template <typename... Args>
@@ -72,7 +71,7 @@ class Table {
                   "All the types in must be pairwise different");
     (
         [&] {
-          Column &column = get_column_unchecked<Args>();
+          Column &column = get_column<Args>();
           column.push<Args>(std::move(components));
         }(),
         ...);

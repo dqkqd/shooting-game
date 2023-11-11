@@ -54,6 +54,13 @@ auto Table::has_component_id(ComponentId component_id) const -> bool {
   return columns_.find(component_id) != columns_.end();
 }
 
-auto Table::get_column_unchecked(ComponentId component_id) -> Column& {
-  return columns_[component_id];
+auto Table::get_column(ComponentId component_id) -> Column& {
+  auto it = columns_.find(component_id);
+  if (it == columns_.end()) {
+    std::ostringstream error_msg;
+    error_msg << "Column with component id " << component_id
+              << " does not exist" << std::endl;
+    throw std::runtime_error(error_msg.str());
+  }
+  return it->second;
 }
