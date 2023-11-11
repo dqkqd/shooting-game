@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "ecs/archetype/archetype_components.h"
 #include "ecs/column.h"
 #include "ecs/primitive.h"
 #include "ecs/table.h"
@@ -18,24 +19,6 @@ struct EntityLocation {
   ArchetypeId archetype_id;
   TableId table_id;
   size_t row;
-};
-
-class ArchetypeComponents {
- public:
-  friend struct std::hash<ArchetypeComponents>;
-
-  explicit ArchetypeComponents(std::vector<ComponentId> &&components);
-  ArchetypeComponents(const ArchetypeComponents &) = delete;
-  ArchetypeComponents(ArchetypeComponents &&) noexcept;
-  auto operator=(const ArchetypeComponents &) -> ArchetypeComponents & = delete;
-  auto operator=(ArchetypeComponents &&) noexcept -> ArchetypeComponents &;
-  ~ArchetypeComponents() = default;
-
-  friend auto operator==(const ArchetypeComponents &lhs,
-                         const ArchetypeComponents &rhs) -> bool;
-
- private:
-  std::set<ComponentId> components_;
 };
 
 class Archetype {
