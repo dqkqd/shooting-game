@@ -84,6 +84,13 @@ class Table {
   }
 
   template <typename... Args>
+  void add_components(Args &&...components) {
+    static_assert(all_types_are_different<Args...>(),
+                  "All column types must be pairwise different");
+    ([&] { add_component<Args>(std::move(components)); }(), ...);
+  }
+
+  template <typename... Args>
   auto add_row(Args &&...components) -> size_t {
     if (sizeof...(components) != width_) {
       std::ostringstream error_msg;
@@ -92,10 +99,8 @@ class Table {
                 << std::endl;
       throw std::runtime_error(error_msg.str());
     }
-    static_assert(all_types_are_different<Args...>(),
-                  "All column types must be pairwise different");
 
-    ([&] { add_component<Args>(std::move(components)); }(), ...);
+    add_components<Args...>(std::move(components)...);
 
     // since all types are different and number of types equal width_, we can
     // certain that if all the component arguments can be added to the table,
