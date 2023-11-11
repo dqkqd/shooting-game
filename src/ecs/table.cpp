@@ -31,17 +31,6 @@ auto Table::is_empty() const -> bool { return height_ == 0; }
 auto Table::width() const -> size_t { return width_; }
 auto Table::height() const -> size_t { return height_; }
 
-auto Table::remove_row(size_t row) -> bool {
-  if (row >= height_) {
-    return false;
-  }
-  for (auto& [_, column] : columns_) {
-    column.remove(row);
-  }
-  --height_;
-  return true;
-}
-
 auto Table::components() const -> std::vector<ComponentId> {
   std::vector<ComponentId> component_ids;
   component_ids.reserve(columns_.size());
@@ -73,6 +62,17 @@ auto Table::add_component(ComponentId component_id, void* item) -> size_t {
   return column.size();
 }
 
+auto Table::remove_row(size_t row) -> bool {
+  if (row >= height_) {
+    return false;
+  }
+  for (auto& [_, column] : columns_) {
+    column.remove(row);
+  }
+  --height_;
+  return true;
+}
+
 auto Table::move_row_to_other(size_t row, Table& other)
     -> std::optional<size_t> {
   if (row >= height_) {
@@ -86,9 +86,7 @@ auto Table::move_row_to_other(size_t row, Table& other)
       height = other.add_component(component_id, column.get_ptr_at(row));
     }
   }
-
   other.reset_height();
-
   remove_row(row);
   return height;
 }
