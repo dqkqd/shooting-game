@@ -10,6 +10,7 @@ Checks: "
   concurrency-*,
   misc-*,
   -modernize-use-nullptr,
+  -readability-identifier-length,
   -cppcoreguidelines-avoid-const-or-ref-data-members,
   -cppcoreguidelines-avoid-non-const-global-variables,
   -cppcoreguidelines-prefer-member-initializer,
