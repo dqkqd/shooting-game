@@ -29,20 +29,18 @@ class Table {
   void add_column(Column &&column);
   [[nodiscard]] auto components() const -> std::vector<ComponentId>;
 
-  template <class T>
-  [[nodiscard]] auto has_component() const -> bool {
-    return has_component(ComponentCounter::id<T>());
-  }
-  [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
+  [[nodiscard]] auto has_component_id(ComponentId component_id) const -> bool;
 
   template <typename... Args, typename = std::enable_if_t<
                                   all_types_are_same<ComponentId, Args...>>>
   auto has_components(ComponentId component_id, Args... component_ids) -> bool {
-    return has_component(component_id) && (... && has_component(component_ids));
+    return has_component_id(component_id) &&
+           (... && has_component_id(component_ids));
   }
   template <typename T, typename... Args>
   auto has_components() -> bool {
-    return has_component<T>() && (... && has_component<Args>());
+    return has_components(ComponentCounter::id<T>(),
+                          ComponentCounter::id<Args>()...);
   }
 
   template <class T>

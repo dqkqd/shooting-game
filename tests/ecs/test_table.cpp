@@ -28,12 +28,9 @@ TEST(Table, AddColumn) {
   table.add_column(std::move(column1));
   table.add_column(std::move(column2));
 
-  EXPECT_TRUE(table.has_component(ColumnCounter::id<int>()));
-  EXPECT_TRUE(table.has_component(ColumnCounter::id<std::string>()));
-  EXPECT_FALSE(table.has_component(ColumnCounter::id<float>()));
-  EXPECT_TRUE(table.has_component<int>());
-  EXPECT_TRUE(table.has_component<std::string>());
-  EXPECT_FALSE(table.has_component<float>());
+  EXPECT_TRUE(table.has_component_id(ColumnCounter::id<int>()));
+  EXPECT_TRUE(table.has_component_id(ColumnCounter::id<std::string>()));
+  EXPECT_FALSE(table.has_component_id(ColumnCounter::id<float>()));
 }
 
 TEST(Table, GetColumn) {

@@ -35,7 +35,7 @@ auto Table::components() const -> std::vector<ComponentId> {
   return component_ids;
 }
 
-auto Table::has_component(ComponentId component_id) const -> bool {
+auto Table::has_component_id(ComponentId component_id) const -> bool {
   return columns_.find(component_id) != columns_.end();
 }
 
