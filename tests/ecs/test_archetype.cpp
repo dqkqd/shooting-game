@@ -67,3 +67,17 @@ TEST(Archetype, MoveConstructor) {
   EXPECT_FALSE((archetype2.has_components<int, float>()));
   EXPECT_EQ(archetype2.archetype_id(), INVALID_ARCHETYPE_ID);
 }
+
+TEST(Archetype, EntityLocation) {
+  auto archetype = Archetype::create_archetype<int, float>();
+
+  EXPECT_FALSE(archetype.location(10).has_value());
+  archetype.add_entity<int, float>(10, 1, 2.0);
+  EXPECT_TRUE(archetype.location(10).has_value());
+  EXPECT_EQ(archetype.location(10)->row, 0);  // NOLINT
+
+  EXPECT_FALSE(archetype.location(20).has_value());
+  archetype.add_entity<int, float>(20, 3, 4.0);
+  EXPECT_TRUE(archetype.location(20).has_value());
+  EXPECT_EQ(archetype.location(20)->row, 1);  // NOLINT
+}

@@ -31,3 +31,12 @@ auto Archetype::is_empty() const -> bool { return table_.is_empty(); }
 auto Archetype::components() const -> std::vector<ComponentId> {
   return components_;
 }
+
+auto Archetype::location(EntityId entity_id) const
+    -> std::optional<EntityLocation> {
+  auto it = locations_.find(entity_id);
+  if (it == locations_.end()) {
+    return {};
+  }
+  return it->second;
+}

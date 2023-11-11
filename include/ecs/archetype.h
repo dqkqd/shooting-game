@@ -1,6 +1,7 @@
 #ifndef ECS_ARCHETYPE_H
 #define ECS_ARCHETYPE_H
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -49,6 +50,9 @@ class Archetype {
     locations_[entity_id] = location;
     return location;
   }
+
+  [[nodiscard]] auto location(EntityId entity_id) const
+      -> std::optional<EntityLocation>;
 
  private:
   explicit Archetype(Table &&table);
