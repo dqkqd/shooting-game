@@ -5,7 +5,7 @@
 
 #include "ecs/primitive.h"
 
-Table::Table(TableId table) : table_id_{table} {}
+Table::Table() : table_id_{TableCounter::id()} {}
 
 Table::Table(Table&& table) noexcept
     : table_id_{std::exchange(table.table_id_, INVALID_TABLE_ID)},
@@ -17,7 +17,7 @@ auto Table::operator=(Table&& table) noexcept -> Table& {
   return *this;
 };
 
-auto Table::create_table() -> Table { return Table(TableCounter::id()); }
+auto Table::create_table() -> Table { return Table(); }
 
 auto Table::table_id() const -> TableId { return table_id_; }
 auto Table::is_valid() const -> bool { return table_id_ != INVALID_TABLE_ID; }

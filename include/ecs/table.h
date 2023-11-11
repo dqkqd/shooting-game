@@ -12,7 +12,7 @@ using TableCounter = InstanceCounter<Table>;
 
 class Table {
  public:
-  explicit Table(TableId table = INVALID_TABLE_ID);
+  explicit Table();
 
   Table(const Table &) = delete;
   Table(Table &&Table) noexcept;
