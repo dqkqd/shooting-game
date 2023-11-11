@@ -26,9 +26,7 @@ class Archetype {
 
   template <typename... Args>
   static auto create_archetype() -> Archetype {
-    auto table = Table();
-    ([&] { table.add_column(Column::create_column<Args>()); }(), ...);
-    return Archetype(std::move(table));
+    return Archetype(Table::create_table<Args...>());
   }
 
   [[nodiscard]] auto archetype_id() const -> ArchetypeId;

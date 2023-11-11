@@ -14,7 +14,7 @@ using TableCounter = InstanceCounter<Table>;
 
 class Table {
  public:
-  explicit Table();
+  Table();
 
   Table(const Table &) = delete;
   Table(Table &&Table) noexcept;
@@ -22,7 +22,22 @@ class Table {
   auto operator=(Table &&table) noexcept -> Table &;
   ~Table() = default;
 
-  static auto create_table() -> Table;
+  template <typename... Args>
+  static auto create_table() -> Table {
+    static_assert(sizeof...(Args) > 0, "Can not create table without column");
+    static_assert(all_types_are_different<Args...>(),
+                  "All column types must be pairwise different");
+
+    auto table = Table();
+    table.width_ = sizeof...(Args);
+    (
+        [&] {
+          table.columns_[ComponentCounter::id<Args>()] =
+              Column::create_column<Args>();
+        }(),
+        ...);
+    return table;
+  }
 
   [[nodiscard]] auto table_id() const -> TableId;
   [[nodiscard]] auto is_valid() const -> bool;
@@ -30,7 +45,6 @@ class Table {
   [[nodiscard]] auto width() const -> size_t;
   [[nodiscard]] auto height() const -> size_t;
 
-  void add_column(Column &&column);
   [[nodiscard]] auto components() const -> std::vector<ComponentId>;
 
   [[nodiscard]] auto has_component_id(ComponentId component_id) const -> bool;

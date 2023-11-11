@@ -2,17 +2,19 @@
 
 #include <stdexcept>
 
-#include "ecs/column.h"
 #include "ecs/primitive.h"
 #include "ecs/table.h"
 
-TEST(Table, TestMove) {
-  auto column = Column::create_column<int>();
-  column.push_unchecked<int>(1);
-  column.push_unchecked<int>(2);
+TEST(Table, Constructor) {
+  auto table = Table::create_table<int, float, double, std::string>();
+  EXPECT_EQ(table.width(), 4);
+  EXPECT_EQ(table.height(), 0);
+}
 
-  auto table1 = Table();
-  table1.add_column(std::move(column));
+TEST(Table, TestMove) {
+  auto table1 = Table::create_table<int>();
+  table1.add_row<int>(1);
+  table1.add_row<int>(2);
 
   auto table2 = std::move(table1);
   EXPECT_TRUE(table2.is_valid());
@@ -27,37 +29,15 @@ TEST(Table, TestMove) {
 }
 
 TEST(Table, ShouldHaveDifferentId) {
-  auto table1 = Table::create_table();
-  auto table2 = Table::create_table();
+  auto table1 = Table::create_table<int>();
+  auto table2 = Table::create_table<int>();
   EXPECT_NE(table1.table_id(), table2.table_id());
 }
 
-TEST(Table, AddColumn) {
-  auto table = Table::create_table();
-
-  auto column1 = Column::create_column<int>();
-  column1.push<int>(10);
-  auto column2 = Column::create_column<std::string>();
-  column2.push<std::string>("Hello");
-
-  table.add_column(std::move(column1));
-  EXPECT_EQ(table.width(), 1);
-  table.add_column(std::move(column2));
-  EXPECT_EQ(table.width(), 2);
-
-  EXPECT_TRUE(table.has_component_id(ColumnCounter::id<int>()));
-  EXPECT_TRUE(table.has_component_id(ColumnCounter::id<std::string>()));
-  EXPECT_FALSE(table.has_component_id(ColumnCounter::id<float>()));
-}
-
 TEST(Table, GetColumn) {
-  auto table = Table::create_table();
-
-  auto column2 = Column::create_column<std::string>();
-  column2.push<std::string>("Hello");
-  column2.push<std::string>("World");
-
-  table.add_column(std::move(column2));
+  auto table = Table::create_table<std::string>();
+  table.add_row<std::string>("Hello");
+  table.add_row<std::string>("World");
 
   EXPECT_EQ(table.get_column(ColumnCounter::id<std::string>())
                 .get_data_unchecked<std::string>(0),
@@ -72,10 +52,7 @@ TEST(Table, GetColumn) {
 }
 
 TEST(Table, GetAllComponents) {
-  auto table = Table::create_table();
-  table.add_column(Column::create_column<int>());
-  table.add_column(Column::create_column<float>());
-  table.add_column(Column::create_column<std::string>());
+  auto table = Table::create_table<int, float, std::string>();
   std::set<ComponentId> expected{ColumnCounter::id<int>(),
                                  ColumnCounter::id<float>(),
                                  ColumnCounter::id<std::string>()};
@@ -86,28 +63,19 @@ TEST(Table, GetAllComponents) {
 };
 
 TEST(Table, GetData) {
-  auto table = Table::create_table();
-
-  auto column2 = Column::create_column<std::string>();
-  column2.push<std::string>("Hello");
-  column2.push<std::string>("World");
-
-  table.add_column(std::move(column2));
-
+  auto table = Table::create_table<std::string>();
+  table.add_row<std::string>("Hello");
+  table.add_row<std::string>("World");
   EXPECT_EQ(table.get_data_unchecked<std::string>(0), "Hello");
   EXPECT_EQ(table.get_data_unchecked<std::string>(1), "World");
 }
 
 TEST(Table, HasMultipleComponents) {
-  auto table = Table();
   struct A1 {};
   struct A2 {};
   struct A3 {};
   struct A4 {};
-  table.add_column(Column::create_column<A1>());
-  table.add_column(Column::create_column<A2>());
-  table.add_column(Column::create_column<A3>());
-
+  auto table = Table::create_table<A1, A2, A3>();
   auto id1 = ColumnCounter::id<A1>();
   auto id2 = ColumnCounter::id<A2>();
   auto id3 = ColumnCounter::id<A3>();
@@ -128,50 +96,9 @@ TEST(Table, HasMultipleComponents) {
   EXPECT_FALSE(has_a1_a2_a3_a4);
 }
 
-TEST(Table, AddColumnWithDifferentSizeThrowError) {
-  auto column1 = Column::create_column<int>();
-  column1.push_unchecked<int>(1);
-  column1.push_unchecked<int>(2);
-
-  auto column2 = Column::create_column<int>();
-  column2.push_unchecked<int>(1);
-  auto column3 = Column::create_column<float>();
-  column3.push_unchecked<float>(2);
-
-  auto table = Table();
-  table.add_column(std::move(column1));
-
-  EXPECT_THROW(table.add_column(std::move(column2)), std::runtime_error);
-  EXPECT_THROW(table.add_column(std::move(column3)), std::runtime_error);
-}
-
-TEST(Table, AddColumnToEmptyTableShouldIncreaseHeight) {
-  auto column = Column::create_column<int>();
-  column.push_unchecked<int>(1);
-  column.push_unchecked<int>(2);
-
-  auto table = Table();
-  EXPECT_TRUE(table.is_empty());
-  EXPECT_EQ(table.width(), 0);
-  EXPECT_EQ(table.height(), 0);
-  table.add_column(std::move(column));
-
-  EXPECT_TRUE(!table.is_empty());
-  EXPECT_EQ(table.width(), 1);
-  EXPECT_EQ(table.height(), 2);
-}
-
 TEST(Table, AddRow) {
-  auto column1 = Column::create_column<int>();
-  column1.push_unchecked<int>(1);
-
-  auto column2 = Column::create_column<std::string>();
-  column2.push_unchecked<std::string>("Hello");
-
-  auto table = Table();
-  table.add_column(std::move(column1));
-  table.add_column(std::move(column2));
-
+  auto table = Table::create_table<int, std::string>();
+  table.add_row<int, std::string>(1, "Hello");
   table.add_row<int, std::string>(2, "World");
 
   EXPECT_EQ(table.height(), 2);
@@ -196,11 +123,7 @@ TEST(Table, RemoveRow) {
     std::string item_;
   };
 
-  auto table = Table();
-  table.add_column(Column::create_column<int>());
-  table.add_column(Column::create_column<std::string>());
-  table.add_column(Column::create_column<A>());
-
+  auto table = Table::create_table<int, std::string, A>();
   table.add_row<int, std::string, A>(10, "Hello", A("Hello"));
   table.add_row<int, std::string, A>(20, "from", A("from"));
   table.add_row<int, std::string, A>(30, "the", A("the"));

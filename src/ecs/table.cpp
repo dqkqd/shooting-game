@@ -22,24 +22,12 @@ auto Table::operator=(Table&& table) noexcept -> Table& {
   return *this;
 };
 
-auto Table::create_table() -> Table { return Table(); }
 auto Table::table_id() const -> TableId { return table_id_; }
 auto Table::is_valid() const -> bool { return table_id_ != INVALID_TABLE_ID; }
 auto Table::is_empty() const -> bool { return height_ == 0; }
 auto Table::width() const -> size_t { return width_; }
 auto Table::height() const -> size_t { return height_; }
 
-void Table::add_column(Column&& column) {
-  if (!is_empty() && column.size() != height_) {
-    throw std::runtime_error("Can not add column into table. Size mismatch.");
-  }
-  height_ = column.size();
-
-  if (!has_component_id(column.component_id())) {
-    columns_[column.component_id()] = std::move(column);
-    ++width_;
-  }
-}
 auto Table::remove_row(size_t row) -> bool {
   if (row >= height_) {
     return false;
