@@ -1,6 +1,7 @@
 #ifndef ECS_ARCHETYPE_H
 #define ECS_ARCHETYPE_H
 
+#include <unordered_map>
 #include <vector>
 
 #include "ecs/column.h"
@@ -41,11 +42,12 @@ class Archetype {
   [[nodiscard]] auto components() const -> std::vector<ComponentId>;
 
   template <typename... Args>
-  auto add_entity(Args &&...components) -> EntityLocation {
+  auto add_entity(EntityId entity_id, Args &&...components) -> EntityLocation {
     auto row = table_.add_row<Args...>(std::forward<Args>(components)...);
-    locations_.emplace_back<EntityLocation>(
-        {.archetype_id = archetype_id(), .table_id = table_id(), .row = row});
-    return locations_.back();
+    auto location = EntityLocation{
+        .archetype_id = archetype_id(), .table_id = table_id(), .row = row};
+    locations_[entity_id] = location;
+    return location;
   }
 
  private:
@@ -53,7 +55,7 @@ class Archetype {
 
   ArchetypeId archetype_id_;
   Table table_;
-  std::vector<EntityLocation> locations_;
+  std::unordered_map<EntityId, EntityLocation> locations_;
   std::vector<ComponentId> components_;
 };
 

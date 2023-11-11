@@ -40,7 +40,7 @@ TEST(Archetype, ComponentsMustBeSorted) {
 
 TEST(Archetype, AddEntity) {
   auto archetype = Archetype::create_archetype<int, float>();
-  auto location = archetype.add_entity<int, float>(1, 2.0);
+  auto location = archetype.add_entity<int, float>(10, 1, 2.0);
   EXPECT_EQ(location.archetype_id, archetype.archetype_id());
   EXPECT_EQ(location.table_id, archetype.table_id());
   EXPECT_EQ(location.row, 0);
@@ -48,8 +48,8 @@ TEST(Archetype, AddEntity) {
 
 TEST(Archetype, MoveConstructor) {
   auto archetype1 = Archetype::create_archetype<int, float>();
-  archetype1.add_entity<int, float>(1, 2.0);
-  archetype1.add_entity<int, float>(2, 3.0);
+  archetype1.add_entity<int, float>(10, 1, 2.0);
+  archetype1.add_entity<int, float>(20, 2, 3.0);
 
   auto archetype2 = std::move(archetype1);
   EXPECT_FALSE(archetype2.is_empty());
