@@ -55,6 +55,8 @@ class Column {
     ++size_;
   }
 
+  void push_unknown(void *item);
+
   auto remove(size_t row) -> bool;
 
   [[nodiscard]] auto component_id() const -> ComponentId;

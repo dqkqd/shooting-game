@@ -82,6 +82,26 @@ TEST(Column, AddTooManyElement) {
   }
 }
 
+TEST(Column, AddUnknownElementToColumn) {
+  auto column = Column::create_column<int>();
+
+  int item = 10;
+  column.push_unknown(&item);
+
+  EXPECT_EQ(column.size(), 1);
+  EXPECT_EQ(column.get_data<int>(0), 10);
+}
+
+TEST(Column, AddTooManyUnknownElement) {
+  auto int_column = Column::create_column<int>();
+  for (int i = 0; i < 1000; ++i) {
+    int_column.push_unknown(&i);
+  }
+  for (int i = 0; i < 1000; ++i) {
+    EXPECT_EQ(int_column.get_data<int>(i), i);
+  }
+}
+
 TEST(Column, ReassignElement) {
   auto int_column = Column::create_column<int>();
   int_column.push<int>(10);
