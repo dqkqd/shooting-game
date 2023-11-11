@@ -25,6 +25,9 @@ class Table {
 
   [[nodiscard]] auto table_id() const -> TableId;
   [[nodiscard]] auto is_valid() const -> bool;
+  [[nodiscard]] auto is_empty() const -> bool;
+  [[nodiscard]] auto width() const -> size_t;
+  [[nodiscard]] auto height() const -> size_t;
 
   void add_column(Column &&column);
   [[nodiscard]] auto components() const -> std::vector<ComponentId>;
@@ -58,6 +61,9 @@ class Table {
  private:
   TableId table_id_;
   std::unordered_map<ComponentId, Column> columns_{};
+
+  size_t width_;
+  size_t height_;
 };
 
 #endif
