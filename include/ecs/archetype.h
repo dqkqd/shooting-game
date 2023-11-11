@@ -17,6 +17,12 @@ using ArchetypeCounter = InstanceCounter<Archetype>;
 
 class Archetype {
  public:
+  Archetype(const Archetype &) = delete;
+  Archetype(Archetype &&) noexcept;
+  auto operator=(const Archetype &) -> Archetype & = delete;
+  auto operator=(Archetype &&) noexcept -> Archetype &;
+  ~Archetype() = default;
+
   template <typename... Args>
   static auto create_archetype() -> Archetype {
     auto table = Table();
@@ -41,7 +47,7 @@ class Archetype {
   }
 
  private:
-  explicit Archetype(Table&& table);
+  explicit Archetype(Table &&table);
 
   ArchetypeId archetype_id_;
   Table table_;

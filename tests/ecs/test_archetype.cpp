@@ -2,6 +2,7 @@
 
 #include "ecs/archetype.h"
 #include "ecs/column.h"
+#include "ecs/primitive.h"
 #include "ecs/table.h"
 
 TEST(Archetype, Constructor) {
@@ -35,4 +36,22 @@ TEST(Archetype, ComponentsMustBeSorted) {
                        ColumnCounter::id<A3>()};
   std::sort(expected.begin(), expected.end());
   EXPECT_EQ(archetype.components(), expected);
+}
+
+TEST(Archetype, MoveConstructor) {
+  auto archetype1 = Archetype::create_archetype<int, float>();
+
+  // TODO(khanhdq) check empty after implementing add entities
+  auto archetype2 = std::move(archetype1);
+  EXPECT_TRUE((archetype2.has_components<int, float>()));
+  EXPECT_NE(archetype2.archetype_id(), INVALID_ARCHETYPE_ID);
+  EXPECT_FALSE((archetype1.has_components<int, float>()));
+  EXPECT_EQ(archetype1.archetype_id(), INVALID_ARCHETYPE_ID);
+
+  // TODO(khanhdq) check empty after implementing add entities
+  Archetype archetype3{std::move(archetype2)};
+  EXPECT_TRUE((archetype3.has_components<int, float>()));
+  EXPECT_NE(archetype3.archetype_id(), INVALID_ARCHETYPE_ID);
+  EXPECT_FALSE((archetype2.has_components<int, float>()));
+  EXPECT_EQ(archetype2.archetype_id(), INVALID_ARCHETYPE_ID);
 }
