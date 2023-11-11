@@ -1,6 +1,7 @@
 #ifndef ECS_TABLE_H
 #define ECS_TABLE_H
 
+#include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
@@ -56,6 +57,28 @@ class Table {
   auto get_data_unchecked(size_t row) -> T & {
     return columns_[ComponentCounter::id<T>()].template get_data_unchecked<T>(
         row);
+  }
+
+  template <typename... Args>
+  auto add_row(Args &&...components) -> size_t {
+    if (sizeof...(components) != width_) {
+      std::ostringstream error_msg;
+      error_msg << "Could not add row into table. "
+                << "Rows: " << sizeof...(components) << ", width: " << width_
+                << std::endl;
+      throw std::runtime_error(error_msg.str());
+    }
+    static_assert(all_types_are_different<Args...>(),
+                  "All the types in must be pairwise different");
+    (
+        [&] {
+          Column &column = get_column_unchecked<Args>();
+          column.push<Args>(std::move(components));
+        }(),
+        ...);
+    ++height_;
+    size_t row_index = height_ - 1;
+    return row_index;
   }
 
  private:

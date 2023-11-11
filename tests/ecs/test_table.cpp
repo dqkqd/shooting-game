@@ -164,3 +164,28 @@ TEST(Table, AddColumnToEmptyTableShouldIncreaseHeight) {
   EXPECT_EQ(table.width(), 1);
   EXPECT_EQ(table.height(), 2);
 }
+
+TEST(Table, AddRow) {
+  auto column1 = Column::create_column<int>();
+  column1.push_unchecked<int>(1);
+
+  auto column2 = Column::create_column<std::string>();
+  column2.push_unchecked<std::string>("Hello");
+
+  auto table = Table();
+  table.add_column(std::move(column1));
+  table.add_column(std::move(column2));
+
+  table.add_row<int, std::string>(2, "World");
+
+  EXPECT_EQ(table.height(), 2);
+  EXPECT_EQ(table.get_data_unchecked<int>(0), 1);
+  EXPECT_EQ(table.get_data_unchecked<int>(1), 2);
+  EXPECT_EQ(table.get_data_unchecked<std::string>(0), "Hello");
+  EXPECT_EQ(table.get_data_unchecked<std::string>(1), "World");
+
+  // mismatch type
+  EXPECT_ANY_THROW((table.add_row<int, float>(0, 1.0)));
+  // mismatch width
+  EXPECT_ANY_THROW((table.add_row<int>(0)));
+}
