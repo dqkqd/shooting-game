@@ -26,8 +26,7 @@ constexpr bool all_types_are_same =  // NOLINT
     std::conjunction_v<std::is_same<T, Ts>...>;
 
 // pairwise different type compile time check
-constexpr auto all_types_are_different() -> bool { return true; }
-template <typename T>
+template <typename T = int>
 constexpr auto all_types_are_different() -> bool {
   return true;
 }
