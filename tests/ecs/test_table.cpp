@@ -98,8 +98,8 @@ TEST(Table, HasMultipleComponents) {
 
 TEST(Table, AddRow) {
   auto table = Table::create_table<int, std::string>();
-  table.add_row<int, std::string>(1, "Hello");
-  table.add_row<int, std::string>(2, "World");
+  EXPECT_EQ((table.add_row<int, std::string>(1, "Hello")), 0);
+  EXPECT_EQ((table.add_row<int, std::string>(2, "World")), 1);
 
   EXPECT_EQ(table.height(), 2);
   EXPECT_EQ(table.get_data_unchecked<int>(0), 1);
