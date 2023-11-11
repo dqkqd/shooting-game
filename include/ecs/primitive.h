@@ -2,6 +2,7 @@
 #define ECS_PRIMITIVE_H
 
 #include <atomic>
+#include <functional>
 #include <type_traits>
 
 constexpr int INVALID_COUNTER_ID = -1;
@@ -34,6 +35,13 @@ template <typename T, typename U, typename... Args>
 constexpr auto all_types_are_different() -> bool {
   return !std::is_same_v<T, U> && all_types_are_different<T, Args...>() &&
          all_types_are_different<U, Args...>();
+}
+
+// custom hash function based on boost::hash_combine
+template <class T>
+inline void hash_combine(std::size_t& seed, const T& value) {
+  std::hash<T> hasher{};
+  seed ^= hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 #endif

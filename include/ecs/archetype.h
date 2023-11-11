@@ -2,6 +2,7 @@
 #define ECS_ARCHETYPE_H
 
 #include <optional>
+#include <set>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -10,14 +11,32 @@
 #include "ecs/primitive.h"
 #include "ecs/table.h"
 
+class Archetype;
+using ArchetypeCounter = InstanceCounter<Archetype>;
+
 struct EntityLocation {
   ArchetypeId archetype_id;
   TableId table_id;
   size_t row;
 };
 
-class Archetype;
-using ArchetypeCounter = InstanceCounter<Archetype>;
+class ArchetypeComponents {
+ public:
+  friend struct std::hash<ArchetypeComponents>;
+
+  explicit ArchetypeComponents(std::vector<ComponentId> &&components);
+  ArchetypeComponents(const ArchetypeComponents &) = delete;
+  ArchetypeComponents(ArchetypeComponents &&) noexcept;
+  auto operator=(const ArchetypeComponents &) -> ArchetypeComponents & = delete;
+  auto operator=(ArchetypeComponents &&) noexcept -> ArchetypeComponents &;
+  ~ArchetypeComponents() = default;
+
+  friend auto operator==(const ArchetypeComponents &lhs,
+                         const ArchetypeComponents &rhs) -> bool;
+
+ private:
+  std::set<ComponentId> components_;
+};
 
 class Archetype {
  public:
@@ -42,7 +61,7 @@ class Archetype {
     return table_.has_components<T, Args...>();
   }
 
-  [[nodiscard]] auto components() const -> std::vector<ComponentId>;
+  [[nodiscard]] auto components() const -> ArchetypeComponents;
 
   template <typename... Args>
   auto add_entity(EntityId entity_id, Args &&...components) -> EntityLocation {
@@ -107,7 +126,6 @@ class Archetype {
   ArchetypeId archetype_id_;
   Table table_;
   std::unordered_map<EntityId, EntityLocation> locations_;
-  std::vector<ComponentId> components_;
 };
 
 #endif
