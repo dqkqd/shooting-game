@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "ecs/column.h"
 #include "ecs/primitive.h"
 #include "ecs/table.h"
 
@@ -12,20 +13,33 @@ struct ArchetypeEntity {
 };
 
 class Archetype;
-using ArchetypeCounter = Counter<Archetype>;
+using ArchetypeCounter = InstanceCounter<Archetype>;
 
 class Archetype {
  public:
-  explicit Archetype(TableId table) : table_(table) {}
-  [[nodiscard]] auto entities() const -> std::vector<ArchetypeEntity> &;
-  [[nodiscard]] auto components() const -> std::vector<ComponentId> &;
-  [[nodiscard]] auto contains(ComponentId component) const -> bool;
+  explicit Archetype(Table &&table);
+
+  auto archetype_id() const -> ArchetypeId;
+  auto table_id() const -> TableId;
+
+  [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
+  template <class T>
+  [[nodiscard]] auto has_components() const -> bool {
+    return has_component(ComponentCounter::id<T>());
+  }
+
+  [[nodiscard]] auto components() const -> std::vector<ComponentId>;
+
+  [[nodiscard]] auto contains(ComponentId component_id) const -> bool;
+  template <class T>
+  [[nodiscard]] auto contains() const -> bool {
+    return contains(ComponentCounter::id<T>());
+  }
 
  private:
+  ArchetypeId archetype_id_;
+  Table table_;
   std::vector<ComponentId> components_;
-  std::vector<ArchetypeEntity> entities_;
-  ArchetypeId id_ = INVALID_ARCHETYPE_ID;
-  TableId table_;
 };
 
 #endif
