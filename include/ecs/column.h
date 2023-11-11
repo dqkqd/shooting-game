@@ -48,10 +48,10 @@ class Column {
   }
 
   template <class T>
-  void push_unchecked(T item) {
+  void push_unchecked(T &&item) {
     grow();
     // placement new
-    new (get_ptr_at(size_)) T{std::move(item)};
+    new (get_ptr_at(size_)) T{std::forward<T>(item)};
     ++size_;
   }
 
