@@ -141,3 +141,22 @@ TEST(Archetype, MoveEntityOverlappedWithAdditionalArguments) {
   // double component is added
   EXPECT_TRUE(other.is_valid());
 }
+
+TEST(ArchetypeComponents, Constructor) {
+  auto components =
+      ArchetypeComponents::create_archetype_components<int, float,
+                                                       std::string>();
+  std::vector v{ComponentCounter::id<int>(), ComponentCounter::id<float>(),
+                ComponentCounter::id<std::string>()};
+  EXPECT_EQ(components, ArchetypeComponents{std::move(v)});
+}
+
+TEST(ArchetypeComponents, Add) {
+  ArchetypeComponents components{{0}};
+  components.add(3);
+  components.add(2);
+  components.add(8);
+
+  std::vector v{0, 2, 3, 8};
+  EXPECT_EQ(components, ArchetypeComponents{std::move(v)});
+}

@@ -28,6 +28,10 @@ auto operator==(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
                      });
 }
 
+void ArchetypeComponents::add(ComponentId component_id) {
+  components_.insert(component_id);
+}
+
 template <>
 struct std::hash<ArchetypeComponents> {
   auto operator()(const ArchetypeComponents &archetype_component) const noexcept
