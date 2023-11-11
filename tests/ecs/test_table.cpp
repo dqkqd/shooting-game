@@ -87,3 +87,33 @@ TEST(Table, GetData) {
   EXPECT_EQ(table.get_data_unchecked<std::string>(0), "Hello");
   EXPECT_EQ(table.get_data_unchecked<std::string>(1), "World");
 }
+
+TEST(Table, HasMultipleComponents) {
+  auto table = Table();
+  struct A1 {};
+  struct A2 {};
+  struct A3 {};
+  struct A4 {};
+  table.add_column(Column::create_column<A1>());
+  table.add_column(Column::create_column<A2>());
+  table.add_column(Column::create_column<A3>());
+
+  auto id1 = ColumnCounter::id<A1>();
+  auto id2 = ColumnCounter::id<A2>();
+  auto id3 = ColumnCounter::id<A3>();
+  auto id4 = ColumnCounter::id<A4>();
+
+  EXPECT_TRUE(table.has_components(id1));
+  EXPECT_TRUE(table.has_components(id1, id2));
+  EXPECT_TRUE(table.has_components(id1, id2, id3));
+  EXPECT_FALSE(table.has_components(id1, id2, id3, id4));
+
+  EXPECT_TRUE(table.has_components<A1>());
+  // gtest doesn't understand this kind of template function
+  auto has_a1_a2 = table.has_components<A1, A2>();
+  EXPECT_TRUE(has_a1_a2);
+  auto has_a1_a2_a3 = table.has_components<A1, A2, A3>();
+  EXPECT_TRUE(has_a1_a2_a3);
+  auto has_a1_a2_a3_a4 = table.has_components<A1, A2, A3, A4>();
+  EXPECT_FALSE(has_a1_a2_a3_a4);
+}

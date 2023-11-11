@@ -1,6 +1,7 @@
 #ifndef ECS_TABLE_H
 #define ECS_TABLE_H
 
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -33,6 +34,16 @@ class Table {
     return has_component(ComponentCounter::id<T>());
   }
   [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
+
+  template <typename... Args, typename = std::enable_if_t<
+                                  all_types_are_same<ComponentId, Args...>>>
+  auto has_components(ComponentId component_id, Args... component_ids) -> bool {
+    return has_component(component_id) && (... && has_component(component_ids));
+  }
+  template <typename T, typename... Args>
+  auto has_components() -> bool {
+    return has_component<T>() && (... && has_component<Args>());
+  }
 
   template <class T>
   auto get_column_unchecked() -> Column & {

@@ -20,4 +20,8 @@ constexpr ArchetypeId INVALID_ARCHETYPE_ID = INVALID_COUNTER_ID;
 using EntityId = int;
 constexpr EntityId INVALID_ENTITY_ID = INVALID_COUNTER_ID;
 
+template <typename T, typename... Ts>
+constexpr bool all_types_are_same =  // NOLINT
+    std::conjunction_v<std::is_same<T, Ts>...>;
+
 #endif
