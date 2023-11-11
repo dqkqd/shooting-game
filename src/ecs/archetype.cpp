@@ -26,6 +26,7 @@ auto Archetype::operator=(Archetype &&archetype) noexcept -> Archetype & {
 
 auto Archetype::archetype_id() const -> ArchetypeId { return archetype_id_; }
 auto Archetype::table_id() const -> TableId { return table_.table_id(); }
+auto Archetype::is_empty() const -> bool { return table_.is_empty(); }
 
 auto Archetype::components() const -> std::vector<ComponentId> {
   return components_;
