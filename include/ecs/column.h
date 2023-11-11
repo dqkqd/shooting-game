@@ -16,6 +16,7 @@ using ComponentCounter = ColumnCounter;
 
 class Column {
  public:
+  friend class Table;
   explicit Column(int layout = INVALID_LAYOUT,
                   ComponentId component_id = INVALID_COMPONENT_ID);
 

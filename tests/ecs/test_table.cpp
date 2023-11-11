@@ -137,4 +137,7 @@ TEST(Table, RemoveRow) {
   EXPECT_EQ(table.get_data_unchecked<int>(2), 50);
   EXPECT_EQ(table.get_data_unchecked<std::string>(2), "side");
   EXPECT_EQ(table.get_data_unchecked<A>(2).run(), "side");
+
+  // no height mismatch
+  EXPECT_TRUE(table.is_valid());
 }

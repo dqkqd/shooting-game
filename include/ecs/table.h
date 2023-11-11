@@ -72,6 +72,16 @@ class Table {
     return get_column<T>().template get_data_unchecked<T>(row);
   }
 
+  // add component to a column without increase height
+  auto add_component(ComponentId component_id, void *item) -> size_t;
+  template <typename T>
+  auto add_component(T &&item) -> size_t {
+    all_heights_equal_ = false;
+    Column &column = get_column<T>();
+    column.push<T>(std::forward<T>(item));
+    return column.size();
+  }
+
   template <typename... Args>
   auto add_row(Args &&...components) -> size_t {
     if (sizeof...(components) != width_) {
@@ -83,12 +93,15 @@ class Table {
     }
     static_assert(all_types_are_different<Args...>(),
                   "All column types must be pairwise different");
-    (
-        [&] {
-          Column &column = get_column<Args>();
-          column.push<Args>(std::move(components));
-        }(),
-        ...);
+
+    ([&] { add_component<Args>(std::move(components)); }(), ...);
+
+    // since all types are different and number of types equal width_, we can
+    // certain that if all the component arguments can be added to the table,
+    // they must be all the components we have, hence we can aggressively set
+    // this to true without checking
+    all_heights_equal_ = true;
+
     ++height_;
     size_t row_index = height_ - 1;
     return row_index;
@@ -102,6 +115,8 @@ class Table {
 
   size_t width_;
   size_t height_;
+
+  bool all_heights_equal_ = true;
 };
 
 #endif

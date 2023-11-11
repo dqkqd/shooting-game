@@ -23,7 +23,9 @@ auto Table::operator=(Table&& table) noexcept -> Table& {
 };
 
 auto Table::table_id() const -> TableId { return table_id_; }
-auto Table::is_valid() const -> bool { return table_id_ != INVALID_TABLE_ID; }
+auto Table::is_valid() const -> bool {
+  return table_id_ != INVALID_TABLE_ID && all_heights_equal_;
+}
 auto Table::is_empty() const -> bool { return height_ == 0; }
 auto Table::width() const -> size_t { return width_; }
 auto Table::height() const -> size_t { return height_; }
@@ -61,4 +63,11 @@ auto Table::get_column(ComponentId component_id) -> Column& {
     throw std::runtime_error(error_msg.str());
   }
   return it->second;
+}
+
+auto Table::add_component(ComponentId component_id, void* item) -> size_t {
+  all_heights_equal_ = false;
+  auto& column = get_column(component_id);
+  column.push_unknown(item);
+  return column.size();
 }
