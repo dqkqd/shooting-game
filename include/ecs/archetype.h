@@ -34,6 +34,7 @@ class Archetype {
   [[nodiscard]] auto archetype_id() const -> ArchetypeId;
   [[nodiscard]] auto table_id() const -> TableId;
   [[nodiscard]] auto is_empty() const -> bool;
+  [[nodiscard]] auto is_valid() const -> bool;
 
   template <typename T, typename... Args>
   auto has_components() -> bool {
@@ -50,6 +51,9 @@ class Archetype {
     locations_[entity_id] = location;
     return location;
   }
+
+  auto move_entity_to_other(EntityId entity_id, Archetype &other)
+      -> std::optional<EntityLocation>;
 
   [[nodiscard]] auto location(EntityId entity_id) const
       -> std::optional<EntityLocation>;

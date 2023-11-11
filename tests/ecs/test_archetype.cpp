@@ -81,3 +81,69 @@ TEST(Archetype, EntityLocation) {
   EXPECT_TRUE(archetype.location(20).has_value());
   EXPECT_EQ(archetype.location(20)->row, 1);  // NOLINT
 }
+
+TEST(Archetype, MoveEntitySuccessful) {
+  auto archetype = Archetype::create_archetype<int, float>();
+  archetype.add_entity<int, float>(10, 1, 2.0);
+  archetype.add_entity<int, float>(20, 3, 4.0);
+
+  auto other = Archetype::create_archetype<int, float>();
+  auto location = archetype.move_entity_to_other(10, other);
+
+  EXPECT_EQ(location->row, 0);  // NOLINT
+  EXPECT_FALSE(archetype.location(10).has_value());
+  EXPECT_TRUE(other.location(10).has_value());
+
+  EXPECT_TRUE(archetype.is_valid());
+  EXPECT_TRUE(other.is_valid());
+}
+
+TEST(Archetype, MoveEntityDidNotMatchType) {
+  auto archetype = Archetype::create_archetype<int, float>();
+  archetype.add_entity<int, float>(10, 1, 2.0);
+  archetype.add_entity<int, float>(20, 3, 4.0);
+
+  auto other = Archetype::create_archetype<std::string>();
+  auto location = archetype.move_entity_to_other(10, other);
+
+  EXPECT_TRUE(!location.has_value());  // NOLINT
+  EXPECT_FALSE(archetype.location(10).has_value());
+  EXPECT_TRUE(other.is_empty());
+
+  EXPECT_TRUE(archetype.is_valid());
+  EXPECT_TRUE(other.is_valid());
+}
+
+TEST(Archetype, MoveEntityMatchSubsetType) {
+  auto archetype = Archetype::create_archetype<int, float>();
+  archetype.add_entity<int, float>(10, 1, 2.0);
+  archetype.add_entity<int, float>(20, 3, 4.0);
+
+  auto other = Archetype::create_archetype<int>();
+  auto location = archetype.move_entity_to_other(10, other);
+
+  EXPECT_EQ(location->row, 0);  // NOLINT
+  EXPECT_FALSE(archetype.location(10).has_value());
+  EXPECT_TRUE(other.location(10).has_value());
+
+  EXPECT_TRUE(archetype.is_valid());
+  EXPECT_TRUE(other.is_valid());
+}
+
+TEST(Archetype, MoveEntityDidNotMatchSubsetType) {
+  auto archetype = Archetype::create_archetype<int, float>();
+  archetype.add_entity<int, float>(10, 1, 2.0);
+  archetype.add_entity<int, float>(20, 3, 4.0);
+
+  auto other = Archetype::create_archetype<int, double>();
+  auto location = archetype.move_entity_to_other(10, other);
+
+  EXPECT_EQ(location->row, 0);  // NOLINT
+  EXPECT_FALSE(archetype.location(10).has_value());
+  EXPECT_TRUE(other.location(10).has_value());
+
+  EXPECT_TRUE(archetype.is_valid());
+
+  // double component is not added
+  EXPECT_FALSE(other.is_valid());
+}

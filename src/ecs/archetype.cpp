@@ -27,6 +27,9 @@ auto Archetype::operator=(Archetype &&archetype) noexcept -> Archetype & {
 auto Archetype::archetype_id() const -> ArchetypeId { return archetype_id_; }
 auto Archetype::table_id() const -> TableId { return table_.table_id(); }
 auto Archetype::is_empty() const -> bool { return table_.is_empty(); }
+auto Archetype::is_valid() const -> bool {
+  return archetype_id_ != INVALID_ARCHETYPE_ID && table_.is_valid();
+}
 
 auto Archetype::components() const -> std::vector<ComponentId> {
   return components_;
@@ -39,4 +42,25 @@ auto Archetype::location(EntityId entity_id) const
     return {};
   }
   return it->second;
+}
+
+auto Archetype::move_entity_to_other(EntityId entity_id, Archetype &other)
+    -> std::optional<EntityLocation> {
+  auto entity_location = location(entity_id);
+  if (!entity_location.has_value()) {
+    return {};
+  }
+
+  auto new_height =
+      table_.move_row_to_other(entity_location->row, other.table_);
+  locations_.erase(entity_id);
+
+  if (!new_height.has_value() || new_height == 0) {
+    return {};
+  }
+  auto location = EntityLocation{.archetype_id = other.archetype_id(),
+                                 .table_id = other.table_id(),
+                                 .row = new_height.value() - 1};
+  other.locations_[entity_id] = location;
+  return location;
 }
