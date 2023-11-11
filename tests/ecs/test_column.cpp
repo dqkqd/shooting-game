@@ -62,9 +62,9 @@ TEST(Column, AddElement) {
   EXPECT_EQ(int_column.get_data_unchecked<int>(0), 15);
   EXPECT_EQ(int_column.get_data_unchecked<int>(1), 45);
   EXPECT_EQ(int_column.get_data_unchecked<int>(2), 30);
-  EXPECT_EQ(int_column.get_data<int>(0)->get(), 15);  // NOLINT
-  EXPECT_EQ(int_column.get_data<int>(1)->get(), 45);  // NOLINT
-  EXPECT_EQ(int_column.get_data<int>(2)->get(), 30);  // NOLINT
+  EXPECT_EQ(int_column.get_data<int>(0), 15);
+  EXPECT_EQ(int_column.get_data<int>(1), 45);
+  EXPECT_EQ(int_column.get_data<int>(2), 30);
 
   // add non integer element
   EXPECT_ANY_THROW(int_column.push<float>(1.5));
@@ -78,7 +78,7 @@ TEST(Column, AddTooManyElement) {
     int_column.push<int>(static_cast<int>(i));
   }
   for (int i = 0; i < 1000; ++i) {
-    EXPECT_EQ(int_column.get_data_unchecked<int>(i), i);
+    EXPECT_EQ(int_column.get_data<int>(i), i);
   }
 }
 
@@ -87,19 +87,19 @@ TEST(Column, ReassignElement) {
   int_column.push<int>(10);
   int_column.push<int>(20);
 
-  int_column.get_data_unchecked<int>(0) = 30;
-  int_column.get_data_unchecked<int>(1) = 40;
+  int_column.get_data<int>(0)->get() = 30;  // NOLINT
+  int_column.get_data<int>(1)->get() = 40;  // NOLINT
 
-  EXPECT_EQ(int_column.get_data_unchecked<int>(0), 30);
-  EXPECT_EQ(int_column.get_data_unchecked<int>(1), 40);
+  EXPECT_EQ(int_column.get_data<int>(0), 30);
+  EXPECT_EQ(int_column.get_data<int>(1), 40);
 }
 
 TEST(Column, ColumnForString) {
   auto column = Column::create_column<std::string>();
   column.push<std::string>("Hello");
-  column.push_unchecked<std::string>("World");
-  EXPECT_EQ(column.get_data_unchecked<std::string>(0), "Hello");
-  EXPECT_EQ(column.get_data_unchecked<std::string>(1), "World");
+  column.push<std::string>("World");
+  EXPECT_EQ(column.get_data<std::string>(0)->get(), "Hello");  // NOLINT
+  EXPECT_EQ(column.get_data<std::string>(1)->get(), "World");  // NOLINT
 }
 
 TEST(Column, ColumnForStruct) {
@@ -114,10 +114,10 @@ TEST(Column, ColumnForStruct) {
 
   auto column = Column::create_column<TestStruct>();
   column.push<TestStruct>(TestStruct("Hello"));
-  column.push_unchecked<TestStruct>(TestStruct("World"));
+  column.push<TestStruct>(TestStruct("World"));
 
-  EXPECT_EQ(column.get_data_unchecked<TestStruct>(0).run(), "Hello");
-  EXPECT_EQ(column.get_data_unchecked<TestStruct>(1).run(), "World");
+  EXPECT_EQ(column.get_data<TestStruct>(0)->get().run(), "Hello");  // NOLINT
+  EXPECT_EQ(column.get_data<TestStruct>(1)->get().run(), "World");  // NOLINT
 }
 
 TEST(Column, Iterator) {
@@ -131,11 +131,11 @@ TEST(Column, Iterator) {
   };
 
   auto column = Column::create_column<TestStruct>();
-  column.push_unchecked<TestStruct>(TestStruct{"Hello"});
-  column.push_unchecked<TestStruct>(TestStruct{" from"});
-  column.push_unchecked<TestStruct>(TestStruct{" the"});
-  column.push_unchecked<TestStruct>(TestStruct{" other"});
-  column.push_unchecked<TestStruct>(TestStruct{" side"});
+  column.push<TestStruct>(TestStruct{"Hello"});
+  column.push<TestStruct>(TestStruct{" from"});
+  column.push<TestStruct>(TestStruct{" the"});
+  column.push<TestStruct>(TestStruct{" other"});
+  column.push<TestStruct>(TestStruct{" side"});
 
   std::string items;
   for (auto &iter : column.iter<TestStruct>()) {
