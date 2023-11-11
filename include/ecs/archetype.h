@@ -17,7 +17,12 @@ using ArchetypeCounter = InstanceCounter<Archetype>;
 
 class Archetype {
  public:
-  explicit Archetype(Table &&table);
+  template <typename... Args>
+  static auto create_archetype() -> Archetype {
+    auto table = Table();
+    ([&] { table.add_column(Column::create_column<Args>()); }(), ...);
+    return Archetype(std::move(table));
+  }
 
   auto archetype_id() const -> ArchetypeId;
   auto table_id() const -> TableId;
@@ -36,6 +41,8 @@ class Archetype {
   }
 
  private:
+  explicit Archetype(Table&& table);
+
   ArchetypeId archetype_id_;
   Table table_;
   std::vector<ComponentId> components_;
