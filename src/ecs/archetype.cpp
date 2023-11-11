@@ -1,10 +1,14 @@
 
 #include "ecs/archetype.h"
 
+#include <algorithm>
+
 Archetype::Archetype(Table &&table)
-    : components_{std::move(table.components())},
-      table_{std::move(table)},
-      archetype_id_(ArchetypeCounter::id()) {}
+    : table_{std::move(table)},
+      archetype_id_(ArchetypeCounter::id()),
+      components_{table_.components()} {
+  std::sort(components_.begin(), components_.end());
+}
 
 auto Archetype::archetype_id() const -> ArchetypeId { return archetype_id_; }
 auto Archetype::table_id() const -> TableId { return table_.table_id(); }

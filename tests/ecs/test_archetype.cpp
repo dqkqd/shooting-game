@@ -35,3 +35,19 @@ TEST(Archetype, HasComponents) {
   EXPECT_TRUE(has_a1_a2);
   EXPECT_FALSE(has_a1_a2_a3);
 }
+
+TEST(Archetype, ComponentsMustBeSorted) {
+  struct A1 {};
+  struct A2 {};
+  struct A3 {};
+
+  auto table = Table();
+  table.add_column(Column::create_column<A3>());
+  table.add_column(Column::create_column<A1>());
+  table.add_column(Column::create_column<A2>());
+  auto archetype = Archetype(std::move(table));
+  std::vector expected{ColumnCounter::id<A1>(), ColumnCounter::id<A2>(),
+                       ColumnCounter::id<A3>()};
+  std::sort(expected.begin(), expected.end());
+  EXPECT_EQ(archetype.components(), expected);
+}
