@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "ecs/archetype.h"
+#include "ecs/archetype/archetype.h"
 #include "ecs/column.h"
 #include "ecs/primitive.h"
 #include "ecs/table.h"

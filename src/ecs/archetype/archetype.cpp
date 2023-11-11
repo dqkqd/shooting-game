@@ -1,5 +1,5 @@
 
-#include "ecs/archetype.h"
+#include "ecs/archetype/archetype.h"
 
 #include <algorithm>
 #include <iterator>

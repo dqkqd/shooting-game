@@ -1,5 +1,5 @@
-#ifndef ECS_ARCHETYPE_H
-#define ECS_ARCHETYPE_H
+#ifndef ECS_ARCHETYPE_ARCHETYPE_H
+#define ECS_ARCHETYPE_ARCHETYPE_H
 
 #include <optional>
 #include <set>
