@@ -22,10 +22,9 @@ class Archetype {
   auto archetype_id() const -> ArchetypeId;
   auto table_id() const -> TableId;
 
-  [[nodiscard]] auto has_component_id(ComponentId component_id) const -> bool;
-  template <class T>
-  [[nodiscard]] auto has_component() const -> bool {
-    return has_component_id(ComponentCounter::id<T>());
+  template <typename T, typename... Args>
+  auto has_components() -> bool {
+    return table_.has_components<T, Args...>();
   }
 
   [[nodiscard]] auto components() const -> std::vector<ComponentId>;
