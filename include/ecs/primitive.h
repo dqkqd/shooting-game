@@ -2,6 +2,7 @@
 #define ECS_PRIMITIVE_H
 
 #include <atomic>
+#include <type_traits>
 
 constexpr int INVALID_COUNTER_ID = -1;
 
@@ -23,5 +24,17 @@ constexpr EntityId INVALID_ENTITY_ID = INVALID_COUNTER_ID;
 template <typename T, typename... Ts>
 constexpr bool all_types_are_same =  // NOLINT
     std::conjunction_v<std::is_same<T, Ts>...>;
+
+// pairwise different type compile time check
+constexpr auto all_types_are_different() -> bool { return true; }
+template <typename T>
+constexpr auto all_types_are_different() -> bool {
+  return true;
+}
+template <typename T, typename U, typename... Args>
+constexpr auto all_types_are_different() -> bool {
+  return !std::is_same_v<T, U> && all_types_are_different<T, Args...>() &&
+         all_types_are_different<U, Args...>();
+}
 
 #endif
