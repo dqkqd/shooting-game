@@ -15,6 +15,7 @@ Column::Column(Column &&column) noexcept
 
 auto Column::operator=(Column &&column) noexcept -> Column & {
   layout_ = std::exchange(column.layout_, {});
+  component_id_ = std::exchange(column.component_id_, INVALID_COMPONENT_ID);
   data_ = std::exchange(column.data_, nullptr);
   size_ = std::exchange(column.size_, 0);
   capacity_ = std ::exchange(column.capacity_, 0);

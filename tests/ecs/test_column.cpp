@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "ecs/column.h"
+#include "ecs/primitive.h"
 
 TEST(Column, BasicConstruct) {
   auto int_column = Column::create_column<int>();
@@ -15,12 +16,39 @@ TEST(Column, BasicConstruct) {
   EXPECT_NE(int_column.component_id(), ColumnCounter::id<size_t>());
 }
 
-TEST(Column, ColumnInvalidAfterMoved) {
+TEST(Column, TestMove) {
   auto column1 = Column::create_column<int>();
+  column1.push<int>(10);
+  column1.push<int>(20);
   EXPECT_TRUE(column1.is_valid());
+  EXPECT_EQ(column1.component_id(), ColumnCounter::id<int>());
+  EXPECT_EQ(column1.size(), 2);
+  EXPECT_EQ(column1.get_data<int>(0), 10);
+  EXPECT_EQ(column1.get_data<int>(1), 20);
+
   auto column2 = std::move(column1);
-  EXPECT_TRUE(column2.is_valid());
+
   EXPECT_FALSE(column1.is_valid());
+  EXPECT_EQ(column1.component_id(), INVALID_COMPONENT_ID);
+  EXPECT_EQ(column1.size(), 0);
+
+  EXPECT_TRUE(column2.is_valid());
+  EXPECT_EQ(column2.component_id(), ColumnCounter::id<int>());
+  EXPECT_EQ(column2.size(), 2);
+  EXPECT_EQ(column2.get_data<int>(0), 10);
+  EXPECT_EQ(column2.get_data<int>(1), 20);
+
+  Column column3{std::move(column2)};
+
+  EXPECT_FALSE(column2.is_valid());
+  EXPECT_EQ(column2.component_id(), INVALID_COMPONENT_ID);
+  EXPECT_EQ(column2.size(), 0);
+
+  EXPECT_TRUE(column3.is_valid());
+  EXPECT_EQ(column3.component_id(), ColumnCounter::id<int>());
+  EXPECT_EQ(column3.size(), 2);
+  EXPECT_EQ(column3.get_data<int>(0), 10);
+  EXPECT_EQ(column3.get_data<int>(1), 20);
 }
 
 TEST(Column, AddElement) {
@@ -64,17 +92,6 @@ TEST(Column, ReassignElement) {
 
   EXPECT_EQ(int_column.get_data_unchecked<int>(0), 30);
   EXPECT_EQ(int_column.get_data_unchecked<int>(1), 40);
-}
-
-TEST(Column, MoveConstruct) {
-  auto int_column = Column::create_column<int>();
-  int_column.push<int>(10);
-  int_column.push<int>(20);
-
-  auto moved_op_column = std::move(int_column);
-  EXPECT_EQ(moved_op_column.get_data_unchecked<int>(0), 10);
-  EXPECT_EQ(moved_op_column.get_data_unchecked<int>(1), 20);
-  EXPECT_FALSE(int_column.is_valid());
 }
 
 TEST(Column, ColumnForString) {
