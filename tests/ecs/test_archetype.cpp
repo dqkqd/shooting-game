@@ -180,27 +180,31 @@ TEST(ArchetypeComponents, CloneWith) {
   EXPECT_EQ(cloned_by_types, (ArchetypeComponents{id1, id2, id3}));
 }
 
-TEST(Archetypes, CreateArchetype) {
+TEST(Archetypes, Add) {
   auto archetypes = Archetypes();
-  auto id1 = archetypes.add<int, float, std::string>();
-  auto id2 = archetypes.add<int, float, std::string, double>();
+  EXPECT_TRUE((archetypes.add<int, float, std::string>()).has_value());
+  EXPECT_TRUE((archetypes.add<int, float, std::string, double>()).has_value());
   EXPECT_EQ(archetypes.size(), 2);
 
-  EXPECT_EQ((archetypes.add<int, float, std::string>()), id1);
-  EXPECT_EQ((archetypes.add<int, float, std::string, double>()), id2);
+  EXPECT_FALSE((archetypes.add<int, float, std::string>()).has_value());
+  EXPECT_FALSE((archetypes.add<int, float, std::string, double>()).has_value());
+}
 
-  EXPECT_EQ((archetypes.get<int, float, std::string>())  // NOLINT
+TEST(Archetypes, Get) {
+  auto archetypes = Archetypes();
+  EXPECT_FALSE((archetypes.get<int, float, std::string>()).has_value());
+  EXPECT_TRUE((archetypes.add<int, float, std::string>()).has_value());
+  EXPECT_TRUE((archetypes.get<int, float, std::string>()).has_value());
+}
+
+TEST(Archetypes, GetOrAdd) {
+  auto archetypes = Archetypes();
+  auto id = archetypes.get_or_add<int, float, std::string>().archetype_id();
+  EXPECT_FALSE((archetypes.add<int, float, std::string>()).has_value());
+
+  EXPECT_EQ((archetypes  // NOLINT
+                 .get<int, float, std::string>())
                 ->get()
                 .archetype_id(),
-            id1);
-  EXPECT_EQ((archetypes.get<int, float, std::string, double>())  // NOLINT
-                ->get()
-                .archetype_id(),
-            id2);
-
-  EXPECT_EQ((archetypes.get_or_add<int, float, std::string>()).archetype_id(),
-            id1);
-  EXPECT_EQ(
-      (archetypes.get_or_add<int, float, std::string, double>()).archetype_id(),
-      id2);
+            id);
 }

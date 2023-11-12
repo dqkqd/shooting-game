@@ -10,29 +10,26 @@
 class Archetypes {
  public:
   Archetypes() = default;
+
   template <typename T, typename... Args>
-  auto add() -> ArchetypeId {
+  auto add() -> OptionalRef<Archetype> {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
-    auto components =
-        ArchetypeComponents::create_archetype_components<T, Args...>();
-    auto it = archetypes_.find(components);
-    if (it != archetypes_.end()) {
-      return it->second.archetype_id();
+    auto [it, inserted] = archetypes_.emplace(
+        ArchetypeComponents::create_archetype_components<T, Args...>(),
+        Archetype::create_archetype<T, Args...>());
+    if (inserted) {
+      return it->second;
     }
-    auto archetype = Archetype::create_archetype<T, Args...>();
-    auto archetype_id = archetype.archetype_id();
-    archetypes_.emplace(std::move(components), std::move(archetype));
-    return archetype_id;
+    return {};
   }
 
   template <typename T, typename... Args>
   auto get() -> OptionalRef<Archetype> {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
-    auto components =
-        ArchetypeComponents::create_archetype_components<T, Args...>();
-    auto it = archetypes_.find(components);
+    auto it = archetypes_.find(
+        ArchetypeComponents::create_archetype_components<T, Args...>());
     if (it == archetypes_.end()) {
       return {};
     }
