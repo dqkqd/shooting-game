@@ -10,13 +10,7 @@
 #include "ecs/table.h"
 
 TEST(Archetype, Constructor) {
-  auto archetype = Archetype::create_archetype<int, float>();
-}
-
-TEST(Archetype, InstanceShouldDifferent) {
-  auto archetype1 = Archetype::create_archetype<int>();
-  auto archetype2 = Archetype::create_archetype<int>();
-  EXPECT_NE(archetype1.archetype_id(), archetype2.archetype_id());
+  auto archetype = Archetype::create_archetype<int, float>(0);
 }
 
 TEST(Archetype, HasComponents) {
@@ -24,7 +18,7 @@ TEST(Archetype, HasComponents) {
   struct A2 {};
   struct A3 {};
 
-  auto archetype = Archetype::create_archetype<A1, A2>();
+  auto archetype = Archetype::create_archetype<A1, A2>(0);
   EXPECT_TRUE((archetype.has_components<A1>()));
   EXPECT_TRUE((archetype.has_components<A1, A2>()));
   EXPECT_FALSE((archetype.has_components<A1, A2, A3>()));
@@ -35,14 +29,14 @@ TEST(Archetype, ComponentsMustBeSorted) {
   struct A2 {};
   struct A3 {};
 
-  auto archetype = Archetype::create_archetype<A1, A2, A3>();
+  auto archetype = Archetype::create_archetype<A1, A2, A3>(0);
   std::vector expected{ColumnCounter::id<A1>(), ColumnCounter::id<A2>(),
                        ColumnCounter::id<A3>()};
   EXPECT_EQ(archetype.components(), ArchetypeComponents{std::move(expected)});
 }
 
 TEST(Archetype, AddEntity) {
-  auto archetype = Archetype::create_archetype<int, float>();
+  auto archetype = Archetype::create_archetype<int, float>(0);
   auto location = archetype.add_entity<int, float>(10, 1, 2.0);
   EXPECT_EQ(location.archetype_id, archetype.archetype_id());
   EXPECT_EQ(location.table_id, archetype.table_id());
@@ -50,7 +44,7 @@ TEST(Archetype, AddEntity) {
 }
 
 TEST(Archetype, MoveConstructor) {
-  auto archetype1 = Archetype::create_archetype<int, float>();
+  auto archetype1 = Archetype::create_archetype<int, float>(0);
   archetype1.add_entity<int, float>(10, 1, 2.0);
   archetype1.add_entity<int, float>(20, 2, 3.0);
 
@@ -72,7 +66,7 @@ TEST(Archetype, MoveConstructor) {
 }
 
 TEST(Archetype, EntityLocation) {
-  auto archetype = Archetype::create_archetype<int, float>();
+  auto archetype = Archetype::create_archetype<int, float>(0);
 
   EXPECT_FALSE(archetype.location(10).has_value());
   archetype.add_entity<int, float>(10, 1, 2.0);
@@ -86,11 +80,11 @@ TEST(Archetype, EntityLocation) {
 }
 
 TEST(Archetype, MoveEntitySuccessful) {
-  auto archetype = Archetype::create_archetype<int, float>();
+  auto archetype = Archetype::create_archetype<int, float>(0);
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
-  auto other = Archetype::create_archetype<int, float>();
+  auto other = Archetype::create_archetype<int, float>(1);
   auto location = archetype.move_entity_to_other(10, other);
 
   EXPECT_EQ(location->row, 0);  // NOLINT
@@ -102,20 +96,20 @@ TEST(Archetype, MoveEntitySuccessful) {
 }
 
 TEST(Archetype, MoveEntityIsNotOverlappedWithoutEnoughArguments) {
-  auto archetype = Archetype::create_archetype<int, float>();
+  auto archetype = Archetype::create_archetype<int, float>(0);
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
-  auto other = Archetype::create_archetype<std::string>();
+  auto other = Archetype::create_archetype<std::string>(1);
   EXPECT_THROW(archetype.move_entity_to_other(10, other), std::runtime_error);
 }
 
 TEST(Archetype, MoveEntitySubset) {
-  auto archetype = Archetype::create_archetype<int, float>();
+  auto archetype = Archetype::create_archetype<int, float>(0);
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
-  auto other = Archetype::create_archetype<int>();
+  auto other = Archetype::create_archetype<int>(1);
   auto location = archetype.move_entity_to_other(10, other);
 
   EXPECT_EQ(location->row, 0);  // NOLINT
@@ -127,11 +121,11 @@ TEST(Archetype, MoveEntitySubset) {
 }
 
 TEST(Archetype, MoveEntityOverlappedWithAdditionalArguments) {
-  auto archetype = Archetype::create_archetype<int, float>();
+  auto archetype = Archetype::create_archetype<int, float>(0);
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
-  auto other = Archetype::create_archetype<int, double>();
+  auto other = Archetype::create_archetype<int, double>(1);
   auto location = archetype.move_entity_to_other<double>(10, other, 5.0);
 
   EXPECT_EQ(location->row, 0);  // NOLINT
@@ -222,8 +216,8 @@ TEST(Archetypes, GetOrAdd) {
 }
 
 TEST(ArchetypeEdges, AddNextEdge) {
-  auto archetype = Archetype::create_archetype<int, float>();
-  auto next_archetype = Archetype::create_archetype<int, float, std::string>();
+  auto archetype = Archetype::create_archetype<int, float>(0);
+  auto next_archetype = Archetype::create_archetype<int, float, std::string>(1);
 
   EXPECT_FALSE(archetype.get_next_edge<std::string>().has_value());
   EXPECT_FALSE(next_archetype.get_prev_edge<std::string>().has_value());
@@ -237,8 +231,8 @@ TEST(ArchetypeEdges, AddNextEdge) {
 }
 
 TEST(ArchetypeEdges, AddPrevEdge) {
-  auto archetype = Archetype::create_archetype<int, float>();
-  auto next_archetype = Archetype::create_archetype<int, float, std::string>();
+  auto archetype = Archetype::create_archetype<int, float>(0);
+  auto next_archetype = Archetype::create_archetype<int, float, std::string>(1);
 
   EXPECT_FALSE(archetype.get_next_edge<std::string>().has_value());
   EXPECT_FALSE(next_archetype.get_prev_edge<std::string>().has_value());

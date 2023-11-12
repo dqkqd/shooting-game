@@ -5,8 +5,8 @@
 #include <iterator>
 #include <utility>
 
-Archetype::Archetype(Table &&table)
-    : table_{std::move(table)}, archetype_id_(ArchetypeCounter::id()) {}
+Archetype::Archetype(ArchetypeId archetype_id, Table &&table)
+    : archetype_id_{archetype_id}, table_{std::move(table)} {}
 
 Archetype::Archetype(Archetype &&archetype) noexcept
     : archetype_id_{std::exchange(archetype.archetype_id_,

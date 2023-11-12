@@ -13,9 +13,6 @@
 #include "ecs/primitive.h"
 #include "ecs/table.h"
 
-class Archetype;
-using ArchetypeCounter = InstanceCounter<Archetype>;
-
 struct EntityLocation {
   ArchetypeId archetype_id;
   TableId table_id;
@@ -31,17 +28,17 @@ class Archetype {
   ~Archetype() = default;
 
   template <typename... Args>
-  static auto create_archetype() -> Archetype {
-    return Archetype(Table::create_table<Args...>());
+  static auto create_archetype(ArchetypeId archetype_id) -> Archetype {
+    return Archetype(archetype_id, Table::create_table<Args...>());
   }
 
   template <typename T>
-  auto clone_with() const -> Archetype {
-    return Archetype(table_.clone_with<T>());
+  auto clone_with(ArchetypeId archetype_id) const -> Archetype {
+    return Archetype(archetype_id, table_.clone_with<T>());
   }
   template <typename T>
-  auto clone_without() const -> Archetype {
-    return Archetype(table_.clone_without<T>());
+  auto clone_without(ArchetypeId archetype_id) const -> Archetype {
+    return Archetype(archetype_id, table_.clone_without<T>());
   }
 
   [[nodiscard]] auto archetype_id() const -> ArchetypeId;
@@ -138,7 +135,7 @@ class Archetype {
   }
 
  private:
-  explicit Archetype(Table &&table);
+  Archetype(ArchetypeId archetype_id, Table &&table);
 
   ArchetypeId archetype_id_;
   Table table_;

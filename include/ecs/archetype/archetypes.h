@@ -20,11 +20,12 @@ class Archetypes {
     if (by_components_.find(components) != by_components_.end()) {
       return {};
     }
-    auto archetype = Archetype::create_archetype<T, Args...>();
-    by_components_.emplace(std::move(components), archetype.archetype_id());
-    auto [it, _] =
-        archetypes_.emplace(archetype.archetype_id(), std::move(archetype));
-    return std::ref(it->second);
+
+    auto archetype_id = size();
+    by_components_.emplace(std::move(components), archetype_id);
+    archetypes_.emplace_back(
+        Archetype::create_archetype<T, Args...>(archetype_id));
+    return std::ref(archetypes_.back());
   }
 
   template <typename T, typename... Args>
@@ -37,8 +38,7 @@ class Archetypes {
       return {};
     }
     auto archetype_id = it->second;
-    // we can always sure that archetype existed
-    return std::ref(archetypes_.find(archetype_id)->second);
+    return std::ref(archetypes_[archetype_id]);
   }
 
   template <typename T, typename... Args>
@@ -48,12 +48,18 @@ class Archetypes {
 
     auto components =
         ArchetypeComponents::create_archetype_components<T, Args...>();
-    auto archetype = Archetype::create_archetype<T, Args...>();
+    auto it = by_components_.find(components);
 
-    by_components_.emplace(std::move(components), archetype.archetype_id());
-    auto [it, _] =
-        archetypes_.emplace(archetype.archetype_id(), std::move(archetype));
-    return it->second;
+    if (by_components_.find(components) != by_components_.end()) {
+      auto archetype_id = it->second;
+      return archetypes_[archetype_id];
+    }
+
+    auto archetype_id = size();
+    by_components_.emplace(std::move(components), archetype_id);
+    archetypes_.emplace_back(
+        Archetype::create_archetype<T, Args...>(archetype_id));
+    return archetypes_.back();
   }
 
   template <typename T>
@@ -71,16 +77,14 @@ class Archetypes {
     auto it = by_components_.find(components);
     if (it != by_components_.end()) {
       auto archetype_id = it->second;
-      return archetypes_.find(archetype_id)->second;
+      return archetypes_[archetype_id];
     }
 
-    Archetype next_archetype = archetype.clone_with<T>();
-    by_components_.emplace(std::move(components),
-                           next_archetype.archetype_id());
-    auto [archetype_it, _] = archetypes_.emplace(next_archetype.archetype_id(),
-                                                 std::move(next_archetype));
-    archetype.add_next_edge<T>(archetype_it->second);
-    return archetype_it->second;
+    auto next_archetype_id = size();
+    by_components_.emplace(std::move(components), next_archetype_id);
+    archetypes_.emplace_back(archetype.clone_with<T>(next_archetype_id));
+    archetype.add_next_edge<T>(archetypes_.back());
+    return archetypes_.back();
   }
 
   template <typename T>
@@ -98,23 +102,20 @@ class Archetypes {
     auto it = by_components_.find(components);
     if (it != by_components_.end()) {
       auto archetype_id = it->second;
-      return archetypes_.find(archetype_id)->second;
+      return archetypes_[archetype_id];
     }
 
-    Archetype prev_archetype = archetype.clone_without<T>();
-    by_components_.emplace(std::move(components),
-                           prev_archetype.archetype_id());
-    auto [archetype_it, _] = archetypes_.emplace(prev_archetype.archetype_id(),
-                                                 std::move(prev_archetype));
-    archetype.add_prev_edge<T>(archetype_it->second);
-    return archetype_it->second;
+    auto prev_archetype_id = size();
+    by_components_.emplace(std::move(components), prev_archetype_id);
+    archetypes_.emplace_back(archetype.clone_without<T>(prev_archetype_id));
+    archetype.add_prev_edge<T>(archetypes_.back());
+    return archetypes_.back();
   }
 
   [[nodiscard]] auto size() const -> size_t;
 
  private:
-  // TODO(khanhdq) use vector later without ArchetypeId
-  std::unordered_map<ArchetypeId, Archetype> archetypes_;
+  std::vector<Archetype> archetypes_;
   std::map<ArchetypeComponents, ArchetypeId> by_components_;
 };
 
