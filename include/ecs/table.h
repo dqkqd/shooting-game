@@ -60,6 +60,31 @@ class Table {
     return std::move(table);
   }
 
+  template <typename T>
+  auto clone_without() const -> Table {
+    /* create an empty table without column *type* T */
+
+    if (!has_components<T>()) {
+      throw std::runtime_error(
+          fmt::format("Component type `{}` does not exist in table `{}`",
+                      typeid(T).name(), table_id_));
+    }
+
+    if (width_ == 1) {
+      throw std::runtime_error("Can not clone to empty table");
+    }
+
+    auto table = Table();
+    for (const auto &[id, column] : columns_) {
+      if (id == ComponentCounter::id<T>()) {
+        continue;
+      }
+      table.columns_.emplace(id, column.clone());
+      ++table.width_;
+    }
+    return std::move(table);
+  }
+
   [[nodiscard]] auto table_id() const -> TableId;
   [[nodiscard]] auto is_valid() const -> bool;
   [[nodiscard]] auto is_empty() const -> bool;

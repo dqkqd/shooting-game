@@ -240,3 +240,17 @@ TEST(Table, CloneWith) {
 
   EXPECT_THROW(table.clone_with<int>(), std::runtime_error);
 }
+
+TEST(Table, CloneWithout) {
+  auto table = Table::create_table<int, float>();
+  table.add_row<int, float>(1, 2.0);
+
+  auto clone = table.clone_without<float>();
+
+  EXPECT_TRUE(clone.is_valid());
+  EXPECT_TRUE(clone.is_empty());
+  EXPECT_TRUE((clone.has_components<int>()));
+  EXPECT_FALSE((clone.has_components<float>()));
+
+  EXPECT_THROW(clone.clone_without<int>(), std::runtime_error);
+}
