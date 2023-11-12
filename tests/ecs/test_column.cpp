@@ -200,3 +200,13 @@ TEST(Column, Iterator) {
 
   EXPECT_EQ(items, "Hello from the other side");
 }
+
+TEST(Column, Clone) {
+  struct A {};
+  auto column = Column::create_column<A>();
+  auto cloned = column.clone();
+
+  EXPECT_TRUE(cloned.is_valid());
+  EXPECT_TRUE(cloned.is<A>());
+  EXPECT_EQ(cloned.size(), 0);
+}

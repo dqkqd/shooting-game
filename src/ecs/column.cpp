@@ -34,6 +34,10 @@ Column::~Column() {
   free(data_);  // NOLINT
 }
 
+auto Column::clone() const -> Column {
+  return std::move(Column(layout_, component_id_));
+}
+
 void Column::push_unknown(void *item) {
   grow();
   std::memcpy(get_ptr_at(size_), item, layout_);

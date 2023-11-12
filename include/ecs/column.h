@@ -32,6 +32,9 @@ class Column {
     return Column{sizeof(T), ColumnCounter::id<T>()};
   }
 
+  // clone a column without copying its content
+  [[nodiscard]] auto clone() const -> Column;
+
   template <class T>
   auto is() -> bool {
     return ColumnCounter::id<T>() == component_id_;
