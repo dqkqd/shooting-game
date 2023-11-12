@@ -18,14 +18,12 @@ auto ArchetypeComponents::operator=(
 }
 
 auto operator==(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
-
     -> bool {
-  return lhs.components_.size() == rhs.components_.size() &&
-         std::all_of(lhs.components_.cbegin(), lhs.components_.cend(),
-                     [&](const auto &component_id) {
-                       return rhs.components_.find(component_id) !=
-                              rhs.components_.end();
-                     });
+  return lhs.components_ == rhs.components_;
+}
+auto operator<(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
+    -> bool {
+  return lhs.components_ < rhs.components_;
 }
 
 void ArchetypeComponents::add(ComponentId component_id) {

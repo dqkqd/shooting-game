@@ -31,6 +31,9 @@ class ArchetypeComponents {
   friend auto operator==(const ArchetypeComponents &lhs,
                          const ArchetypeComponents &rhs) -> bool;
 
+  friend auto operator<(const ArchetypeComponents &lhs,
+                        const ArchetypeComponents &rhs) -> bool;
+
   void add(ComponentId component_id);
 
  private:
