@@ -3,7 +3,14 @@
 
 #include <atomic>
 #include <functional>
+#include <optional>
 #include <type_traits>
+
+template <typename T>
+using Ref = std::reference_wrapper<T>;
+
+template <typename T>
+using OptionalRef = std::optional<Ref<T>>;
 
 constexpr int INVALID_COUNTER_ID = -1;
 

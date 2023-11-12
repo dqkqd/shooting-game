@@ -188,4 +188,13 @@ TEST(Archetypes, CreateArchetype) {
 
   EXPECT_EQ((archetypes.add<int, float, std::string>()), id1);
   EXPECT_EQ((archetypes.add<int, float, std::string, double>()), id2);
+
+  EXPECT_EQ((archetypes.get<int, float, std::string>())  // NOLINT
+                ->get()
+                .archetype_id(),
+            id1);
+  EXPECT_EQ((archetypes.get<int, float, std::string, double>())  // NOLINT
+                ->get()
+                .archetype_id(),
+            id2);
 }

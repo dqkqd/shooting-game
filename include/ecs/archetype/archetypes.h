@@ -26,6 +26,19 @@ class Archetypes {
     return archetype_id;
   }
 
+  template <typename T, typename... Args>
+  auto get() -> OptionalRef<Archetype> {
+    static_assert(all_types_are_different<T, Args...>(),
+                  "All column types must be pairwise different");
+    auto components =
+        ArchetypeComponents::create_archetype_components<T, Args...>();
+    auto it = archetypes_.find(components);
+    if (it == archetypes_.end()) {
+      return {};
+    }
+    return std::ref(it->second);
+  }
+
   [[nodiscard]] auto size() const -> size_t;
 
  private:
