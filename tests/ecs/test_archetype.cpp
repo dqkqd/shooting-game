@@ -148,25 +148,25 @@ TEST(ArchetypeComponents, Constructor) {
   auto components =
       ArchetypeComponents::create_archetype_components<int, float,
                                                        std::string>();
-  std::vector v{ComponentCounter::id<int>(), ComponentCounter::id<float>(),
-                ComponentCounter::id<std::string>()};
-  EXPECT_EQ(components, ArchetypeComponents{std::move(v)});
+  EXPECT_EQ(components,
+            (ArchetypeComponents{ComponentCounter::id<int>(),
+                                 ComponentCounter::id<float>(),
+                                 ComponentCounter::id<std::string>()}));
 }
 
 TEST(ArchetypeComponents, Add) {
-  ArchetypeComponents components{{0}};
+  ArchetypeComponents components{0};
   components.add(3);
   components.add(2);
   components.add(8);
 
-  std::vector v{0, 2, 3, 8};
-  EXPECT_EQ(components, ArchetypeComponents{std::move(v)});
+  EXPECT_EQ(components, (ArchetypeComponents{0, 2, 3, 8}));
 }
 
 TEST(ArchetypeComponents, HasComponent) {
   auto id1 = ComponentCounter::id<int>();
   auto id2 = ComponentCounter::id<float>();
-  ArchetypeComponents components{{id1, id2}};
+  ArchetypeComponents components{id1, id2};
 
   EXPECT_TRUE(components.has_components(id1, id2));
   EXPECT_FALSE(
@@ -185,9 +185,8 @@ TEST(ArchetypeComponents, CloneWith) {
   ArchetypeComponents cloned_by_ids{components.clone_with(id3)};
   ArchetypeComponents cloned_by_types{components.clone_with<char>()};
 
-  std::vector v{id1, id2, id3};
-  EXPECT_EQ(cloned_by_ids, ArchetypeComponents{std::move(v)});
-  EXPECT_EQ(cloned_by_types, cloned_by_ids);
+  EXPECT_EQ(cloned_by_ids, (ArchetypeComponents{id1, id2, id3}));
+  EXPECT_EQ(cloned_by_types, (ArchetypeComponents{id1, id2, id3}));
 }
 
 TEST(Archetypes, CreateArchetype) {

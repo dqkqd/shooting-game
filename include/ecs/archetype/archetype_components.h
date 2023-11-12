@@ -12,21 +12,27 @@ class ArchetypeComponents {
   friend struct std::hash<ArchetypeComponents>;
 
   explicit ArchetypeComponents(std::vector<ComponentId> &&components);
+
+  template <typename... Args, typename = std::enable_if_t<
+                                  all_types_are_same<ComponentId, Args...>>>
+  explicit ArchetypeComponents(ComponentId component_id,
+                               Args... component_ids) {
+    components_.insert(component_id);
+    (components_.insert(component_ids), ...);
+  }
+
   ArchetypeComponents(const ArchetypeComponents &) = delete;
   ArchetypeComponents(ArchetypeComponents &&) noexcept;
   auto operator=(const ArchetypeComponents &) -> ArchetypeComponents & = delete;
   auto operator=(ArchetypeComponents &&) noexcept -> ArchetypeComponents &;
   ~ArchetypeComponents() = default;
 
-  template <typename... Args>
+  template <typename T, typename... Args>
   static auto create_archetype_components() -> ArchetypeComponents {
-    static_assert(all_types_are_different<Args...>(),
+    static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
-
-    std::vector<ComponentId> components;
-    components.reserve(sizeof...(Args));
-    ([&] { components.push_back(ComponentCounter::id<Args>()); }(), ...);
-    return ArchetypeComponents{std::move(components)};
+    return ArchetypeComponents(ComponentCounter::id<T>(),
+                               ComponentCounter::id<Args>()...);
   }
 
   template <typename T, typename... Args>
