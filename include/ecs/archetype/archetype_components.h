@@ -61,6 +61,37 @@ class ArchetypeComponents {
     return ArchetypeComponents(std::move(components));
   }
 
+  template <typename T, typename... Args>
+  auto clone_without() -> ArchetypeComponents {
+    return clone_without(ComponentCounter::id<T>(),
+                         ComponentCounter::id<Args>()...);
+  }
+
+  template <typename... Args, typename = std::enable_if_t<
+                                  all_types_are_same<ComponentId, Args...>>>
+  auto clone_without(ComponentId component_id, Args... component_ids)
+      -> ArchetypeComponents {
+    auto all_components_existed =
+        (has_components(component_id) && ... && has_components(component_ids));
+    if (!all_components_existed) {
+      throw std::runtime_error(
+          "All components must be existed in order to `clone_without`");
+    }
+
+    std::set<ComponentId> components{components_.begin(), components_.end()};
+    components.erase(component_id);
+    (components.erase(component_ids), ...);
+
+    auto expected_size = components_.size() - (1 + sizeof...(Args));
+    if (components.size() != expected_size) {
+      throw std::runtime_error("Can not `clone_without` with duplicated ids");
+    }
+
+    std::vector<ComponentId> vector_components{
+        std::make_move_iterator(components.begin()),
+        std::make_move_iterator(components.end())};
+    return ArchetypeComponents(std::move(vector_components));
+  }
   friend auto operator==(const ArchetypeComponents &lhs,
                          const ArchetypeComponents &rhs) -> bool;
 
