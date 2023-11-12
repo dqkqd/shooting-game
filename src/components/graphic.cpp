@@ -19,7 +19,7 @@ auto GraphicComponent::from_file(Graphic& graphic, const char* filename)
   if (SDL_QueryTexture(texture, NULL, NULL, &texture_width, &texture_height) <
       0) {
     throw GameError::from_sdl(
-        "Could not query texture when loading GraphicComponent from file");
+        "Can not query texture when loading GraphicComponent from file");
   }
 
   SDL_FRect position{0, 0, static_cast<float>(texture_width),

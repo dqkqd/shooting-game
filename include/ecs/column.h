@@ -3,12 +3,12 @@
 
 #include <cstddef>
 #include <optional>
-#include <sstream>
 #include <stdexcept>
 #include <typeinfo>
 
 #include "ecs/counter.h"
 #include "ecs/primitive.h"
+#include "fmt/core.h"
 
 class Column;
 using ColumnCounter = Counter<Column>;
@@ -40,10 +40,8 @@ class Column {
   template <class T>
   void push(T &&item) {
     if (!is<T>()) {
-      std::ostringstream error_msg;
-      error_msg << "Could not add type " << typeid(T).name() << " to column"
-                << std::endl;
-      throw std::runtime_error(error_msg.str());
+      throw std::runtime_error(fmt::format(
+          "Can not add data with type `{}` to column", typeid(T).name()));
     }
     push_unchecked<T>(std::forward<T>(item));
   }

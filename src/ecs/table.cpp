@@ -47,10 +47,8 @@ auto Table::has_component_id(ComponentId component_id) const -> bool {
 auto Table::get_column(ComponentId component_id) -> Column& {
   auto it = columns_.find(component_id);
   if (it == columns_.end()) {
-    std::ostringstream error_msg;
-    error_msg << "Column with component id " << component_id
-              << " does not exist" << std::endl;
-    throw std::runtime_error(error_msg.str());
+    throw std::runtime_error(fmt::format(
+        "Column with component id `{}` does not exist", component_id));
   }
   return it->second;
 }

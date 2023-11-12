@@ -2,19 +2,16 @@
 
 #include "SDL3_image/SDL_image.h"
 #include "SDL_error.h"
+#include "fmt/core.h"
 
 GameError::GameError(const char* msg) : error_msg_{msg} {}
 
 auto GameError::from_sdl(const char* msg) -> GameError {
-  std::ostringstream error_msg;
-  error_msg << msg << ' ' << SDL_GetError() << std::endl;
-  return GameError(error_msg.str().c_str());
+  return GameError(fmt::format("{}, {}", msg, SDL_GetError()).c_str());
 }
 
 auto GameError::from_sdl_img(const char* msg) -> GameError {
-  std::ostringstream error_msg;
-  error_msg << msg << ' ' << IMG_GetError() << std::endl;
-  return GameError(error_msg.str().c_str());
+  return GameError(fmt::format("{}, {}", msg, IMG_GetError()).c_str());
 }
 
 auto GameError::what() const noexcept -> const char* {

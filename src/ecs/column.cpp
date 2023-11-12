@@ -66,7 +66,7 @@ auto Column::get_ptr_at(size_t row) -> void * {
 void Column::reserve(size_t capacity) {
   auto temp_data = std::realloc(data_, capacity * layout_);  // NOLINT
   if (temp_data == nullptr) {
-    throw std::runtime_error("Could not allocate memory");
+    throw std::runtime_error("Can not allocate memory");
   }
   data_ = temp_data;
   capacity_ = capacity;

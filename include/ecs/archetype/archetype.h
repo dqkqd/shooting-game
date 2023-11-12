@@ -65,10 +65,9 @@ class Archetype {
     }
 
     if (other.location(entity_id).has_value()) {
-      std::ostringstream error_msg;
-      error_msg << "Archetype " << other.archetype_id()
-                << " already has entity " << entity_id << std::endl;
-      throw std::runtime_error(error_msg.str().c_str());
+      throw std::runtime_error(
+          fmt::format("Archetype `{}` already has entity `{}`",
+                      other.archetype_id_, entity_id));
     }
 
     auto old_height = other.table_.height();
@@ -82,11 +81,9 @@ class Archetype {
     auto new_height = other.table_.height();
 
     if (!other.is_valid() || old_height + 1 != new_height) {
-      std::ostringstream error_msg;
-      error_msg << "Could move entity " << entity_id << " from archetype "
-                << archetype_id_ << " into archetype " << other.archetype_id()
-                << std::endl;
-      throw std::runtime_error(error_msg.str().c_str());
+      throw std::runtime_error(fmt::format(
+          "Can not move entity `{}` from archetype `{}` into archetype `{}`",
+          entity_id, archetype_id_, other.archetype_id_));
     }
 
     if (other.is_empty()) {

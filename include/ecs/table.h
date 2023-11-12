@@ -1,6 +1,8 @@
 #ifndef ECS_TABLE_H
 #define ECS_TABLE_H
 
+#include <fmt/core.h>
+
 #include <optional>
 #include <stdexcept>
 #include <type_traits>
@@ -93,11 +95,9 @@ class Table {
   template <typename... Args>
   auto add_row(Args &&...components) -> size_t {
     if (sizeof...(components) != width_) {
-      std::ostringstream error_msg;
-      error_msg << "Could not add row into table. "
-                << "Rows: " << sizeof...(components) << ", width: " << width_
-                << std::endl;
-      throw std::runtime_error(error_msg.str());
+      throw std::runtime_error(
+          fmt::format("Can not add row into table. Row `{}`, width `{}`",
+                      sizeof...(components), width_));
     }
 
     add_components<Args...>(std::move(components)...);
