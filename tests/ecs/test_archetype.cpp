@@ -197,4 +197,10 @@ TEST(Archetypes, CreateArchetype) {
                 ->get()
                 .archetype_id(),
             id2);
+
+  EXPECT_EQ((archetypes.get_or_add<int, float, std::string>()).archetype_id(),
+            id1);
+  EXPECT_EQ(
+      (archetypes.get_or_add<int, float, std::string, double>()).archetype_id(),
+      id2);
 }

@@ -39,6 +39,16 @@ class Archetypes {
     return std::ref(it->second);
   }
 
+  template <typename T, typename... Args>
+  auto get_or_add() -> Archetype& {
+    static_assert(all_types_are_different<T, Args...>(),
+                  "All column types must be pairwise different");
+    auto it = archetypes_.emplace(
+        ArchetypeComponents::create_archetype_components<T, Args...>(),
+        Archetype::create_archetype<T, Args...>());
+    return it.first->second;
+  }
+
   [[nodiscard]] auto size() const -> size_t;
 
  private:
