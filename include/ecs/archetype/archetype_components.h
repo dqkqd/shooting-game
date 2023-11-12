@@ -45,17 +45,20 @@ class ArchetypeComponents {
                                   all_types_are_same<ComponentId, Args...>>>
   auto clone_with(ComponentId component_id, Args... component_ids)
       -> ArchetypeComponents {
-    auto component_existed = has_components(component_id, component_ids...);
-    if (component_existed) {
-      throw std::runtime_error("All components must be unique");
+    auto one_component_existed =
+        (has_components(component_id) || ... || has_components(component_ids));
+    if (one_component_existed) {
+      throw std::runtime_error(
+          "All components must not be existed in order to `clone_with`");
     }
+
     std::vector<ComponentId> components{components_.begin(), components_.end()};
     components.emplace_back(component_id);
     (components.emplace_back(component_ids), ...);
 
     auto expected_size = components_.size() + 1 + sizeof...(Args);
-    if (components.size() < expected_size) {
-      throw std::runtime_error("All components must be unique");
+    if (components.size() != expected_size) {
+      throw std::runtime_error("Can not `clone_with` with duplicated ids");
     }
 
     return ArchetypeComponents(std::move(components));

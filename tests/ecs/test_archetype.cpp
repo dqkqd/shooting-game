@@ -168,16 +168,16 @@ TEST(ArchetypeComponents, HasComponent) {
 }
 
 TEST(ArchetypeComponents, CloneWith) {
-  auto id1 = ComponentCounter::id<int>();
-  auto id2 = ComponentCounter::id<float>();
-  auto id3 = ComponentCounter::id<char>();
-
-  ArchetypeComponents components{{id1, id2}};
-  ArchetypeComponents cloned_by_ids{components.clone_with(id3)};
-  ArchetypeComponents cloned_by_types{components.clone_with<char>()};
-
-  EXPECT_EQ(cloned_by_ids, (ArchetypeComponents{id1, id2, id3}));
-  EXPECT_EQ(cloned_by_types, (ArchetypeComponents{id1, id2, id3}));
+  auto components =
+      ArchetypeComponents::create_archetype_components<int, float, char>();
+  auto cloned = components.clone_with<std::string>();
+  EXPECT_EQ(cloned,
+            (ArchetypeComponents::create_archetype_components<int, float, char,
+                                                              std::string>()));
+  // duplicated components
+  EXPECT_THROW((components.clone_with<int, int>()), std::runtime_error);
+  // existed component
+  EXPECT_THROW((components.clone_with<float>()), std::runtime_error);
 }
 
 TEST(ArchetypeComponents, CloneWithout) {
@@ -186,10 +186,8 @@ TEST(ArchetypeComponents, CloneWithout) {
   auto cloned = components.clone_without<int, char>();
   EXPECT_EQ(cloned,
             (ArchetypeComponents::create_archetype_components<float>()));
-
   // duplicated components
   EXPECT_THROW((components.clone_without<int, int>()), std::runtime_error);
-
   // non existed component
   EXPECT_THROW((components.clone_without<std::string>()), std::runtime_error);
 }
