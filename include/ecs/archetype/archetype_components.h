@@ -2,6 +2,7 @@
 #define ECS_ARCHETYPE_ARCHETYPE_COMPONENT_H
 
 #include <set>
+#include <stdexcept>
 
 #include "ecs/column.h"
 #include "ecs/primitive.h"
@@ -26,6 +27,32 @@ class ArchetypeComponents {
     components.reserve(sizeof...(Args));
     ([&] { components.push_back(ComponentCounter::id<Args>()); }(), ...);
     return ArchetypeComponents{std::move(components)};
+  }
+
+  template <typename T, typename... Args>
+  auto clone_with() -> ArchetypeComponents {
+    return clone_with(ComponentCounter::id<T>(),
+                      ComponentCounter::id<Args>()...);
+  }
+
+  template <typename... Args, typename = std::enable_if_t<
+                                  all_types_are_same<ComponentId, Args...>>>
+  auto clone_with(ComponentId component_id, Args... component_ids)
+      -> ArchetypeComponents {
+    auto component_existed = has_components(component_id, component_ids...);
+    if (component_existed) {
+      throw std::runtime_error("All components must be unique");
+    }
+    std::vector<ComponentId> components{components_.begin(), components_.end()};
+    components.emplace_back(component_id);
+    (components.emplace_back(component_ids), ...);
+
+    auto expected_size = components_.size() + 1 + sizeof...(Args);
+    if (components.size() < expected_size) {
+      throw std::runtime_error("All components must be unique");
+    }
+
+    return ArchetypeComponents(std::move(components));
   }
 
   friend auto operator==(const ArchetypeComponents &lhs,

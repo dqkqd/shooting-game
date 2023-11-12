@@ -176,6 +176,20 @@ TEST(ArchetypeComponents, HasComponent) {
   EXPECT_FALSE((components.has_components<int, float, double>()));
 }
 
+TEST(ArchetypeComponents, CloneWith) {
+  auto id1 = ComponentCounter::id<int>();
+  auto id2 = ComponentCounter::id<float>();
+  auto id3 = ComponentCounter::id<char>();
+
+  ArchetypeComponents components{{id1, id2}};
+  ArchetypeComponents cloned_by_ids{components.clone_with(id3)};
+  ArchetypeComponents cloned_by_types{components.clone_with<char>()};
+
+  std::vector v{id1, id2, id3};
+  EXPECT_EQ(cloned_by_ids, ArchetypeComponents{std::move(v)});
+  EXPECT_EQ(cloned_by_types, cloned_by_ids);
+}
+
 TEST(Archetypes, CreateArchetype) {
   auto archetypes = Archetypes();
   auto id1 = archetypes.add<int, float, std::string>();
