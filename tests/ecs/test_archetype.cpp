@@ -154,15 +154,6 @@ TEST(ArchetypeComponents, Constructor) {
                                  ComponentCounter::id<std::string>()}));
 }
 
-TEST(ArchetypeComponents, Add) {
-  ArchetypeComponents components{0};
-  components.add(3);
-  components.add(2);
-  components.add(8);
-
-  EXPECT_EQ(components, (ArchetypeComponents{0, 2, 3, 8}));
-}
-
 TEST(ArchetypeComponents, HasComponent) {
   auto id1 = ComponentCounter::id<int>();
   auto id2 = ComponentCounter::id<float>();

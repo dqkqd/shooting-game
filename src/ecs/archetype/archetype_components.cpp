@@ -26,10 +26,6 @@ auto operator<(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
   return lhs.components_ < rhs.components_;
 }
 
-void ArchetypeComponents::add(ComponentId component_id) {
-  components_.insert(component_id);
-}
-
 auto ArchetypeComponents::has_component_id(ComponentId component_id) const
     -> bool {
   return components_.find(component_id) != components_.end();

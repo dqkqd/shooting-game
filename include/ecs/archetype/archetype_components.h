@@ -67,8 +67,6 @@ class ArchetypeComponents {
   friend auto operator<(const ArchetypeComponents &lhs,
                         const ArchetypeComponents &rhs) -> bool;
 
-  void add(ComponentId component_id);
-
   [[nodiscard]] auto has_component_id(ComponentId component_id) const -> bool;
   template <typename... Args, typename = std::enable_if_t<
                                   all_types_are_same<ComponentId, Args...>>>
