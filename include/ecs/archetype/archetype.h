@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ecs/archetype/archetype_components.h"
+#include "ecs/archetype/archetype_edges.h"
 #include "ecs/column.h"
 #include "ecs/primitive.h"
 #include "ecs/table.h"
@@ -100,12 +101,41 @@ class Archetype {
   [[nodiscard]] auto location(EntityId entity_id) const
       -> std::optional<EntityLocation>;
 
+  template <typename T>
+  void add_next_edge(Archetype &archetype) {
+    if (this->archetype_id_ == archetype.archetype_id_) {
+      throw std::runtime_error(fmt::format(
+          "Can not add self reference edge to archetype `{}`", archetype_id_));
+    }
+    next_edges_.add<T>(archetype);
+    archetype.prev_edges_.add<T>(*this);
+  }
+  template <typename T>
+  void add_prev_edge(Archetype &archetype) {
+    if (this->archetype_id_ == archetype.archetype_id_) {
+      throw std::runtime_error(fmt::format(
+          "Can not add self reference edge to archetype `{}`", archetype_id_));
+    }
+    prev_edges_.add<T>(archetype);
+    archetype.next_edges_.add<T>(*this);
+  }
+  template <typename T>
+  auto get_next_edge() -> OptionalRef<Archetype> {
+    return next_edges_.get<T>();
+  }
+  template <typename T>
+  auto get_prev_edge() -> OptionalRef<Archetype> {
+    return prev_edges_.get<T>();
+  }
+
  private:
   explicit Archetype(Table &&table);
 
   ArchetypeId archetype_id_;
   Table table_;
   std::unordered_map<EntityId, EntityLocation> locations_;
+  ArchetypeEdges next_edges_;
+  ArchetypeEdges prev_edges_;
 };
 
 #endif
