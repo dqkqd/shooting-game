@@ -227,3 +227,16 @@ TEST(Table, MoveRowToOtherHasSomeTableComponentTypes) {
   EXPECT_EQ(table.height(), 3);
   EXPECT_TRUE(table.is_valid());
 }
+
+TEST(Table, CloneWith) {
+  auto table = Table::create_table<int, float>();
+  table.add_row<int, float>(1, 2.0);
+
+  auto clone = table.clone_with<std::string>();
+
+  EXPECT_TRUE(clone.is_valid());
+  EXPECT_TRUE(clone.is_empty());
+  EXPECT_TRUE((clone.has_components<int, float, std::string>()));
+
+  EXPECT_THROW(table.clone_with<int>(), std::runtime_error);
+}

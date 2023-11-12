@@ -42,6 +42,24 @@ class Table {
     return table;
   }
 
+  template <typename T>
+  auto clone_with() const -> Table {
+    /* create an empty table with additional column *type* T */
+
+    if (has_components<T>()) {
+      throw std::runtime_error(
+          fmt::format("Component type `{}` has already existed in table `{}`",
+                      typeid(T).name(), table_id_));
+    }
+
+    auto table = create_table<T>();
+    for (const auto &[id, column] : columns_) {
+      table.columns_.emplace(id, column.clone());
+      ++table.width_;
+    }
+    return std::move(table);
+  }
+
   [[nodiscard]] auto table_id() const -> TableId;
   [[nodiscard]] auto is_valid() const -> bool;
   [[nodiscard]] auto is_empty() const -> bool;
@@ -54,12 +72,13 @@ class Table {
 
   template <typename... Args, typename = std::enable_if_t<
                                   all_types_are_same<ComponentId, Args...>>>
-  auto has_components(ComponentId component_id, Args... component_ids) -> bool {
+  auto has_components(ComponentId component_id, Args... component_ids) const
+      -> bool {
     return has_component_id(component_id) &&
            (... && has_component_id(component_ids));
   }
   template <typename T, typename... Args>
-  auto has_components() -> bool {
+  auto has_components() const -> bool {
     return has_components(ComponentCounter::id<T>(),
                           ComponentCounter::id<Args>()...);
   }
