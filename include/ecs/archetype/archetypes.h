@@ -46,6 +46,40 @@ class Archetypes {
     return it.first->second;
   }
 
+  template <typename T>
+  auto get_or_add_next_archetype(Archetype& archetype) -> Archetype& {
+    /* Find the next archetype on the graph, add one if there is none */
+
+    if (archetype.has_components<T>()) {
+      throw std::runtime_error(fmt::format(
+          "Component type `{}` has already existed in archetype `{}`",
+          typeid(T).name(), archetype.archetype_id()));
+    }
+
+    auto [it, inserted] = archetypes_.emplace(
+        ArchetypeComponents(archetype.components().clone_with<T>()),
+        archetype.clone_with<T>());
+    archetype.add_next_edge<T>(it->second);
+    return it->second;
+  }
+
+  template <typename T>
+  auto get_or_add_prev_archetype(Archetype& archetype) -> Archetype& {
+    /* Find the prev archetype on the graph, add one if there is none */
+
+    if (!archetype.has_components<T>()) {
+      throw std::runtime_error(
+          fmt::format("Component type `{}` does not exist in archetype `{}`",
+                      typeid(T).name(), archetype.archetype_id()));
+    }
+
+    auto [it, inserted] = archetypes_.emplace(
+        ArchetypeComponents(archetype.components().clone_without<T>()),
+        archetype.clone_without<T>());
+    archetype.add_prev_edge<T>(it->second);
+    return it->second;
+  }
+
   [[nodiscard]] auto size() const -> size_t;
 
  private:

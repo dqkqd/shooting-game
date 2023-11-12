@@ -35,6 +35,15 @@ class Archetype {
     return Archetype(Table::create_table<Args...>());
   }
 
+  template <typename T>
+  auto clone_with() const -> Archetype {
+    return Archetype(table_.clone_with<T>());
+  }
+  template <typename T>
+  auto clone_without() const -> Archetype {
+    return Archetype(table_.clone_without<T>());
+  }
+
   [[nodiscard]] auto archetype_id() const -> ArchetypeId;
   [[nodiscard]] auto table_id() const -> TableId;
   [[nodiscard]] auto is_empty() const -> bool;
