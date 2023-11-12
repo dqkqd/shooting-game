@@ -3,6 +3,8 @@
 #include <stdexcept>
 
 #include "ecs/archetype/archetype.h"
+#include "ecs/archetype/archetype_components.h"
+#include "ecs/archetype/archetypes.h"
 #include "ecs/column.h"
 #include "ecs/primitive.h"
 #include "ecs/table.h"
@@ -159,4 +161,14 @@ TEST(ArchetypeComponents, Add) {
 
   std::vector v{0, 2, 3, 8};
   EXPECT_EQ(components, ArchetypeComponents{std::move(v)});
+}
+
+TEST(Archetypes, CreateArchetype) {
+  auto archetypes = Archetypes();
+  auto id1 = archetypes.add<int, float, std::string>();
+  auto id2 = archetypes.add<int, float, std::string, double>();
+  EXPECT_EQ(archetypes.size(), 2);
+
+  EXPECT_EQ((archetypes.add<int, float, std::string>()), id1);
+  EXPECT_EQ((archetypes.add<int, float, std::string, double>()), id2);
 }
