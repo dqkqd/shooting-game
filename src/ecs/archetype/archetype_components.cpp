@@ -30,6 +30,11 @@ void ArchetypeComponents::add(ComponentId component_id) {
   components_.insert(component_id);
 }
 
+auto ArchetypeComponents::has_component_id(ComponentId component_id) const
+    -> bool {
+  return components_.find(component_id) != components_.end();
+}
+
 template <>
 struct std::hash<ArchetypeComponents> {
   auto operator()(const ArchetypeComponents &archetype_component) const noexcept

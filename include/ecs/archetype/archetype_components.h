@@ -36,6 +36,20 @@ class ArchetypeComponents {
 
   void add(ComponentId component_id);
 
+  [[nodiscard]] auto has_component_id(ComponentId component_id) const -> bool;
+  template <typename... Args, typename = std::enable_if_t<
+                                  all_types_are_same<ComponentId, Args...>>>
+  [[nodiscard]] auto has_components(ComponentId component_id,
+                                    Args... component_ids) -> bool {
+    return has_component_id(component_id) &&
+           (... && has_component_id(component_ids));
+  }
+  template <typename T, typename... Args>
+  [[nodiscard]] auto has_components() -> bool {
+    return has_components(ComponentCounter::id<T>(),
+                          ComponentCounter::id<Args>()...);
+  }
+
  private:
   std::set<ComponentId> components_;
 };

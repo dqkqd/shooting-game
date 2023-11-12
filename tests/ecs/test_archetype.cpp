@@ -163,6 +163,19 @@ TEST(ArchetypeComponents, Add) {
   EXPECT_EQ(components, ArchetypeComponents{std::move(v)});
 }
 
+TEST(ArchetypeComponents, HasComponent) {
+  auto id1 = ComponentCounter::id<int>();
+  auto id2 = ComponentCounter::id<float>();
+  ArchetypeComponents components{{id1, id2}};
+
+  EXPECT_TRUE(components.has_components(id1, id2));
+  EXPECT_FALSE(
+      components.has_components(id1, id2, ComponentCounter::id<double>()));
+
+  EXPECT_TRUE((components.has_components<int, float>()));
+  EXPECT_FALSE((components.has_components<int, float, double>()));
+}
+
 TEST(Archetypes, CreateArchetype) {
   auto archetypes = Archetypes();
   auto id1 = archetypes.add<int, float, std::string>();
