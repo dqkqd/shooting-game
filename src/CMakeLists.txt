@@ -9,6 +9,7 @@ set(SOURCE_FILES
     ecs/archetype/archetypes.cpp
     ecs/column.cpp
     ecs/table.cpp
+    ecs/world.cpp
     error.cpp
 )
 
@@ -26,7 +27,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG main 
+    GIT_TAG main
     GIT_SHALLOW TRUE
     GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL

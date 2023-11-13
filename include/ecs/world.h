@@ -1,14 +1,34 @@
 #ifndef ECS_WORLD_H
 #define ECS_WORLD_H
 
-#include <unordered_map>
+#include <optional>
 
-#include "ecs/archetype.h"
-
-using EntityId = int;
+#include "ecs/archetype/archetype.h"
+#include "ecs/archetype/archetypes.h"
+#include "ecs/entity.h"
 
 class World {
-  std::unordered_map<EntityId, ArchetypeRecord> entities_;
+ public:
+  World() = delete;
+
+  template <typename T, typename... Args>
+  static auto spawn_entity_with(T&& component, Args&&... components)
+      -> std::optional<EntityLocation> {
+    OptionalRef<Archetype> archetype = archetypes_.add<T, Args...>();
+    if (!archetype.has_value()) {
+      return {};
+    }
+    auto entity_id = EntityCounter::id();
+    auto location =
+        archetype->get().add_entity(entity_id, std::forward<T>(component),
+                                    std::forward<Args>(components)...);
+    World::entities_.emplace(entity_id, location);
+    return location;
+  }
+
+ private:
+  static Archetypes archetypes_;
+  static std::unordered_map<EntityId, EntityLocation> entities_;
 };
 
 #endif
