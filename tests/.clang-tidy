@@ -1,0 +1,48 @@
+Checks: "
+  bugprone-*,
+  clang-analyzer-*,
+  google-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  cppcoreguidelines-*,
+  readability-*,
+  concurrency-*,
+  misc-*,
+  -modernize-use-nullptr,
+  -readability-identifier-length,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-prefer-member-initializer,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -readability-magic-numbers,
+  -bugprone-unchecked-optional-access,
+  "
+
+CheckOptions:
+  - { key: readability-identifier-naming.ConstantCase, value: UPPER_CASE }
+  - {
+      key: readability-identifier-naming.ConstantParameterCase,
+      value: lower_case,
+    }
+  - { key: readability-identifier-naming.NamespaceCase, value: lower_case }
+  - { key: readability-identifier-naming.ClassCase, value: CamelCase }
+  - { key: readability-identifier-naming.StructCase, value: CamelCase }
+  - {
+      key: readability-identifier-naming.TemplateParameterCase,
+      value: CamelCase,
+    }
+  - { key: readability-identifier-naming.FunctionCase, value: lower_case }
+  - { key: readability-identifier-naming.VariableCase, value: lower_case }
+  - { key: readability-identifier-naming.ClassMemberCase, value: lower_case }
+  - { key: readability-identifier-naming.PrivateMemberCase, value: lower_case }
+  - {
+      key: readability-identifier-naming.ProtectedMemberCase,
+      value: lower_case,
+    }
+  - { key: readability-identifier-naming.ClassMemberSuffix, value: _ }
+  - { key: readability-identifier-naming.PrivateMemberSuffix, value: _ }
+  - { key: readability-identifier-naming.ProtectedMemberSuffix, value: _ }

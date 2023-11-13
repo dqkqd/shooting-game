@@ -252,12 +252,12 @@ TEST(Archetypes, AddNextArchetype) {
 
   EXPECT_TRUE(archetype.has_value());
 
-  auto &next_archetype = archetypes.get_or_add_next_archetype<std::string>(
-      archetype->get());  // NOLINT
-  EXPECT_TRUE((next_archetype.has_components<int, float, std::string>()));
+  auto next_archetype =
+      archetypes.get_or_add_next_archetype<std::string>(*archetype);
   EXPECT_TRUE(
-      archetype->get().get_next_edge<std::string>().has_value());  // NOLINT
-  EXPECT_TRUE(next_archetype.get_prev_edge<std::string>().has_value());
+      (next_archetype->get().has_components<int, float, std::string>()));
+  EXPECT_TRUE(archetype->get().get_next_edge<std::string>().has_value());
+  EXPECT_TRUE(next_archetype->get().get_prev_edge<std::string>().has_value());
 }
 
 TEST(Archetypes, AddPrevArchetype) {
@@ -267,11 +267,10 @@ TEST(Archetypes, AddPrevArchetype) {
 
   EXPECT_TRUE(archetype.has_value());
 
-  auto &prev_archetype = archetypes.get_or_add_prev_archetype<std::string>(
-      archetype->get());  // NOLINT
-  EXPECT_TRUE((prev_archetype.has_components<int, float>()));
-  EXPECT_FALSE((prev_archetype.has_components<std::string>()));
-  EXPECT_TRUE(
-      archetype->get().get_prev_edge<std::string>().has_value());  // NOLINT
-  EXPECT_TRUE(prev_archetype.get_next_edge<std::string>().has_value());
+  auto prev_archetype =
+      archetypes.get_or_add_prev_archetype<std::string>(*archetype);
+  EXPECT_TRUE((prev_archetype->get().has_components<int, float>()));
+  EXPECT_FALSE(prev_archetype->get().has_components<std::string>());
+  EXPECT_TRUE(archetype->get().get_prev_edge<std::string>().has_value());
+  EXPECT_TRUE(prev_archetype->get().get_next_edge<std::string>().has_value());
 }

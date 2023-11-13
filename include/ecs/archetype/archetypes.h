@@ -63,54 +63,50 @@ class Archetypes {
   }
 
   template <typename T>
-  auto get_or_add_next_archetype(Archetype& archetype) -> Archetype& {
+  auto get_or_add_next_archetype(Archetype& archetype)
+      -> OptionalRef<Archetype> {
     /* Find the next archetype on the graph, add one if there is none */
 
-    if (archetype.has_components<T>()) {
-      throw std::runtime_error(fmt::format(
-          "Component type `{}` has already existed in archetype `{}`",
-          typeid(T).name(), archetype.archetype_id()));
+    auto components = archetype.components().clone_with<T>();
+    if (!components.has_value()) {
+      spdlog::error("Component type `{}` has already existed in archetype `{}`",
+                    typeid(T).name(), archetype.archetype_id());
+      return {};
     }
 
-    auto components =
-        ArchetypeComponents(archetype.components()
-                                .clone_with<T>()
-                                .value());  // TODO(khanhdq): remove this value
-    auto it = by_components_.find(components);
+    auto it = by_components_.find(*components);
     if (it != by_components_.end()) {
       auto archetype_id = it->second;
       return archetypes_[archetype_id];
     }
 
     auto next_archetype_id = size();
-    by_components_.emplace(std::move(components), next_archetype_id);
+    by_components_.emplace(std::move(components.value()), next_archetype_id);
     archetypes_.emplace_back(archetype.clone_with<T>(next_archetype_id));
     archetype.add_next_edge<T>(archetypes_.back());
     return archetypes_.back();
   }
 
   template <typename T>
-  auto get_or_add_prev_archetype(Archetype& archetype) -> Archetype& {
+  auto get_or_add_prev_archetype(Archetype& archetype)
+      -> OptionalRef<Archetype> {
     /* Find the prev archetype on the graph, add one if there is none */
 
-    if (!archetype.has_components<T>()) {
-      throw std::runtime_error(
-          fmt::format("Component type `{}` does not exist in archetype `{}`",
-                      typeid(T).name(), archetype.archetype_id()));
+    auto components = archetype.components().clone_without<T>();
+    if (!components.has_value()) {
+      spdlog::error("Component type `{}` does not exist in archetype `{}`",
+                    typeid(T).name(), archetype.archetype_id());
+      return {};
     }
 
-    auto components =
-        ArchetypeComponents(archetype.components()
-                                .clone_without<T>()
-                                .value());  // TODO(khanhdq): remove this value
-    auto it = by_components_.find(components);
+    auto it = by_components_.find(*components);
     if (it != by_components_.end()) {
       auto archetype_id = it->second;
       return archetypes_[archetype_id];
     }
 
     auto prev_archetype_id = size();
-    by_components_.emplace(std::move(components), prev_archetype_id);
+    by_components_.emplace(std::move(components.value()), prev_archetype_id);
     archetypes_.emplace_back(archetype.clone_without<T>(prev_archetype_id));
     archetype.add_prev_edge<T>(archetypes_.back());
     return archetypes_.back();
