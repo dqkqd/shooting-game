@@ -38,9 +38,10 @@ TEST(Archetype, ComponentsMustBeSorted) {
 TEST(Archetype, AddEntity) {
   auto archetype = Archetype::create_archetype<int, float>(0);
   auto location = archetype.add_entity<int, float>(10, 1, 2.0);
+  EXPECT_EQ(location.entity_id, 10);
   EXPECT_EQ(location.archetype_id, archetype.archetype_id());
   EXPECT_EQ(location.table_id, archetype.table_id());
-  EXPECT_EQ(location.row, 0);
+  EXPECT_EQ(location.table_row, 0);
 }
 
 TEST(Archetype, MoveConstructor) {
@@ -71,12 +72,12 @@ TEST(Archetype, EntityLocation) {
   EXPECT_FALSE(archetype.location(10).has_value());
   archetype.add_entity<int, float>(10, 1, 2.0);
   EXPECT_TRUE(archetype.location(10).has_value());
-  EXPECT_EQ(archetype.location(10)->row, 0);  // NOLINT
+  EXPECT_EQ(archetype.location(10)->table_row, 0);  // NOLINT
 
   EXPECT_FALSE(archetype.location(20).has_value());
   archetype.add_entity<int, float>(20, 3, 4.0);
   EXPECT_TRUE(archetype.location(20).has_value());
-  EXPECT_EQ(archetype.location(20)->row, 1);  // NOLINT
+  EXPECT_EQ(archetype.location(20)->table_row, 1);  // NOLINT
 }
 
 TEST(Archetype, MoveEntitySuccessful) {
@@ -88,7 +89,8 @@ TEST(Archetype, MoveEntitySuccessful) {
   auto location = archetype.move_entity_to_other(10, other);
 
   EXPECT_TRUE(location.has_value());
-  EXPECT_EQ(location->row, 0);
+  EXPECT_EQ(location->entity_id, 10);
+  EXPECT_EQ(location->table_row, 0);
   EXPECT_FALSE(archetype.location(10).has_value());
   EXPECT_TRUE(other.location(10).has_value());
 
@@ -114,7 +116,8 @@ TEST(Archetype, MoveEntitySubset) {
   auto location = archetype.move_entity_to_other(10, other);
 
   EXPECT_TRUE(location.has_value());
-  EXPECT_EQ(location->row, 0);
+  EXPECT_EQ(location->entity_id, 10);
+  EXPECT_EQ(location->table_row, 0);
   EXPECT_FALSE(archetype.location(10).has_value());
   EXPECT_TRUE(other.location(10).has_value());
 
@@ -131,7 +134,8 @@ TEST(Archetype, MoveEntityOverlappedWithAdditionalArguments) {
   auto location = archetype.move_entity_to_other<double>(10, other, 5.0);
 
   EXPECT_TRUE(location.has_value());
-  EXPECT_EQ(location->row, 0);
+  EXPECT_EQ(location->entity_id, 10);
+  EXPECT_EQ(location->table_row, 0);
   EXPECT_FALSE(archetype.location(10).has_value());
   EXPECT_TRUE(other.location(10).has_value());
 

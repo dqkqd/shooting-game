@@ -14,9 +14,10 @@
 #include "ecs/table.h"
 
 struct EntityLocation {
+  EntityId entity_id;
   ArchetypeId archetype_id;
   TableId table_id;
-  size_t row;
+  size_t table_row;
 };
 
 class Archetype {
@@ -55,9 +56,11 @@ class Archetype {
 
   template <typename... Args>
   auto add_entity(EntityId entity_id, Args &&...components) -> EntityLocation {
-    auto row = table_.add_row<Args...>(std::forward<Args>(components)...);
-    auto location = EntityLocation{
-        .archetype_id = archetype_id(), .table_id = table_id(), .row = row};
+    auto table_row = table_.add_row<Args...>(std::forward<Args>(components)...);
+    auto location = EntityLocation{.entity_id = entity_id,
+                                   .archetype_id = archetype_id(),
+                                   .table_id = table_id(),
+                                   .table_row = table_row};
     locations_[entity_id] = location;
     return location;
   }
@@ -81,7 +84,8 @@ class Archetype {
 
     auto old_height = other.table_.height();
     // Construct new row in other's table
-    auto new_row = table_.move_row_to_other(entity_location->row, other.table_);
+    auto new_row =
+        table_.move_row_to_other(entity_location->table_row, other.table_);
     if (!new_row.has_value()) {
       spdlog::error("Moving invalid entity {}", entity_id);
       return {};
@@ -107,9 +111,10 @@ class Archetype {
       return {};
     }
 
-    auto location = EntityLocation{.archetype_id = other.archetype_id(),
+    auto location = EntityLocation{.entity_id = entity_id,
+                                   .archetype_id = other.archetype_id(),
                                    .table_id = other.table_id(),
-                                   .row = old_height};
+                                   .table_row = old_height};
     locations_.erase(entity_id);
     other.locations_[entity_id] = location;
     return location;
