@@ -133,7 +133,7 @@ class Table {
   void add_components(Args &&...components) {
     static_assert(all_types_are_different<Args...>(),
                   "All column types must be pairwise different");
-    ([&] { add_component<Args>(std::move(components)); }(), ...);
+    ([&] { add_component<Args>(std::forward<Args>(components)); }(), ...);
   }
 
   template <typename... Args>
@@ -144,7 +144,7 @@ class Table {
                       sizeof...(components), width_));
     }
 
-    add_components<Args...>(std::move(components)...);
+    add_components<Args...>(std::forward<Args>(components)...);
 
     // since all types are different and number of types equal width_, we can
     // certain that if all the component arguments can be added to the table,
