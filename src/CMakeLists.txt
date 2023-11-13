@@ -25,6 +25,14 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
     )
 FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG v1.x
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+    EXCLUDE_FROM_ALL
+    )
+FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
     GIT_TAG main
@@ -42,10 +50,11 @@ FetchContent_Declare(
     )
 
 FetchContent_MakeAvailable(fmt)
+FetchContent_MakeAvailable(spdlog)
 FetchContent_MakeAvailable(SDL3)
 FetchContent_MakeAvailable(SDL3_image)
 
 add_library(GAME_SOURCE ${SOURCE_FILES})
 
 target_include_directories(GAME_SOURCE PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(GAME_SOURCE PUBLIC fmt::fmt SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(GAME_SOURCE PUBLIC fmt::fmt spdlog::spdlog SDL3::SDL3 SDL3_image::SDL3_image)
