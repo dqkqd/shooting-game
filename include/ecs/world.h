@@ -13,15 +13,11 @@ class World {
 
   template <typename T, typename... Args>
   static auto spawn_entity_with(T&& component, Args&&... components)
-      -> std::optional<EntityLocation> {
-    OptionalRef<Archetype> archetype = archetypes_.add<T, Args...>();
-    if (!archetype.has_value()) {
-      return {};
-    }
+      -> EntityLocation {
     auto entity_id = EntityCounter::id();
-    auto location =
-        archetype->get().add_entity(entity_id, std::forward<T>(component),
-                                    std::forward<Args>(components)...);
+    auto location = archetypes_.get_or_add<T, Args...>().add_entity(
+        entity_id, std::forward<T>(component),
+        std::forward<Args>(components)...);
     World::entities_.emplace(entity_id, location);
     return location;
   }

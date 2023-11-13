@@ -13,5 +13,4 @@ TEST(World, SpawnEntityWith) {
 
   auto entity_location =
       World::spawn_entity_with<A, int, std::string>(A{"Hello"}, 1, "World");
-  EXPECT_TRUE(entity_location.has_value());
 }
