@@ -66,28 +66,38 @@ class Archetype {
   auto move_entity_to_other(EntityId entity_id, Archetype &other,
                             Args &&...components)
       -> std::optional<EntityLocation> {
-    auto entity_location = location(entity_id);
-    if (!entity_location.has_value()) {
+    if (other.location(entity_id).has_value()) {
+      spdlog::error("Entity {} has already existed in archetype {}", entity_id,
+                    other.archetype_id_);
       return {};
     }
 
-    if (other.location(entity_id).has_value()) {
-      throw std::runtime_error(
-          fmt::format("Archetype `{}` already has entity `{}`",
-                      other.archetype_id_, entity_id));
+    auto entity_location = location(entity_id);
+    if (!entity_location.has_value()) {
+      spdlog::error("Entity {} does not exist in archetype {}", entity_id,
+                    archetype_id_);
+      return {};
     }
 
     auto old_height = other.table_.height();
-    table_.move_row_to_other(entity_location->row, other.table_);
+    // Construct new row in other's table
+    auto new_row = table_.move_row_to_other(entity_location->row, other.table_);
+    if (!new_row.has_value()) {
+      spdlog::error("Moving invalid entity {}", entity_id);
+      return {};
+    }
+
+    // Adding missing components
     if (sizeof...(Args) > 0) {
       other.table_.add_components<Args...>(std::move(components)...);
     }
 
-    locations_.erase(entity_id);
     other.table_.reset_height();
     auto new_height = other.table_.height();
 
     if (!other.is_valid() || old_height + 1 != new_height) {
+      // Since we changed archetype's table structure, this can't be undone,
+      // hence we should throw error here instead of return nullopt
       throw std::runtime_error(fmt::format(
           "Can not move entity `{}` from archetype `{}` into archetype `{}`",
           entity_id, archetype_id_, other.archetype_id_));
@@ -99,7 +109,8 @@ class Archetype {
 
     auto location = EntityLocation{.archetype_id = other.archetype_id(),
                                    .table_id = other.table_id(),
-                                   .row = other.table_.height() - 1};
+                                   .row = old_height};
+    locations_.erase(entity_id);
     other.locations_[entity_id] = location;
     return location;
   }

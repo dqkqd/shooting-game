@@ -87,7 +87,8 @@ TEST(Archetype, MoveEntitySuccessful) {
   auto other = Archetype::create_archetype<int, float>(1);
   auto location = archetype.move_entity_to_other(10, other);
 
-  EXPECT_EQ(location->row, 0);  // NOLINT
+  EXPECT_TRUE(location.has_value());
+  EXPECT_EQ(location->row, 0);
   EXPECT_FALSE(archetype.location(10).has_value());
   EXPECT_TRUE(other.location(10).has_value());
 
@@ -112,7 +113,8 @@ TEST(Archetype, MoveEntitySubset) {
   auto other = Archetype::create_archetype<int>(1);
   auto location = archetype.move_entity_to_other(10, other);
 
-  EXPECT_EQ(location->row, 0);  // NOLINT
+  EXPECT_TRUE(location.has_value());
+  EXPECT_EQ(location->row, 0);
   EXPECT_FALSE(archetype.location(10).has_value());
   EXPECT_TRUE(other.location(10).has_value());
 
@@ -128,7 +130,8 @@ TEST(Archetype, MoveEntityOverlappedWithAdditionalArguments) {
   auto other = Archetype::create_archetype<int, double>(1);
   auto location = archetype.move_entity_to_other<double>(10, other, 5.0);
 
-  EXPECT_EQ(location->row, 0);  // NOLINT
+  EXPECT_TRUE(location.has_value());
+  EXPECT_EQ(location->row, 0);
   EXPECT_FALSE(archetype.location(10).has_value());
   EXPECT_TRUE(other.location(10).has_value());
 
@@ -136,6 +139,30 @@ TEST(Archetype, MoveEntityOverlappedWithAdditionalArguments) {
 
   // double component is added
   EXPECT_TRUE(other.is_valid());
+}
+
+TEST(Archetype, MoveNonExistedEntity) {
+  auto archetype = Archetype::create_archetype<int, float>(0);
+  archetype.add_entity<int, float>(10, 1, 2.0);
+  archetype.add_entity<int, float>(20, 3, 4.0);
+
+  auto other = Archetype::create_archetype<int, double>(1);
+  auto location = archetype.move_entity_to_other<double>(30, other, 5.0);
+
+  EXPECT_FALSE(location.has_value());
+}
+
+TEST(Archetype, MoveAlreadyExistedEntityOnOther) {
+  auto archetype = Archetype::create_archetype<int, float>(0);
+  archetype.add_entity<int, float>(10, 1, 2.0);
+  archetype.add_entity<int, float>(20, 3, 4.0);
+
+  auto other = Archetype::create_archetype<int, double, std::string>(1);
+  other.add_entity<int, double, std::string>(10, 2, 3.0, "Hello");
+  auto location =
+      archetype.move_entity_to_other<std::string>(10, other, "World");
+
+  EXPECT_FALSE(location.has_value());
 }
 
 TEST(ArchetypeComponents, Constructor) {
