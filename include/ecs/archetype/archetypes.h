@@ -73,7 +73,9 @@ class Archetypes {
     }
 
     auto components =
-        ArchetypeComponents(archetype.components().clone_with<T>());
+        ArchetypeComponents(archetype.components()
+                                .clone_with<T>()
+                                .value());  // TODO(khanhdq): remove this value
     auto it = by_components_.find(components);
     if (it != by_components_.end()) {
       auto archetype_id = it->second;
@@ -98,7 +100,9 @@ class Archetypes {
     }
 
     auto components =
-        ArchetypeComponents(archetype.components().clone_without<T>());
+        ArchetypeComponents(archetype.components()
+                                .clone_without<T>()
+                                .value());  // TODO(khanhdq): remove this value
     auto it = by_components_.find(components);
     if (it != by_components_.end()) {
       auto archetype_id = it->second;

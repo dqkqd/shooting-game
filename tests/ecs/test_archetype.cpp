@@ -169,9 +169,9 @@ TEST(ArchetypeComponents, CloneWith) {
             (ArchetypeComponents::create_archetype_components<int, float, char,
                                                               std::string>()));
   // duplicated components
-  EXPECT_THROW((components.clone_with<int, int>()), std::runtime_error);
+  EXPECT_FALSE((components.clone_with<int, int>()).has_value());
   // existed component
-  EXPECT_THROW((components.clone_with<float>()), std::runtime_error);
+  EXPECT_FALSE((components.clone_with<float>()).has_value());
 }
 
 TEST(ArchetypeComponents, CloneWithout) {
@@ -181,9 +181,9 @@ TEST(ArchetypeComponents, CloneWithout) {
   EXPECT_EQ(cloned,
             (ArchetypeComponents::create_archetype_components<float>()));
   // duplicated components
-  EXPECT_THROW((components.clone_without<int, int>()), std::runtime_error);
+  EXPECT_FALSE((components.clone_without<int, int>()).has_value());
   // non existed component
-  EXPECT_THROW((components.clone_without<std::string>()), std::runtime_error);
+  EXPECT_FALSE((components.clone_without<std::string>()).has_value());
 }
 
 TEST(Archetypes, Add) {
