@@ -9,22 +9,22 @@
 
 class World {
  public:
-  World() = delete;
+  World() = default;
 
   template <typename T, typename... Args>
-  static auto spawn_entity_with(T&& component, Args&&... components)
+  auto spawn_entity_with(T&& component, Args&&... components)
       -> EntityLocation {
     auto entity_id = EntityCounter::id();
     auto location = archetypes_.get_or_add<T, Args...>().add_entity(
         entity_id, std::forward<T>(component),
         std::forward<Args>(components)...);
-    World::entities_.emplace(entity_id, location);
+    entities_.emplace(entity_id, location);
     return location;
   }
 
  private:
-  static Archetypes archetypes_;
-  static std::unordered_map<EntityId, EntityLocation> entities_;
+  Archetypes archetypes_;
+  std::unordered_map<EntityId, EntityLocation> entities_;
 };
 
 #endif

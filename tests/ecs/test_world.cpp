@@ -11,6 +11,7 @@ TEST(World, SpawnEntityWith) {
     std::string item_;
   };
 
+  auto world = World();
   auto entity_location =
-      World::spawn_entity_with<A, int, std::string>(A{"Hello"}, 1, "World");
+      world.spawn_entity_with<A, int, std::string>(A{"Hello"}, 1, "World");
 }
