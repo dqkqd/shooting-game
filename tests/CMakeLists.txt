@@ -18,6 +18,7 @@ add_executable(
     ecs/archetype/test_archetype_components.cpp
     ecs/archetype/test_archetype_edges.cpp
     ecs/archetype/test_archetype.cpp
+    ecs/archetype/test_archetypes.cpp
     ecs/test_column.cpp
     ecs/test_counter.cpp
     ecs/test_table.cpp
