@@ -29,7 +29,7 @@ class Archetypes {
   }
 
   template <typename T, typename... Args>
-  auto get() -> OptionalRef<Archetype> {
+  auto get() -> std::optional<ArchetypeId> {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
     auto it = by_components_.find(
@@ -37,8 +37,7 @@ class Archetypes {
     if (it == by_components_.end()) {
       return {};
     }
-    auto archetype_id = it->second;
-    return std::ref(archetypes_[archetype_id]);
+    return it->second;
   }
 
   template <typename T, typename... Args>

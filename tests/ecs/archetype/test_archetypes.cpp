@@ -24,9 +24,5 @@ TEST(Archetypes, GetOrAdd) {
   auto id = archetypes.get_or_add<int, float, std::string>().archetype_id();
   EXPECT_FALSE((archetypes.add<int, float, std::string>()).has_value());
 
-  EXPECT_EQ((archetypes  // NOLINT
-                 .get<int, float, std::string>())
-                ->get()
-                .archetype_id(),
-            id);
+  EXPECT_EQ((archetypes.get<int, float, std::string>()), id);
 }
