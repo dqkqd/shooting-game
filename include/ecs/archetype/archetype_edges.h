@@ -7,25 +7,25 @@
 class Archetype;
 
 class ArchetypeEdges {
-  using Edge = std::unordered_map<ComponentId, Ref<Archetype>>;
-
  public:
   ArchetypeEdges() = default;
 
-  void add(ComponentId component_id, Archetype &archetype);
-  auto get(ComponentId component_id) -> OptionalRef<Archetype>;
-
   template <typename T>
   void add(Archetype &archetype) {
-    add(ComponentCounter::id<T>(), archetype);
+    edges_.emplace(ComponentCounter::id<T>(), std::ref(archetype));
   }
+
   template <typename T>
   auto get() -> OptionalRef<Archetype> {
-    return get(ComponentCounter::id<T>());
+    auto it = edges_.find(ComponentCounter::id<T>());
+    if (it == edges_.end()) {
+      return {};
+    }
+    return it->second;
   }
 
  private:
-  Edge edges_{};
+  std::unordered_map<ComponentId, Ref<Archetype>> edges_{};
 };
 
 #endif
