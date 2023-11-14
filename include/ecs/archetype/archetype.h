@@ -124,22 +124,20 @@ class Archetype {
       -> std::optional<EntityLocation>;
 
   template <typename T>
-  void add_next_edge(Archetype &archetype) {
-    if (this->archetype_id_ == archetype.archetype_id_) {
+  void add_next_edge(ArchetypeId archetype_id) {
+    if (archetype_id_ == archetype_id) {
       throw std::runtime_error(fmt::format(
-          "Can not add self reference edge to archetype `{}`", archetype_id_));
+          "Can not add self reference edge to archetype `{}`", archetype_id));
     }
-    next_edges_.add<T>(archetype.archetype_id());
-    archetype.prev_edges_.add<T>(this->archetype_id());
+    next_edges_.add<T>(archetype_id);
   }
   template <typename T>
-  void add_prev_edge(Archetype &archetype) {
-    if (this->archetype_id_ == archetype.archetype_id_) {
+  void add_prev_edge(ArchetypeId archetype_id) {
+    if (this->archetype_id_ == archetype_id) {
       throw std::runtime_error(fmt::format(
-          "Can not add self reference edge to archetype `{}`", archetype_id_));
+          "Can not add self reference edge to archetype `{}`", archetype_id));
     }
-    prev_edges_.add<T>(archetype.archetype_id());
-    archetype.next_edges_.add<T>(this->archetype_id());
+    prev_edges_.add<T>(archetype_id);
   }
   template <typename T>
   auto get_next_edge() -> std::optional<ArchetypeId> {

@@ -168,14 +168,12 @@ TEST(Archetype, AddNextEdge) {
   auto archetype = Archetype::create_archetype<int, float>(0);
   auto next_archetype = Archetype::create_archetype<int, float, std::string>(1);
 
-  archetype.add_next_edge<std::string>(next_archetype);
+  archetype.add_next_edge<std::string>(next_archetype.archetype_id());
 
   EXPECT_EQ(archetype.get_next_edge<std::string>(),
             next_archetype.archetype_id());
-  EXPECT_EQ(next_archetype.get_prev_edge<std::string>(),
-            archetype.archetype_id());
 
-  EXPECT_THROW(archetype.add_next_edge<std::string>(archetype),
+  EXPECT_THROW(archetype.add_next_edge<std::string>(archetype.archetype_id()),
                std::runtime_error);
 }
 
@@ -183,13 +181,11 @@ TEST(Archetype, AddPrevEdge) {
   auto archetype = Archetype::create_archetype<int, float, std::string>(1);
   auto prev_archetype = Archetype::create_archetype<int, float>(0);
 
-  archetype.add_prev_edge<std::string>(prev_archetype);
+  archetype.add_prev_edge<std::string>(prev_archetype.archetype_id());
 
   EXPECT_EQ(archetype.get_prev_edge<std::string>(),
             prev_archetype.archetype_id());
-  EXPECT_EQ(prev_archetype.get_next_edge<std::string>(),
-            archetype.archetype_id());
 
-  EXPECT_THROW(archetype.add_prev_edge<std::string>(archetype),
+  EXPECT_THROW(archetype.add_prev_edge<std::string>(archetype.archetype_id()),
                std::runtime_error);
 }
