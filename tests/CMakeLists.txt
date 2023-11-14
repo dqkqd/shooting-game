@@ -15,7 +15,8 @@ enable_testing()
 
 add_executable(
     test
-    ecs/test_archetype.cpp
+    ecs/archetype/test_archetype_components.cpp
+    ecs/archetype/test_archetype.cpp
     ecs/test_column.cpp
     ecs/test_counter.cpp
     ecs/test_table.cpp

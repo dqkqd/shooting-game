@@ -169,54 +169,6 @@ TEST(Archetype, MoveAlreadyExistedEntityOnOther) {
   EXPECT_FALSE(location.has_value());
 }
 
-TEST(ArchetypeComponents, Constructor) {
-  auto components =
-      ArchetypeComponents::create_archetype_components<int, float,
-                                                       std::string>();
-  EXPECT_EQ(components,
-            (ArchetypeComponents{ComponentCounter::id<int>(),
-                                 ComponentCounter::id<float>(),
-                                 ComponentCounter::id<std::string>()}));
-}
-
-TEST(ArchetypeComponents, HasComponent) {
-  auto id1 = ComponentCounter::id<int>();
-  auto id2 = ComponentCounter::id<float>();
-  ArchetypeComponents components{id1, id2};
-
-  EXPECT_TRUE(components.has_components(id1, id2));
-  EXPECT_FALSE(
-      components.has_components(id1, id2, ComponentCounter::id<double>()));
-
-  EXPECT_TRUE((components.has_components<int, float>()));
-  EXPECT_FALSE((components.has_components<int, float, double>()));
-}
-
-TEST(ArchetypeComponents, CloneWith) {
-  auto components =
-      ArchetypeComponents::create_archetype_components<int, float, char>();
-  auto cloned = components.clone_with<std::string>();
-  EXPECT_EQ(cloned,
-            (ArchetypeComponents::create_archetype_components<int, float, char,
-                                                              std::string>()));
-  // duplicated components
-  EXPECT_FALSE((components.clone_with<int, int>()).has_value());
-  // existed component
-  EXPECT_FALSE((components.clone_with<float>()).has_value());
-}
-
-TEST(ArchetypeComponents, CloneWithout) {
-  auto components =
-      ArchetypeComponents::create_archetype_components<int, float, char>();
-  auto cloned = components.clone_without<int, char>();
-  EXPECT_EQ(cloned,
-            (ArchetypeComponents::create_archetype_components<float>()));
-  // duplicated components
-  EXPECT_FALSE((components.clone_without<int, int>()).has_value());
-  // non existed component
-  EXPECT_FALSE((components.clone_without<std::string>()).has_value());
-}
-
 TEST(Archetypes, Add) {
   auto archetypes = Archetypes();
   EXPECT_TRUE((archetypes.add<int, float, std::string>()).has_value());
