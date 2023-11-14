@@ -170,9 +170,9 @@ TEST(Archetype, AddNextEdge) {
 
   archetype.add_next_edge<std::string>(next_archetype);
 
-  EXPECT_EQ(archetype.get_next_edge<std::string>()->get().archetype_id(),
+  EXPECT_EQ(archetype.get_next_edge<std::string>(),
             next_archetype.archetype_id());
-  EXPECT_EQ(next_archetype.get_prev_edge<std::string>()->get().archetype_id(),
+  EXPECT_EQ(next_archetype.get_prev_edge<std::string>(),
             archetype.archetype_id());
 
   EXPECT_THROW(archetype.add_next_edge<std::string>(archetype),
@@ -185,9 +185,9 @@ TEST(Archetype, AddPrevEdge) {
 
   archetype.add_prev_edge<std::string>(prev_archetype);
 
-  EXPECT_EQ(archetype.get_prev_edge<std::string>()->get().archetype_id(),
+  EXPECT_EQ(archetype.get_prev_edge<std::string>(),
             prev_archetype.archetype_id());
-  EXPECT_EQ(prev_archetype.get_next_edge<std::string>()->get().archetype_id(),
+  EXPECT_EQ(prev_archetype.get_next_edge<std::string>(),
             archetype.archetype_id());
 
   EXPECT_THROW(archetype.add_prev_edge<std::string>(archetype),

@@ -129,8 +129,8 @@ class Archetype {
       throw std::runtime_error(fmt::format(
           "Can not add self reference edge to archetype `{}`", archetype_id_));
     }
-    next_edges_.add<T>(archetype);
-    archetype.prev_edges_.add<T>(*this);
+    next_edges_.add<T>(archetype.archetype_id());
+    archetype.prev_edges_.add<T>(this->archetype_id());
   }
   template <typename T>
   void add_prev_edge(Archetype &archetype) {
@@ -138,15 +138,15 @@ class Archetype {
       throw std::runtime_error(fmt::format(
           "Can not add self reference edge to archetype `{}`", archetype_id_));
     }
-    prev_edges_.add<T>(archetype);
-    archetype.next_edges_.add<T>(*this);
+    prev_edges_.add<T>(archetype.archetype_id());
+    archetype.next_edges_.add<T>(this->archetype_id());
   }
   template <typename T>
-  auto get_next_edge() -> OptionalRef<Archetype> {
+  auto get_next_edge() -> std::optional<ArchetypeId> {
     return next_edges_.get<T>();
   }
   template <typename T>
-  auto get_prev_edge() -> OptionalRef<Archetype> {
+  auto get_prev_edge() -> std::optional<ArchetypeId> {
     return prev_edges_.get<T>();
   }
 

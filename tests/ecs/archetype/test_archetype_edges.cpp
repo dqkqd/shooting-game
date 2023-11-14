@@ -6,7 +6,6 @@
 TEST(ArchetypeEdges, AddAndGet) {
   auto edges = ArchetypeEdges();
   auto archetype = Archetype::create_archetype<int, float>(0);
-  edges.add<std::string>(archetype);
-  EXPECT_EQ(edges.get<std::string>()->get().archetype_id(),
-            archetype.archetype_id());
+  edges.add<std::string>(1);
+  EXPECT_EQ(edges.get<std::string>(), 1);
 }
