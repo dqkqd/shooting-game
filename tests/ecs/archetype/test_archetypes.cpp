@@ -4,8 +4,8 @@
 
 TEST(Archetypes, Add) {
   auto archetypes = Archetypes();
-  EXPECT_TRUE((archetypes.add<int, float, std::string>()).has_value());
-  EXPECT_TRUE((archetypes.add<int, float, std::string, double>()).has_value());
+  EXPECT_EQ((archetypes.add<int, float, std::string>()), 0);
+  EXPECT_EQ((archetypes.add<int, float, std::string, double>()), 1);
   EXPECT_EQ(archetypes.size(), 2);
 
   EXPECT_FALSE((archetypes.add<int, float, std::string>()).has_value());
@@ -15,8 +15,8 @@ TEST(Archetypes, Add) {
 TEST(Archetypes, Get) {
   auto archetypes = Archetypes();
   EXPECT_FALSE((archetypes.get<int, float, std::string>()).has_value());
-  EXPECT_TRUE((archetypes.add<int, float, std::string>()).has_value());
-  EXPECT_TRUE((archetypes.get<int, float, std::string>()).has_value());
+  EXPECT_EQ((archetypes.add<int, float, std::string>()), 0);
+  EXPECT_EQ((archetypes.get<int, float, std::string>()), 0);
 }
 
 TEST(Archetypes, GetOrAdd) {

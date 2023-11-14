@@ -12,7 +12,7 @@ class Archetypes {
   Archetypes() = default;
 
   template <typename T, typename... Args>
-  auto add() -> OptionalRef<Archetype> {
+  auto add() -> std::optional<ArchetypeId> {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
     auto components =
@@ -25,7 +25,7 @@ class Archetypes {
     by_components_.emplace(std::move(components), archetype_id);
     archetypes_.emplace_back(
         Archetype::create_archetype<T, Args...>(archetype_id));
-    return std::ref(archetypes_.back());
+    return archetype_id;
   }
 
   template <typename T, typename... Args>
