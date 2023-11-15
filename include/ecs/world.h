@@ -20,6 +20,67 @@ class World {
     return location;
   }
 
+  template <typename T>
+  auto add_component_to_entity(EntityId entity_id, T&& component)
+      -> std::optional<EntityLocation> {
+    auto it = entities_.find(entity_id);
+    if (it == entities_.end()) {
+      spdlog::warn("Could not add component {}: entity {} does not exist",
+                   typeid(T).name(), entity_id);
+      return {};
+    }
+
+    auto location = it->second;
+    auto archetype_id = location.archetype_id;
+
+    auto next_archetype_id =
+        archetypes_.get_or_add_next_archetype<T>(archetype_id);
+    if (!next_archetype_id.has_value()) {
+      spdlog::warn(
+          "Could not add component {}: component has already existed in "
+          "archetype {}",
+          typeid(T).name(), archetype_id);
+      return {};
+    }
+
+    auto new_location =
+        archetypes_.get_by_id_unchecked(archetype_id)
+            .move_entity_to_other(
+                entity_id, archetypes_.get_by_id_unchecked(*next_archetype_id),
+                std::forward<T>(component));
+    return new_location;
+  }
+
+  template <typename T>
+  auto remove_component_from_entity(EntityId entity_id)
+      -> std::optional<EntityLocation> {
+    auto it = entities_.find(entity_id);
+    if (it == entities_.end()) {
+      spdlog::warn("Could not remove component {}: entity {} does not exist",
+                   typeid(T).name(), entity_id);
+      return {};
+    }
+
+    auto location = it->second;
+    auto archetype_id = location.archetype_id;
+
+    auto prev_archetype_id =
+        archetypes_.get_or_add_prev_archetype<T>(archetype_id);
+    if (!prev_archetype_id.has_value()) {
+      spdlog::warn(
+          "Could not remove component {}: component does not exist in "
+          "archetype {}",
+          typeid(T).name(), archetype_id);
+      return {};
+    }
+
+    auto new_location =
+        archetypes_.get_by_id_unchecked(archetype_id)
+            .move_entity_to_other(
+                entity_id, archetypes_.get_by_id_unchecked(*prev_archetype_id));
+    return new_location;
+  }
+
  private:
   Archetypes archetypes_;
   std::unordered_map<EntityId, EntityLocation> entities_;
