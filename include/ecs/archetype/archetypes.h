@@ -43,7 +43,7 @@ class Archetypes {
   }
 
   template <typename T, typename... Args>
-  auto get_or_add() -> Archetype& {
+  auto get_or_add() -> ArchetypeId {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
 
@@ -51,16 +51,16 @@ class Archetypes {
         ArchetypeComponents::create_archetype_components<T, Args...>();
     auto it = by_components_.find(components);
 
-    if (by_components_.find(components) != by_components_.end()) {
+    if (it != by_components_.end()) {
       auto archetype_id = it->second;
-      return archetypes_[archetype_id];
+      return archetype_id;
     }
 
-    auto archetype_id = size();
+    auto archetype_id = static_cast<ArchetypeId>(size());
     by_components_.emplace(std::move(components), archetype_id);
     archetypes_.emplace_back(
         Archetype::create_archetype<T, Args...>(archetype_id));
-    return archetypes_.back();
+    return archetype_id;
   }
 
   template <typename T>
