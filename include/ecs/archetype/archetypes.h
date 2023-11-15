@@ -11,6 +11,8 @@ class Archetypes {
  public:
   Archetypes() = default;
 
+  auto get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype&;
+
   template <typename T, typename... Args>
   auto add() -> std::optional<ArchetypeId> {
     static_assert(all_types_are_different<T, Args...>(),
