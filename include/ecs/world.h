@@ -7,6 +7,11 @@
 class World {
  public:
   World() = default;
+  World(const World&) = delete;
+  World(World&&) = delete;
+  auto operator=(const World&) -> World& = delete;
+  auto operator=(World&&) -> World& = delete;
+  ~World() = default;
 
   template <typename T, typename... Args>
   auto spawn_entity_with(T&& component, Args&&... components)
@@ -80,6 +85,8 @@ class World {
                 entity_id, archetypes_.get_by_id_unchecked(*prev_archetype_id));
     return new_location;
   }
+
+  auto archetypes() -> Archetypes&;
 
  private:
   Archetypes archetypes_;
