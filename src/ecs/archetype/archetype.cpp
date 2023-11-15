@@ -11,11 +11,17 @@ Archetype::Archetype(ArchetypeId archetype_id, Table &&table)
 Archetype::Archetype(Archetype &&archetype) noexcept
     : archetype_id_{std::exchange(archetype.archetype_id_,
                                   INVALID_ARCHETYPE_ID)},
-      table_{std::move(archetype.table_)} {}
+      table_{std::move(archetype.table_)},
+      locations_{std::move(archetype.locations_)},
+      next_edges_{std::move(archetype.next_edges_)},
+      prev_edges_{std::move(archetype.prev_edges_)} {}
 
 auto Archetype::operator=(Archetype &&archetype) noexcept -> Archetype & {
   archetype_id_ = std::exchange(archetype.archetype_id_, INVALID_ARCHETYPE_ID);
   table_ = std::move(archetype.table_);
+  locations_ = std::move(archetype.locations_);
+  next_edges_ = std::move(archetype.next_edges_);
+  prev_edges_ = std::move(archetype.prev_edges_);
   return *this;
 }
 

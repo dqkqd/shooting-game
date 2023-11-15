@@ -4,6 +4,7 @@ set(SOURCE_FILES
     entity.cpp
     components/graphic.cpp
     ecs/archetype/archetype_components.cpp
+    ecs/archetype/archetype_edges.cpp
     ecs/archetype/archetype.cpp
     ecs/archetype/archetypes.cpp
     ecs/column.cpp

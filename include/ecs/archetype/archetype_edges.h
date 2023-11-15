@@ -9,6 +9,11 @@ class Archetype;
 class ArchetypeEdges {
  public:
   ArchetypeEdges() = default;
+  ArchetypeEdges(const ArchetypeEdges &) = delete;
+  ArchetypeEdges(ArchetypeEdges &&) noexcept;
+  auto operator=(const ArchetypeEdges &) -> ArchetypeEdges & = delete;
+  auto operator=(ArchetypeEdges &&) noexcept -> ArchetypeEdges &;
+  ~ArchetypeEdges() = default;
 
   template <typename T>
   void add(ArchetypeId archetype_id) {
