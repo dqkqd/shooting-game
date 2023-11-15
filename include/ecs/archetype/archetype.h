@@ -54,8 +54,24 @@ class Archetype {
 
   [[nodiscard]] auto components() const -> ArchetypeComponents;
 
+  template <typename T>
+  [[nodiscard]] auto get_entity_data(EntityId entity_id) -> OptionalRef<T> {
+    auto it = locations_.find(entity_id);
+    if (it == locations_.end()) {
+      return {};
+    }
+
+    if (!table_.has_components<T>()) {
+      return {};
+    }
+
+    return std::ref(table_.get_data_unchecked<T>(it->second.table_row));
+  }
+
   template <typename... Args>
   auto add_entity(EntityId entity_id, Args &&...components) -> EntityLocation {
+    // TODO(khanhdq): made this function return optional because add_row might
+    // fail
     auto table_row = table_.add_row<Args...>(std::forward<Args>(components)...);
     auto location = EntityLocation{.entity_id = entity_id,
                                    .archetype_id = archetype_id(),

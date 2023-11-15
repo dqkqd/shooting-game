@@ -212,3 +212,19 @@ TEST(Archetype, AddPrevEdge) {
   EXPECT_THROW(archetype.add_prev_edge<std::string>(archetype.archetype_id()),
                std::runtime_error);
 }
+
+TEST(Archetype, GetData) {
+  auto archetype = Archetype::create_archetype<int, float, std::string>(1);
+  auto location =
+      archetype.add_entity<int, float, std::string>(10, 1, 2.0, "Hello world");
+  auto string_data = archetype.get_entity_data<std::string>(location.entity_id);
+  EXPECT_EQ(string_data->get(), "Hello world");
+
+  // invalid entity id
+  EXPECT_FALSE(
+      archetype.get_entity_data<int>(location.entity_id + 1).has_value());
+
+  // invalid type
+  EXPECT_FALSE(
+      archetype.get_entity_data<double>(location.entity_id).has_value());
+}
