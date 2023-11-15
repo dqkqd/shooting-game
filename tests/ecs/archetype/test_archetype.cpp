@@ -99,12 +99,16 @@ TEST(Archetype, MoveEntitySuccessful) {
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
-  auto other = Archetype::create_archetype<int, float>(1);
-  auto location = archetype.move_entity_to_other(10, other);
+  auto other = Archetype::create_archetype<int, float, std::string>(1);
+
+  auto old_location = archetype.location(10);
+  auto location =
+      archetype.move_entity_to_other<std::string>(10, other, "Hello");
 
   EXPECT_TRUE(location.has_value());
-  EXPECT_EQ(location->entity_id, 10);
+  EXPECT_EQ(location->entity_id, old_location->entity_id);
   EXPECT_EQ(location->table_row, 0);
+  EXPECT_NE(location->table_id, old_location->table_id);
   EXPECT_FALSE(archetype.location(10).has_value());
   EXPECT_TRUE(other.location(10).has_value());
 
