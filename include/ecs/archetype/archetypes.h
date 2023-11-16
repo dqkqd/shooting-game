@@ -11,7 +11,7 @@ class Archetypes {
  public:
   Archetypes() = default;
 
-  auto get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype&;
+  auto get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype &;
 
   template <typename T, typename... Args>
   auto add() -> std::optional<ArchetypeId> {
@@ -24,9 +24,10 @@ class Archetypes {
     }
 
     auto archetype_id = size();
-    by_components_.emplace(std::move(components), archetype_id);
-    archetypes_.emplace_back(
+    add_component_and_archetype(
+        std::move(components),
         Archetype::create_archetype<T, Args...>(archetype_id));
+
     return archetype_id;
   }
 
@@ -57,9 +58,10 @@ class Archetypes {
     }
 
     auto archetype_id = static_cast<ArchetypeId>(size());
-    by_components_.emplace(std::move(components), archetype_id);
-    archetypes_.emplace_back(
+    add_component_and_archetype(
+        std::move(components),
         Archetype::create_archetype<T, Args...>(archetype_id));
+
     return archetype_id;
   }
 
@@ -81,12 +83,10 @@ class Archetypes {
     }
 
     auto next_archetype_id = static_cast<ArchetypeId>(size());
-    by_components_.emplace(std::move(components.value()), next_archetype_id);
-    archetypes_.emplace_back(
+    add_component_and_archetype(
+        std::move(components.value()),
         archetypes_[archetype_id].clone_with<T>(next_archetype_id));
-
-    archetypes_[archetype_id].add_next_edge<T>(next_archetype_id);
-    archetypes_[next_archetype_id].add_prev_edge<T>(archetype_id);
+    add_edge<T>(archetype_id, next_archetype_id);
 
     return next_archetype_id;
   }
@@ -109,17 +109,25 @@ class Archetypes {
     }
 
     auto prev_archetype_id = static_cast<ArchetypeId>(size());
-    by_components_.emplace(std::move(components.value()), prev_archetype_id);
-    archetypes_.emplace_back(
+    add_component_and_archetype(
+        std::move(components.value()),
         archetypes_[archetype_id].clone_without<T>(prev_archetype_id));
-    archetypes_[archetype_id].add_prev_edge<T>(prev_archetype_id);
-    archetypes_[prev_archetype_id].add_next_edge<T>(archetype_id);
+    add_edge<T>(prev_archetype_id, archetype_id);
+
     return prev_archetype_id;
   }
 
   [[nodiscard]] auto size() const -> size_t;
 
  private:
+  template <typename T>
+  void add_edge(ArchetypeId archetype_id, ArchetypeId next_archetype_id) {
+    archetypes_[archetype_id].add_next_edge<T>(next_archetype_id);
+    archetypes_[next_archetype_id].add_prev_edge<T>(archetype_id);
+  }
+  void add_component_and_archetype(ArchetypeComponents &&component,
+                                   Archetype &&archetype);
+
   std::vector<Archetype> archetypes_;
   std::map<ArchetypeComponents, ArchetypeId> by_components_;
 };

@@ -2,6 +2,13 @@
 
 auto Archetypes::size() const -> size_t { return archetypes_.size(); }
 
-auto Archetypes::get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype& {
+auto Archetypes::get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype & {
   return archetypes_[archetype_id];
+}
+
+void Archetypes::add_component_and_archetype(ArchetypeComponents &&component,
+                                             Archetype &&archetype) {
+  by_components_.emplace(std::forward<ArchetypeComponents>(component),
+                         archetype.archetype_id());
+  archetypes_.emplace_back(std::forward<Archetype>(archetype));
 }
