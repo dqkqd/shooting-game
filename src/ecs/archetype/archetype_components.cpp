@@ -33,6 +33,10 @@ auto ArchetypeComponents::has_component(ComponentId component_id) const
   return components_.count(component_id) > 0;
 }
 
+auto ArchetypeComponents::as_raw() const -> const std::set<ComponentId> & {
+  return components_;
+}
+
 auto ArchetypeComponents::from_vec(std::vector<ComponentId> &&components)
     -> ArchetypeComponents {
   return from_set({std::make_move_iterator(components.begin()),

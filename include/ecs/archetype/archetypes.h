@@ -7,6 +7,35 @@
 #include "ecs/archetype/archetype.h"
 #include "ecs/archetype/archetype_components.h"
 
+class ArchetypesFinder {
+ public:
+  ArchetypesFinder() = default;
+
+  void add(ComponentId component_id, ArchetypeId archetype_id);
+  template <typename... Args>
+  auto get() const -> std::vector<ArchetypeId> {
+    std::unordered_map<ArchetypeId, int> archetypes_occurrences;
+    (
+        [&] {
+          for (const auto &archetype_id :
+               by_component_.at(ComponentCounter::id<Args>())) {
+            ++archetypes_occurrences[archetype_id];
+          }
+        }(),
+        ...);
+    std::vector<ArchetypeId> results;
+    for (const auto &[archetype_id, count] : archetypes_occurrences) {
+      if (count == sizeof...(Args)) {
+        results.emplace_back(archetype_id);
+      }
+    }
+    return results;
+  }
+
+ private:
+  std::unordered_map<ComponentId, std::vector<ArchetypeId>> by_component_;
+};
+
 class Archetypes {
  public:
   Archetypes() = default;
@@ -94,6 +123,7 @@ class Archetypes {
 
   std::vector<Archetype> archetypes_;
   std::map<ArchetypeComponents, ArchetypeId> by_components_;
+  ArchetypesFinder finder_;
 };
 
 #endif

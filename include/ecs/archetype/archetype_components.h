@@ -88,6 +88,8 @@ class ArchetypeComponents {
   friend auto operator<(const ArchetypeComponents &lhs,
                         const ArchetypeComponents &rhs) -> bool;
 
+  [[nodiscard]] auto as_raw() const -> const std::set<ComponentId> &;
+
  private:
   template <typename... Args, typename = std::enable_if_t<
                                   all_types_are_same<ComponentId, Args...>>>
