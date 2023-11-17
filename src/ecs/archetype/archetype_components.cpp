@@ -2,10 +2,6 @@
 
 #include <utility>
 
-ArchetypeComponents::ArchetypeComponents(std::vector<ComponentId> &&components)
-    : components_{std::make_move_iterator(components.begin()),
-                  std::make_move_iterator(components.end())} {}
-
 ArchetypeComponents::ArchetypeComponents(
     ArchetypeComponents &&archetype_components) noexcept
     : components_{std::exchange(archetype_components.components_, {})} {}
@@ -31,6 +27,19 @@ auto ArchetypeComponents::size() const -> size_t { return components_.size(); }
 auto ArchetypeComponents::has_component(ComponentId component_id) const
     -> bool {
   return components_.count(component_id) > 0;
+}
+
+auto ArchetypeComponents::from_vec(std::vector<ComponentId> &&components)
+    -> ArchetypeComponents {
+  return from_set({std::make_move_iterator(components.begin()),
+                   std::make_move_iterator(components.end())});
+}
+
+auto ArchetypeComponents::from_set(std::set<ComponentId> &&components)
+    -> ArchetypeComponents {
+  ArchetypeComponents archetype_components;
+  archetype_components.components_ = std::move(components);
+  return archetype_components;
 }
 
 template <>

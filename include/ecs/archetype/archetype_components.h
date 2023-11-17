@@ -13,16 +13,7 @@ class ArchetypeComponents {
  public:
   friend struct std::hash<ArchetypeComponents>;
 
-  explicit ArchetypeComponents(std::vector<ComponentId> &&components);
-
-  template <typename... Args, typename = std::enable_if_t<
-                                  all_types_are_same<ComponentId, Args...>>>
-  explicit ArchetypeComponents(ComponentId component_id,
-                               Args... component_ids) {
-    components_.insert(component_id);
-    (components_.insert(component_ids), ...);
-  }
-
+  ArchetypeComponents() = default;
   ArchetypeComponents(const ArchetypeComponents &) = delete;
   ArchetypeComponents(ArchetypeComponents &&) noexcept;
   auto operator=(const ArchetypeComponents &) -> ArchetypeComponents & = delete;
@@ -31,8 +22,13 @@ class ArchetypeComponents {
 
   [[nodiscard]] auto size() const -> size_t;
 
+  static auto from_vec(std::vector<ComponentId> &&components)
+      -> ArchetypeComponents;
+  static auto from_set(std::set<ComponentId> &&components)
+      -> ArchetypeComponents;
+
   template <typename T, typename... Args>
-  static auto create_archetype_components() -> ArchetypeComponents {
+  static auto from_types() -> ArchetypeComponents {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
     return ArchetypeComponents(ComponentCounter::id<T>(),
@@ -67,7 +63,7 @@ class ArchetypeComponents {
       return {};
     }
 
-    return ArchetypeComponents(std::move(components));
+    return ArchetypeComponents::from_vec(std::move(components));
   }
 
   template <typename T, typename... Args>
@@ -101,8 +97,10 @@ class ArchetypeComponents {
     std::vector<ComponentId> vector_components{
         std::make_move_iterator(components.begin()),
         std::make_move_iterator(components.end())};
-    return ArchetypeComponents(std::move(vector_components));
+
+    return ArchetypeComponents::from_vec(std::move(vector_components));
   }
+
   friend auto operator==(const ArchetypeComponents &lhs,
                          const ArchetypeComponents &rhs) -> bool;
 
@@ -110,6 +108,14 @@ class ArchetypeComponents {
                         const ArchetypeComponents &rhs) -> bool;
 
  private:
+  template <typename... Args, typename = std::enable_if_t<
+                                  all_types_are_same<ComponentId, Args...>>>
+  explicit ArchetypeComponents(ComponentId component_id,
+                               Args... component_ids) {
+    components_.insert(component_id);
+    (components_.insert(component_ids), ...);
+  }
+
   [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
 
   std::set<ComponentId> components_;

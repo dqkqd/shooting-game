@@ -17,8 +17,7 @@ class Archetypes {
   auto add() -> std::optional<ArchetypeId> {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
-    auto components =
-        ArchetypeComponents::create_archetype_components<T, Args...>();
+    auto components = ArchetypeComponents::from_types<T, Args...>();
     if (by_components_.find(components) != by_components_.end()) {
       return {};
     }
@@ -35,8 +34,8 @@ class Archetypes {
   auto get() -> std::optional<ArchetypeId> {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
-    auto it = by_components_.find(
-        ArchetypeComponents::create_archetype_components<T, Args...>());
+    auto it =
+        by_components_.find(ArchetypeComponents::from_types<T, Args...>());
     if (it == by_components_.end()) {
       return {};
     }
@@ -48,8 +47,7 @@ class Archetypes {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
 
-    auto components =
-        ArchetypeComponents::create_archetype_components<T, Args...>();
+    auto components = ArchetypeComponents::from_types<T, Args...>();
     auto it = by_components_.find(components);
 
     if (it != by_components_.end()) {

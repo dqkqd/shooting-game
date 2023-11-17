@@ -33,7 +33,7 @@ auto Archetype::is_valid() const -> bool {
 }
 
 auto Archetype::components() const -> ArchetypeComponents {
-  return ArchetypeComponents{table_.components()};
+  return ArchetypeComponents::from_vec(table_.components());
 }
 
 auto Archetype::location(EntityId entity_id) const
