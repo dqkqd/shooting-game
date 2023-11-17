@@ -3,27 +3,13 @@
 #include "ecs/archetype/archetype_components.h"
 #include "ecs/column.h"
 
-TEST(ArchetypeComponents, HasComponent) {
-  auto id1 = ComponentCounter::id<int>();
-  auto id2 = ComponentCounter::id<float>();
-  auto components =
-      ArchetypeComponents::create_archetype_components<int, float>();
-
-  EXPECT_TRUE(components.has_components(id1, id2));
-  EXPECT_FALSE(
-      components.has_components(id1, id2, ComponentCounter::id<double>()));
-
-  EXPECT_TRUE((components.has_components<int, float>()));
-  EXPECT_FALSE((components.has_components<int, float, double>()));
-}
-
 TEST(ArchetypeComponents, MoveConstructor) {
   auto components =
       ArchetypeComponents::create_archetype_components<int, float,
                                                        std::string>();
   auto components2 = std::move(components);
-  EXPECT_TRUE(components2.has_components<int>());
-  EXPECT_FALSE(components.has_components<int>());
+  EXPECT_EQ(components2.size(), 3);
+  EXPECT_EQ(components.size(), 0);
 }
 
 TEST(ArchetypeComponents, Comparison) {

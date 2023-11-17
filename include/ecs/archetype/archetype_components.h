@@ -29,6 +29,8 @@ class ArchetypeComponents {
   auto operator=(ArchetypeComponents &&) noexcept -> ArchetypeComponents &;
   ~ArchetypeComponents() = default;
 
+  [[nodiscard]] auto size() const -> size_t;
+
   template <typename T, typename... Args>
   static auto create_archetype_components() -> ArchetypeComponents {
     static_assert(all_types_are_different<T, Args...>(),
@@ -48,7 +50,7 @@ class ArchetypeComponents {
   auto clone_with(ComponentId component_id, Args... component_ids)
       -> std::optional<ArchetypeComponents> {
     auto one_component_existed =
-        (has_components(component_id) || ... || has_components(component_ids));
+        (has_component(component_id) || ... || has_component(component_ids));
     if (one_component_existed) {
       spdlog::error(
           "All components must not be existed in order to `clone_with`");
@@ -79,7 +81,7 @@ class ArchetypeComponents {
   auto clone_without(ComponentId component_id, Args... component_ids)
       -> std::optional<ArchetypeComponents> {
     auto all_components_existed =
-        (has_components(component_id) && ... && has_components(component_ids));
+        (has_component(component_id) && ... && has_component(component_ids));
     if (!all_components_existed) {
       spdlog::error(
           "All components must be existed in order to `clone_without`");
@@ -107,21 +109,9 @@ class ArchetypeComponents {
   friend auto operator<(const ArchetypeComponents &lhs,
                         const ArchetypeComponents &rhs) -> bool;
 
-  [[nodiscard]] auto has_component_id(ComponentId component_id) const -> bool;
-  template <typename... Args, typename = std::enable_if_t<
-                                  all_types_are_same<ComponentId, Args...>>>
-  [[nodiscard]] auto has_components(ComponentId component_id,
-                                    Args... component_ids) -> bool {
-    return has_component_id(component_id) &&
-           (... && has_component_id(component_ids));
-  }
-  template <typename T, typename... Args>
-  [[nodiscard]] auto has_components() -> bool {
-    return has_components(ComponentCounter::id<T>(),
-                          ComponentCounter::id<Args>()...);
-  }
-
  private:
+  [[nodiscard]] auto has_component(ComponentId component_id) const -> bool;
+
   std::set<ComponentId> components_;
 };
 

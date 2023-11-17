@@ -26,9 +26,11 @@ auto operator<(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
   return lhs.components_ < rhs.components_;
 }
 
-auto ArchetypeComponents::has_component_id(ComponentId component_id) const
+auto ArchetypeComponents::size() const -> size_t { return components_.size(); }
+
+auto ArchetypeComponents::has_component(ComponentId component_id) const
     -> bool {
-  return components_.find(component_id) != components_.end();
+  return components_.count(component_id) > 0;
 }
 
 template <>
