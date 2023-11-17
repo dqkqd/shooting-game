@@ -50,8 +50,7 @@ class Archetypes {
   }
 
   template <typename T>
-  auto get_or_add_next_archetype(ArchetypeId archetype_id)
-      -> std::optional<ArchetypeId> {
+  auto get_or_add_next_archetype(ArchetypeId archetype_id) -> ArchetypeId {
     /* Find the next archetype on the graph, add one if there is none */
 
     auto archetype = archetypes_[archetype_id].clone_with<T>();
@@ -67,8 +66,7 @@ class Archetypes {
   }
 
   template <typename T>
-  auto get_or_add_prev_archetype(ArchetypeId archetype_id)
-      -> std::optional<ArchetypeId> {
+  auto get_or_add_prev_archetype(ArchetypeId archetype_id) -> ArchetypeId {
     /* Find the prev archetype on the graph, add one if there is none */
     auto archetype = archetypes_[archetype_id].clone_without<T>();
     auto it = by_components_.find(archetype.components());

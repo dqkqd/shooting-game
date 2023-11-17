@@ -34,7 +34,7 @@ TEST(Archetypes, GetOrAddNextArchetype) {
   EXPECT_EQ(
       archetypes.get_by_id_unchecked(archetype_id).get_next_edge<std::string>(),
       next_archetype_id);
-  EXPECT_EQ(archetypes.get_by_id_unchecked(*next_archetype_id)
+  EXPECT_EQ(archetypes.get_by_id_unchecked(next_archetype_id)
                 .get_prev_edge<std::string>(),
             archetype_id);
 }
@@ -47,7 +47,7 @@ TEST(Archetypes, GetOrAddPrevArchetype) {
   EXPECT_EQ(
       archetypes.get_by_id_unchecked(archetype_id).get_prev_edge<std::string>(),
       prev_archetype_id);
-  EXPECT_EQ(archetypes.get_by_id_unchecked(*prev_archetype_id)
+  EXPECT_EQ(archetypes.get_by_id_unchecked(prev_archetype_id)
                 .get_next_edge<std::string>(),
             archetype_id);
 }

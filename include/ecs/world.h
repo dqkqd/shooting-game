@@ -40,18 +40,11 @@ class World {
 
     auto next_archetype_id =
         archetypes_.get_or_add_next_archetype<T>(archetype_id);
-    if (!next_archetype_id.has_value()) {
-      spdlog::warn(
-          "Could not add component {}: component has already existed in "
-          "archetype {}",
-          typeid(T).name(), archetype_id);
-      return {};
-    }
 
     auto new_location =
         archetypes_.get_by_id_unchecked(archetype_id)
             .move_entity_to_other(
-                entity_id, archetypes_.get_by_id_unchecked(*next_archetype_id),
+                entity_id, archetypes_.get_by_id_unchecked(next_archetype_id),
                 std::forward<T>(component));
     return new_location;
   }
@@ -71,18 +64,11 @@ class World {
 
     auto prev_archetype_id =
         archetypes_.get_or_add_prev_archetype<T>(archetype_id);
-    if (!prev_archetype_id.has_value()) {
-      spdlog::warn(
-          "Could not remove component {}: component does not exist in "
-          "archetype {}",
-          typeid(T).name(), archetype_id);
-      return {};
-    }
 
     auto new_location =
         archetypes_.get_by_id_unchecked(archetype_id)
             .move_entity_to_other(
-                entity_id, archetypes_.get_by_id_unchecked(*prev_archetype_id));
+                entity_id, archetypes_.get_by_id_unchecked(prev_archetype_id));
     return new_location;
   }
 
