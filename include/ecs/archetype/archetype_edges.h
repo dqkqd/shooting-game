@@ -4,8 +4,6 @@
 #include "ecs/column.h"
 #include "ecs/primitive.h"
 
-class Archetype;
-
 class ArchetypeEdges {
  public:
   ArchetypeEdges() = default;
