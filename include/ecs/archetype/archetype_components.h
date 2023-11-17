@@ -35,6 +35,8 @@ class ArchetypeComponents {
                                ComponentCounter::id<Args>()...);
   }
 
+  [[nodiscard]] auto clone() const -> ArchetypeComponents;
+
   template <typename T, typename... Args>
   [[nodiscard]] auto clone_with() const -> std::optional<ArchetypeComponents> {
     return clone_with(ComponentCounter::id<T>(),

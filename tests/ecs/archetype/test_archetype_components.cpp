@@ -26,6 +26,13 @@ TEST(ArchetypeComponents, VecAndSetConstruct) {
                 {ComponentCounter::id<int>(), ComponentCounter::id<float>()}));
 }
 
+TEST(ArchetypeComponents, Clone) {
+  auto components = ArchetypeComponents::from_types<int, float, char>();
+  EXPECT_EQ(components.clone(),
+            (ArchetypeComponents::from_types<int, float, char>()));
+  EXPECT_EQ(components.clone(), components);
+}
+
 TEST(ArchetypeComponents, CloneWith) {
   auto components = ArchetypeComponents::from_types<int, float, char>();
   auto cloned = components.clone_with<std::string>();

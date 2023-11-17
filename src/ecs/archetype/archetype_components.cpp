@@ -22,6 +22,10 @@ auto operator<(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
   return lhs.components_ < rhs.components_;
 }
 
+auto ArchetypeComponents::clone() const -> ArchetypeComponents {
+  return ArchetypeComponents::from_set(std::set{components_});
+}
+
 auto ArchetypeComponents::size() const -> size_t { return components_.size(); }
 
 auto ArchetypeComponents::has_component(ComponentId component_id) const
