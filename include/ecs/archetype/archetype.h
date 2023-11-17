@@ -46,13 +46,12 @@ class Archetype {
   [[nodiscard]] auto table_id() const -> TableId;
   [[nodiscard]] auto is_empty() const -> bool;
   [[nodiscard]] auto is_valid() const -> bool;
+  [[nodiscard]] auto components() const -> const ArchetypeComponents &;
 
   template <typename T, typename... Args>
   auto has_components() -> bool {
     return table_.has_components<T, Args...>();
   }
-
-  [[nodiscard]] auto components() const -> ArchetypeComponents;
 
   template <typename T>
   [[nodiscard]] auto get_entity_data(EntityId entity_id) -> OptionalRef<T> {
@@ -169,6 +168,8 @@ class Archetype {
 
   ArchetypeId archetype_id_;
   Table table_;
+  ArchetypeComponents components_;
+
   std::unordered_map<EntityId, EntityLocation> locations_;
   ArchetypeEdges next_edges_;
   ArchetypeEdges prev_edges_;

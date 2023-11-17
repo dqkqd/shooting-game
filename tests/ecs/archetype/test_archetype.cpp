@@ -55,6 +55,8 @@ TEST(Archetype, MoveConstructor) {
             next_archetype.archetype_id());
   EXPECT_EQ(archetype2.get_prev_edge<float>(), prev_archetype.archetype_id());
   EXPECT_TRUE((archetype2.has_components<int, float>()));
+  EXPECT_EQ(archetype2.components(),
+            (ArchetypeComponents::from_types<int, float>()));
   EXPECT_NE(archetype2.archetype_id(), INVALID_ARCHETYPE_ID);
 
   EXPECT_TRUE(archetype1.is_empty());
@@ -62,6 +64,7 @@ TEST(Archetype, MoveConstructor) {
   EXPECT_FALSE(archetype1.get_next_edge<std::string>().has_value());
   EXPECT_FALSE(archetype1.get_prev_edge<float>().has_value());
   EXPECT_FALSE((archetype1.has_components<int, float>()));
+  EXPECT_EQ(archetype1.components().size(), 0);
   EXPECT_EQ(archetype1.archetype_id(), INVALID_ARCHETYPE_ID);
 
   Archetype archetype3{std::move(archetype2)};
@@ -71,6 +74,8 @@ TEST(Archetype, MoveConstructor) {
   EXPECT_EQ(archetype3.get_prev_edge<float>(), prev_archetype.archetype_id());
   EXPECT_TRUE(archetype3.location(10).has_value());
   EXPECT_TRUE((archetype3.has_components<int, float>()));
+  EXPECT_EQ(archetype3.components(),
+            (ArchetypeComponents::from_types<int, float>()));
   EXPECT_NE(archetype3.archetype_id(), INVALID_ARCHETYPE_ID);
 
   EXPECT_TRUE(archetype2.is_empty());
@@ -78,6 +83,7 @@ TEST(Archetype, MoveConstructor) {
   EXPECT_FALSE(archetype2.get_next_edge<std::string>().has_value());
   EXPECT_FALSE(archetype2.get_prev_edge<float>().has_value());
   EXPECT_FALSE((archetype2.has_components<int, float>()));
+  EXPECT_EQ(archetype2.components().size(), 0);
   EXPECT_EQ(archetype2.archetype_id(), INVALID_ARCHETYPE_ID);
 }
 
