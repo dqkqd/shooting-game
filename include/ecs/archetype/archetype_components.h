@@ -36,69 +36,48 @@ class ArchetypeComponents {
   }
 
   template <typename T, typename... Args>
-  auto clone_with() -> std::optional<ArchetypeComponents> {
+  [[nodiscard]] auto clone_with() const -> std::optional<ArchetypeComponents> {
     return clone_with(ComponentCounter::id<T>(),
                       ComponentCounter::id<Args>()...);
   }
 
   template <typename... Args, typename = std::enable_if_t<
                                   all_types_are_same<ComponentId, Args...>>>
-  auto clone_with(ComponentId component_id, Args... component_ids)
+  [[nodiscard]] auto clone_with(ComponentId component_id,
+                                Args... component_ids) const
       -> std::optional<ArchetypeComponents> {
-    auto one_component_existed =
-        (has_component(component_id) || ... || has_component(component_ids));
-    if (one_component_existed) {
-      spdlog::error(
-          "All components must not be existed in order to `clone_with`");
+    std::set components{components_};
+    components.insert(component_id);
+    (components.insert(component_ids), ...);
+    if (components.size() != components_.size() + 1 + sizeof...(Args)) {
+      spdlog::warn(
+          "Trying to use `clone_with` with duplicated or existed types");
       return {};
     }
-
-    std::vector<ComponentId> components{components_.begin(), components_.end()};
-    components.emplace_back(component_id);
-    (components.emplace_back(component_ids), ...);
-
-    auto expected_size = components_.size() + 1 + sizeof...(Args);
-    if (components.size() != expected_size) {
-      spdlog::error("Can not `clone_with` with duplicated ids");
-      return {};
-    }
-
-    return ArchetypeComponents::from_vec(std::move(components));
+    return ArchetypeComponents::from_set(std::move(components));
   }
 
   template <typename T, typename... Args>
-  auto clone_without() -> std::optional<ArchetypeComponents> {
+  [[nodiscard]] auto clone_without() const
+      -> std::optional<ArchetypeComponents> {
     return clone_without(ComponentCounter::id<T>(),
                          ComponentCounter::id<Args>()...);
   }
 
   template <typename... Args, typename = std::enable_if_t<
                                   all_types_are_same<ComponentId, Args...>>>
-  auto clone_without(ComponentId component_id, Args... component_ids)
+  [[nodiscard]] auto clone_without(ComponentId component_id,
+                                   Args... component_ids) const
       -> std::optional<ArchetypeComponents> {
-    auto all_components_existed =
-        (has_component(component_id) && ... && has_component(component_ids));
-    if (!all_components_existed) {
-      spdlog::error(
-          "All components must be existed in order to `clone_without`");
-      return {};
-    }
-
-    std::set<ComponentId> components{components_.begin(), components_.end()};
+    std::set components{components_};
     components.erase(component_id);
     (components.erase(component_ids), ...);
-
-    auto expected_size = components_.size() - (1 + sizeof...(Args));
-    if (components.size() != expected_size) {
-      spdlog::error("Can not `clone_without` with duplicated ids");
+    if (components.size() != components_.size() - 1 - sizeof...(Args)) {
+      spdlog::warn(
+          "Trying to use `clone_without` with duplicated or non existed types");
       return {};
     }
-
-    std::vector<ComponentId> vector_components{
-        std::make_move_iterator(components.begin()),
-        std::make_move_iterator(components.end())};
-
-    return ArchetypeComponents::from_vec(std::move(vector_components));
+    return ArchetypeComponents::from_set(std::move(components));
   }
 
   friend auto operator==(const ArchetypeComponents &lhs,
