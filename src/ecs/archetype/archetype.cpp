@@ -32,6 +32,10 @@ auto Archetype::is_valid() const -> bool {
   return archetype_id_ != INVALID_ARCHETYPE_ID && table_.is_valid();
 }
 
+void Archetype::set_archetype_id(ArchetypeId archetype_id) {
+  archetype_id_ = archetype_id;
+}
+
 auto Archetype::components() const -> const ArchetypeComponents & {
   return components_;
 }

@@ -29,16 +29,19 @@ class Archetype {
   ~Archetype() = default;
 
   template <typename... Args>
-  static auto create_archetype(ArchetypeId archetype_id) -> Archetype {
+  static auto create_archetype(ArchetypeId archetype_id = INVALID_ARCHETYPE_ID)
+      -> Archetype {
     return Archetype(archetype_id, Table::create_table<Args...>());
   }
 
   template <typename T>
-  auto clone_with(ArchetypeId archetype_id) const -> Archetype {
+  auto clone_with(ArchetypeId archetype_id = INVALID_ARCHETYPE_ID) const
+      -> Archetype {
     return Archetype(archetype_id, table_.clone_with<T>());
   }
   template <typename T>
-  auto clone_without(ArchetypeId archetype_id) const -> Archetype {
+  auto clone_without(ArchetypeId archetype_id = INVALID_ARCHETYPE_ID) const
+      -> Archetype {
     return Archetype(archetype_id, table_.clone_without<T>());
   }
 
@@ -47,6 +50,7 @@ class Archetype {
   [[nodiscard]] auto is_empty() const -> bool;
   [[nodiscard]] auto is_valid() const -> bool;
   [[nodiscard]] auto components() const -> const ArchetypeComponents &;
+  void set_archetype_id(ArchetypeId archetype_id);
 
   template <typename T, typename... Args>
   auto has_components() -> bool {

@@ -44,8 +44,7 @@ TEST(World, AddComponentInvalid) {
                    .has_value());
 
   // already existed type
-  EXPECT_FALSE(
-      world.add_component_to_entity<int>(location.entity_id, 2).has_value());
+  EXPECT_ANY_THROW(world.add_component_to_entity<int>(location.entity_id, 2));
 }
 
 TEST(World, RemoveComponentFromEntity) {
@@ -82,7 +81,6 @@ TEST(World, RemoveComponentInvalid) {
                    .has_value());
 
   // not existed type
-  EXPECT_FALSE(
-      world.remove_component_from_entity<std::string>(location.entity_id)
-          .has_value());
+  EXPECT_ANY_THROW(
+      world.remove_component_from_entity<std::string>(location.entity_id));
 }

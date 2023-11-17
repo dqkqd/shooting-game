@@ -17,17 +17,11 @@ class Archetypes {
   auto add() -> std::optional<ArchetypeId> {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
-    auto components = ArchetypeComponents::from_types<T, Args...>();
-    if (by_components_.find(components) != by_components_.end()) {
+    auto archetype = Archetype::create_archetype<T, Args...>();
+    if (by_components_.count(archetype.components())) {
       return {};
     }
-
-    auto archetype_id = size();
-    add_component_and_archetype(
-        std::move(components),
-        Archetype::create_archetype<T, Args...>(archetype_id));
-
-    return archetype_id;
+    return add_archetype(std::move(archetype));
   }
 
   template <typename T, typename... Args>
@@ -46,21 +40,13 @@ class Archetypes {
   auto get_or_add() -> ArchetypeId {
     static_assert(all_types_are_different<T, Args...>(),
                   "All column types must be pairwise different");
-
-    auto components = ArchetypeComponents::from_types<T, Args...>();
-    auto it = by_components_.find(components);
-
+    auto archetype = Archetype::create_archetype<T, Args...>();
+    auto it = by_components_.find(archetype.components());
     if (it != by_components_.end()) {
       auto archetype_id = it->second;
       return archetype_id;
     }
-
-    auto archetype_id = static_cast<ArchetypeId>(size());
-    add_component_and_archetype(
-        std::move(components),
-        Archetype::create_archetype<T, Args...>(archetype_id));
-
-    return archetype_id;
+    return add_archetype(std::move(archetype));
   }
 
   template <typename T>
@@ -68,24 +54,15 @@ class Archetypes {
       -> std::optional<ArchetypeId> {
     /* Find the next archetype on the graph, add one if there is none */
 
-    auto components = archetypes_[archetype_id].components().clone_with<T>();
-    if (!components.has_value()) {
-      spdlog::error("Component type `{}` has already existed in archetype `{}`",
-                    typeid(T).name(), archetype_id);
-      return {};
-    }
-
-    auto it = by_components_.find(*components);
+    auto archetype = archetypes_[archetype_id].clone_with<T>();
+    auto it = by_components_.find(archetype.components());
     if (it != by_components_.end()) {
-      return it->second;
+      auto archetype_id = it->second;
+      return archetype_id;
     }
 
-    auto next_archetype_id = static_cast<ArchetypeId>(size());
-    add_component_and_archetype(
-        std::move(components.value()),
-        archetypes_[archetype_id].clone_with<T>(next_archetype_id));
+    auto next_archetype_id = add_archetype(std::move(archetype));
     add_edge<T>(archetype_id, next_archetype_id);
-
     return next_archetype_id;
   }
 
@@ -93,38 +70,29 @@ class Archetypes {
   auto get_or_add_prev_archetype(ArchetypeId archetype_id)
       -> std::optional<ArchetypeId> {
     /* Find the prev archetype on the graph, add one if there is none */
-
-    auto components = archetypes_[archetype_id].components().clone_without<T>();
-    if (!components.has_value()) {
-      spdlog::error("Component type `{}` does not exist in archetype `{}`",
-                    typeid(T).name(), archetype_id);
-      return {};
-    }
-
-    auto it = by_components_.find(*components);
+    auto archetype = archetypes_[archetype_id].clone_without<T>();
+    auto it = by_components_.find(archetype.components());
     if (it != by_components_.end()) {
-      return it->second;
+      auto archetype_id = it->second;
+      return archetype_id;
     }
 
-    auto prev_archetype_id = static_cast<ArchetypeId>(size());
-    add_component_and_archetype(
-        std::move(components.value()),
-        archetypes_[archetype_id].clone_without<T>(prev_archetype_id));
+    auto prev_archetype_id = add_archetype(std::move(archetype));
     add_edge<T>(prev_archetype_id, archetype_id);
-
     return prev_archetype_id;
   }
 
   [[nodiscard]] auto size() const -> size_t;
 
  private:
+  [[nodiscard]] auto new_archetype_id() const -> ArchetypeId;
+
   template <typename T>
   void add_edge(ArchetypeId archetype_id, ArchetypeId next_archetype_id) {
     archetypes_[archetype_id].add_next_edge<T>(next_archetype_id);
     archetypes_[next_archetype_id].add_prev_edge<T>(archetype_id);
   }
-  void add_component_and_archetype(ArchetypeComponents &&component,
-                                   Archetype &&archetype);
+  auto add_archetype(Archetype &&archetype) -> ArchetypeId;
 
   std::vector<Archetype> archetypes_;
   std::map<ArchetypeComponents, ArchetypeId> by_components_;

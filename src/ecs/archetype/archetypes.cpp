@@ -6,9 +6,14 @@ auto Archetypes::get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype & {
   return archetypes_[archetype_id];
 }
 
-void Archetypes::add_component_and_archetype(ArchetypeComponents &&component,
-                                             Archetype &&archetype) {
-  by_components_.emplace(std::forward<ArchetypeComponents>(component),
-                         archetype.archetype_id());
+auto Archetypes::new_archetype_id() const -> ArchetypeId {
+  return static_cast<ArchetypeId>(size());
+}
+
+auto Archetypes::add_archetype(Archetype &&archetype) -> ArchetypeId {
+  auto archetype_id = new_archetype_id();
+  archetype.set_archetype_id(archetype_id);
+  by_components_.emplace(archetype.components().clone(), archetype_id);
   archetypes_.emplace_back(std::forward<Archetype>(archetype));
+  return archetype_id;
 }
