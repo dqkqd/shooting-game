@@ -15,8 +15,7 @@ TEST(Query, QueryWithinTheSameArchetype) {
   world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
   world.spawn_entity_with<int, float, std::string>(3, 4.0, "World");
 
-  world.add_query<int, float, std::string>();
-  auto query = world.query<int, float, std::string>(0);
+  auto query = world.query<int, float, std::string>();
   EXPECT_FALSE(query.done());
 
   auto [i1, f1, s1] = query.next();
@@ -41,8 +40,7 @@ TEST(Query, QueryAcrossArchetypes) {
   world.spawn_entity_with<int, char, std::string>(4, 'x', "other");
   world.spawn_entity_with<int, A, std::string>(5, A{}, "side");
 
-  world.add_query<int, std::string>();
-  auto query = world.query<int, std::string>(0);
+  auto query = world.query<int, std::string>();
   std::vector<int> is;
   std::vector<std::string> ss;
   while (!query.done()) {

@@ -64,12 +64,17 @@ auto World::remove_component_from_entity(EntityId entity_id)
 }
 
 template <typename... Args>
-void World::add_query() {
-  auto matched_archetypes = archetypes_.finder().get<Args...>();
-  queries_.emplace_back(archetypes_, std::move(matched_archetypes));
-}
+auto World::query() -> QueryIterator<Args...> {
+  auto components = ArchetypeComponents::from_types<Args...>();
 
-template <typename... Args>
-auto World::query(size_t index) -> QueryIterator<Args...> {
-  return queries_[index].iter<Args...>();
+  auto it = queries_.find(components);
+  if (it != queries_.end()) {
+    return it->second.template iter<Args...>();
+  }
+
+  auto matched_archetypes = archetypes_.finder().get<Args...>();
+
+  auto [added_it, _] = queries_.emplace(
+      std::move(components), Query(archetypes_, std::move(matched_archetypes)));
+  return added_it->second.template iter<Args...>();
 }

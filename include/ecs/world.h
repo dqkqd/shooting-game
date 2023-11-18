@@ -30,18 +30,14 @@ class World {
   auto remove_component_from_entity(EntityId entity_id)
       -> std::optional<EntityLocation>;
 
-  // TODO(khanhdq): return query id, and use map instead
   template <typename... Args>
-  void add_query();
-
-  template <typename... Args>
-  auto query(size_t index) -> QueryIterator<Args...>;
+  auto query() -> QueryIterator<Args...>;
 
   auto archetypes() -> Archetypes& { return archetypes_; }
 
  private:
   Archetypes archetypes_;
-  std::vector<Query> queries_;
+  std::map<ArchetypeComponents, Query> queries_;
   std::unordered_map<EntityId, EntityLocation> entities_;
 };
 
