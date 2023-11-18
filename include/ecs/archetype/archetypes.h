@@ -41,6 +41,7 @@ class Archetypes {
   Archetypes() = default;
 
   auto get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype &;
+  auto finder() -> ArchetypesFinder & { return finder_; }
 
   template <typename T, typename... Args>
   auto add() -> std::optional<ArchetypeId> {

@@ -52,6 +52,8 @@ class Archetype {
   [[nodiscard]] auto components() const -> const ArchetypeComponents &;
   void set_archetype_id(ArchetypeId archetype_id);
 
+  auto table() -> Table & { return table_; }
+
   template <typename T, typename... Args>
   auto has_components() -> bool {
     return table_.has_components<T, Args...>();

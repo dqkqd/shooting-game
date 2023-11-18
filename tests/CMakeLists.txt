@@ -21,6 +21,7 @@ add_executable(
     ecs/archetype/test_archetypes.cpp
     ecs/test_column.cpp
     ecs/test_counter.cpp
+    ecs/test_query.cpp
     ecs/test_table.cpp
     ecs/test_world.cpp
     )
