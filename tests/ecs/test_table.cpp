@@ -280,6 +280,10 @@ TEST(Table, Iterator) {
   EXPECT_EQ(i3, 5);
   EXPECT_EQ(f3, 8.0);
 
+  ++iter;
+  // iter is now done
+  EXPECT_TRUE(iter.done());
+
   // iter could be looped
   std::vector<int> is;
   std::vector<float> fs;

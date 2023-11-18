@@ -162,8 +162,13 @@ class Table {
     using pointer = std::tuple<Args *...>;
     using reference = std::tuple<Args &...>;
 
-    explicit Iterator(Column::Iterator<Args>... column_iters)
-        : iters_(std::make_tuple(column_iters...)) {}
+    Iterator() = default;
+    explicit Iterator(size_t max_rows, Column::Iterator<Args>... column_iters)
+        : max_rows_{max_rows}, iters_(std::make_tuple(column_iters...)) {}
+
+    [[nodiscard]] auto done() const -> bool {
+      return current_row_ == max_rows_;
+    }
 
     auto operator*() -> reference { return dereference(); }
     auto operator++() -> Iterator & {
@@ -183,6 +188,8 @@ class Table {
     };
 
    private:
+    size_t max_rows_{};
+    size_t current_row_{};
     std::tuple<Column::Iterator<Args>...> iters_;
 
     auto dereference() -> reference {
@@ -196,6 +203,7 @@ class Table {
     void advance() { return advance_impl(std::index_sequence_for<Args...>()); }
     template <size_t... Is>
     auto advance_impl(std::index_sequence<Is...> /**/) {
+      ++current_row_;
       ([&] { ++std::get<Is>(iters_); }(), ...);
     }
 
@@ -220,11 +228,13 @@ class Table {
 
   template <typename... Args>
   auto begin() -> Iterator<Args...> {
-    return Iterator<Args...>(get_column<Args>().template begin<Args>()...);
+    return Iterator<Args...>(height_,
+                             get_column<Args>().template begin<Args>()...);
   }
   template <typename... Args>
   auto end() -> Iterator<Args...> {
-    return Iterator<Args...>(get_column<Args>().template end<Args>()...);
+    return Iterator<Args...>(height_,
+                             get_column<Args>().template end<Args>()...);
   }
 
  private:
