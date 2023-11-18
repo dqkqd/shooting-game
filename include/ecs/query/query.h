@@ -5,14 +5,24 @@
 
 class Query {
  public:
-  explicit Query(Archetypes* archetypes,
-                 std::vector<ArchetypeId>&& matched_archetypes);
+  Query(Archetypes* archetypes, std::vector<ArchetypeId>&& matched_archetypes)
+      : archetypes_{archetypes},
+        matched_archetypes_{std::move(matched_archetypes)} {}
+
   ~Query() = default;
 
   Query(const Query&) = delete;
-  Query(Query&& /*query*/) noexcept;
   auto operator=(const Query&) -> Query& = delete;
-  auto operator=(Query&& /*query*/) noexcept -> Query&;
+
+  Query(Query&& query) noexcept
+      : matched_archetypes_{std::move(query.matched_archetypes_)},
+        archetypes_{query.archetypes_} {}
+
+  auto operator=(Query&& query) noexcept -> Query& {
+    matched_archetypes_ = std::move(query.matched_archetypes_);
+    archetypes_ = query.archetypes_;
+    return *this;
+  }
 
   template <typename... Args>
   auto iter() -> QueryIterator<Args...> {
