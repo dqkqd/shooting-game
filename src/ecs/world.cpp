@@ -65,7 +65,7 @@ auto World::remove_component_from_entity(EntityId entity_id)
 
 template <typename... Args>
 void World::add_query() {
-  queries_.emplace_back(std::make_unique<Query<Args...>>(*this));
+  queries_.emplace_back(std::make_unique<Query<Args...>>(this->archetypes()));
 }
 
 template <typename... Args>

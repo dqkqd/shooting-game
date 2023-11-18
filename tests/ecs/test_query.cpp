@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
 
 #include "ecs/query/query.h"
+#include "ecs/world.h"
 
 class QueryTest : public testing::Test {
  protected:
   template <typename... Args>
   auto create_query(World &world) -> Query<Args...> {
-    return Query<Args...>(world);
+    return Query<Args...>(world.archetypes());
   }
 };
 

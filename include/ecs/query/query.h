@@ -3,15 +3,14 @@
 
 #include <tuple>
 
+#include "ecs/archetype/archetypes.h"
 #include "ecs/query/base.h"
 #include "ecs/table.h"
-
-class World;
 
 template <typename... Args>
 class Query : public BaseQuery {
  public:
-  explicit Query(World& world);
+  explicit Query(Archetypes& archetypes);
   ~Query() override = default;
 
   Query(const Query&) = delete;
@@ -25,8 +24,8 @@ class Query : public BaseQuery {
  private:
   std::size_t archetype_index_{};
   Table::Iterator<Args...> table_iter_;
-  std::vector<ArchetypeId> archetypes_;
-  World& world_;
+  std::vector<ArchetypeId> matched_archetypes_;
+  Archetypes& archetypes_;
 
   void reset();
   void fetch_iter();
