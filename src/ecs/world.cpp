@@ -2,6 +2,8 @@
 
 #include "ecs/world.h"
 
+#include "ecs/query/query.h"
+
 template <typename T, typename... Args>
 auto World::spawn_entity_with(T&& component, Args&&... components)
     -> EntityLocation {

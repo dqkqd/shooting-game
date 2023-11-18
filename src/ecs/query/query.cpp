@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ecs/query.h"
+#include "ecs/query/query.h"
 
 #include "ecs/world.h"
 

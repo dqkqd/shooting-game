@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "ecs/query.h"
+#include "ecs/query/query.h"
 
 class QueryTest : public testing::Test {
  protected:

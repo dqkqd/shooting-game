@@ -1,24 +1,15 @@
-#ifndef ECS_QUERY_H
-#define ECS_QUERY_H
+#ifndef ECS_QUERY_QUERY_H
+#define ECS_QUERY_QUERY_H
 
 #include <tuple>
 
+#include "ecs/query/base.h"
 #include "ecs/table.h"
 
 class World;
 
-class BaseQuery {
- public:
-  explicit BaseQuery(World& world);
-  BaseQuery(const BaseQuery&) = default;
-  BaseQuery(BaseQuery&&) = delete;
-  auto operator=(const BaseQuery&) -> BaseQuery& = delete;
-  auto operator=(BaseQuery&&) -> BaseQuery& = delete;
-  virtual ~BaseQuery();
-};
-
 template <typename... Args>
-class Query {
+class Query : public BaseQuery {
  public:
   explicit Query(World& world);
   [[nodiscard]] auto done() const -> bool;
@@ -34,6 +25,6 @@ class Query {
   void fetch_iter();
 };
 
-#include "../../src/ecs/query.cpp"
+#include "../../../src/ecs/query/query.cpp"
 
 #endif
