@@ -6,6 +6,7 @@ set(SOURCE_FILES
     ecs/archetype/components.cpp
     ecs/archetype/archetype.cpp
     ecs/archetype/archetypes.cpp
+    ecs/query/query.cpp
     ecs/column.cpp
     ecs/table.cpp
     ecs/world.cpp

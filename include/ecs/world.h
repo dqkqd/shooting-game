@@ -6,7 +6,7 @@
 #include "ecs/archetype/archetype.h"
 #include "ecs/archetype/archetypes.h"
 #include "ecs/entity.h"
-#include "ecs/query/base.h"
+#include "ecs/query/query.h"
 
 class BaseQuery;
 
@@ -35,13 +35,13 @@ class World {
   void add_query();
 
   template <typename... Args>
-  auto run_query(size_t index) -> std::tuple<Args&...>;
+  auto query(size_t index) -> QueryIterator<Args...>;
 
   auto archetypes() -> Archetypes& { return archetypes_; }
 
  private:
   Archetypes archetypes_;
-  std::vector<std::unique_ptr<BaseQuery>> queries_{};
+  std::vector<Query> queries_;
   std::unordered_map<EntityId, EntityLocation> entities_;
 };
 

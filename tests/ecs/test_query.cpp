@@ -3,35 +3,20 @@
 #include "ecs/query/query.h"
 #include "ecs/world.h"
 
-class QueryTest : public testing::Test {
- protected:
-  template <typename... Args>
-  auto create_query(World &world) -> Query<Args...> {
-    return Query<Args...>(world.archetypes());
-  }
-};
-
-TEST_F(QueryTest, MoveQuery) {
+TEST(Query, MoveQuery) {
   auto world = World();
-  world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
-  world.spawn_entity_with<int, float, std::string>(3, 4.0, "World");
-
-  auto query1 = this->create_query<int, float, std::string>(world);
+  auto query1 = Query(&world.archetypes(), {1, 2, 3});
   auto query2 = std::move(query1);
-  EXPECT_TRUE(query1.done());
-  EXPECT_FALSE(query2.done());
-
-  Query<int, float, std::string> query3{std::move(query2)};
-  EXPECT_TRUE(query2.done());
-  EXPECT_FALSE(query3.done());
+  Query query3{std::move(query2)};
 }
 
-TEST_F(QueryTest, QueryWithinTheSameArchetype) {
+TEST(Query, QueryWithinTheSameArchetype) {
   auto world = World();
   world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
   world.spawn_entity_with<int, float, std::string>(3, 4.0, "World");
-  auto query = this->create_query<int, float, std::string>(world);
 
+  world.add_query<int, float, std::string>();
+  auto query = world.query<int, float, std::string>(0);
   EXPECT_FALSE(query.done());
 
   auto [i1, f1, s1] = query.next();
@@ -47,7 +32,7 @@ TEST_F(QueryTest, QueryWithinTheSameArchetype) {
   EXPECT_TRUE(query.done());
 }
 
-TEST_F(QueryTest, QueryAcrossArchetypes) {
+TEST(Query, QueryAcrossArchetypes) {
   struct A {};
   auto world = World();
   world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
@@ -56,7 +41,8 @@ TEST_F(QueryTest, QueryAcrossArchetypes) {
   world.spawn_entity_with<int, char, std::string>(4, 'x', "other");
   world.spawn_entity_with<int, A, std::string>(5, A{}, "side");
 
-  auto query = this->create_query<int, std::string>(world);
+  world.add_query<int, std::string>();
+  auto query = world.query<int, std::string>(0);
   std::vector<int> is;
   std::vector<std::string> ss;
   while (!query.done()) {

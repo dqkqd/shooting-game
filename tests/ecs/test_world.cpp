@@ -84,31 +84,3 @@ TEST(World, RemoveComponentInvalid) {
   EXPECT_ANY_THROW(
       world.remove_component_from_entity<std::string>(location.entity_id));
 }
-
-TEST(World, AddQuery) {
-  struct A {};
-
-  auto world = World();
-
-  world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
-  world.spawn_entity_with<int, float, std::string>(2, 3.0, "from");
-  world.spawn_entity_with<int, double, std::string>(3, 4.0, "the");
-  world.spawn_entity_with<int, char, std::string>(4, 'x', "other");
-  world.spawn_entity_with<int, A, std::string>(5, A{}, "side");
-
-  world.add_query<int, std::string>();
-
-  std::vector<int> is;
-  std::vector<std::string> ss;
-  for (int _ = 0; _ < 5; ++_) {
-    auto [i, s] = world.run_query<int, std::string>(0);
-    is.emplace_back(i);
-    ss.emplace_back(s);
-  }
-  EXPECT_EQ(is, std::vector({1, 2, 3, 4, 5}));
-  EXPECT_EQ(ss[0], "Hello");
-  EXPECT_EQ(ss[1], "from");
-  EXPECT_EQ(ss[2], "the");
-  EXPECT_EQ(ss[3], "other");
-  EXPECT_EQ(ss[4], "side");
-}

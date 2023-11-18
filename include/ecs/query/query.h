@@ -1,36 +1,30 @@
 #ifndef ECS_QUERY_QUERY_H
 #define ECS_QUERY_QUERY_H
 
-#include <tuple>
+#include "ecs/query/iterator.h"
 
-#include "ecs/archetype/archetypes.h"
-#include "ecs/query/base.h"
-#include "ecs/table.h"
-
-template <typename... Args>
-class Query : public BaseQuery {
+class Query {
  public:
-  explicit Query(Archetypes& archetypes);
-  ~Query() override = default;
+  explicit Query(Archetypes* archetypes,
+                 std::vector<ArchetypeId>&& matched_archetypes);
+  ~Query() = default;
 
   Query(const Query&) = delete;
   Query(Query&& /*query*/) noexcept;
   auto operator=(const Query&) -> Query& = delete;
   auto operator=(Query&& /*query*/) noexcept -> Query&;
 
-  [[nodiscard]] auto done() const -> bool;
-  auto next() -> std::tuple<Args&...>;
+  template <typename... Args>
+  auto iter() -> QueryIterator<Args...> {
+    return QueryIterator<Args...>(archetypes_, matched_archetypes_);
+  }
 
  private:
-  std::size_t archetype_index_{};
-  Table::Iterator<Args...> table_iter_;
-  std::vector<ArchetypeId> matched_archetypes_;
-  Archetypes& archetypes_;
+  std::vector<ArchetypeId> matched_archetypes_{};
+  // TODO(khanhdq): make this shared ptr
+  Archetypes* archetypes_;
 
   void reset();
-  void fetch_iter();
 };
-
-#include "../../../src/ecs/query/query.cpp"
 
 #endif

@@ -65,11 +65,12 @@ auto World::remove_component_from_entity(EntityId entity_id)
 
 template <typename... Args>
 void World::add_query() {
-  queries_.emplace_back(std::make_unique<Query<Args...>>(this->archetypes()));
+  auto matched_archetypes = archetypes_.finder().get<Args...>();
+  Query query{&archetypes_, std::move(matched_archetypes)};
+  queries_.emplace_back(std::move(query));
 }
 
 template <typename... Args>
-auto World::run_query(size_t index) -> std::tuple<Args&...> {
-  auto& query = dynamic_cast<Query<Args...>&>(*queries_[index]);
-  return query.next();
+auto World::query(size_t index) -> QueryIterator<Args...> {
+  return queries_[index].iter<Args...>();
 }
