@@ -7,8 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ecs/archetype/archetype_components.h"
 #include "ecs/archetype/archetype_edges.h"
+#include "ecs/archetype/components.h"
 #include "ecs/column.h"
 #include "ecs/primitive.h"
 #include "ecs/table.h"

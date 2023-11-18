@@ -3,7 +3,7 @@ set(SOURCE_FILES
     graphic.cpp
     entity.cpp
     components/graphic.cpp
-    ecs/archetype/archetype_components.cpp
+    ecs/archetype/components.cpp
     ecs/archetype/archetype_edges.cpp
     ecs/archetype/archetype.cpp
     ecs/archetype/archetypes.cpp

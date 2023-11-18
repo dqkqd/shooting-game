@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "ecs/archetype/archetype_components.h"
+#include "ecs/archetype/components.h"
 #include "ecs/column.h"
 
 TEST(ArchetypeComponents, MoveConstructor) {

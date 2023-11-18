@@ -1,4 +1,4 @@
-#include "ecs/archetype/archetype_components.h"
+#include "ecs/archetype/components.h"
 
 ArchetypeComponents::ArchetypeComponents(
     ArchetypeComponents &&archetype_components) noexcept

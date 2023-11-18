@@ -5,7 +5,6 @@
 #include <stdexcept>
 
 #include "ecs/archetype/archetype.h"
-#include "ecs/archetype/archetype_components.h"
 
 class ArchetypesFinder {
  public:
