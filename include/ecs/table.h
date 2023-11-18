@@ -1,14 +1,6 @@
 #ifndef ECS_TABLE_H
 #define ECS_TABLE_H
 
-#include <fmt/core.h>
-
-#include <optional>
-#include <stdexcept>
-#include <type_traits>
-#include <unordered_map>
-#include <vector>
-
 #include "ecs/column.h"
 #include "ecs/primitive.h"
 
@@ -160,6 +152,80 @@ class Table {
   auto remove_row(size_t row) -> bool;
   auto move_row_to_other(size_t row, Table &other) -> std::optional<size_t>;
   void reset_height();
+
+  template <typename... Args>
+  class Iterator {
+   public:
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = std::tuple<Args...>;
+    using pointer = std::tuple<Args *...>;
+    using reference = std::tuple<Args &...>;
+
+    explicit Iterator(Column::Iterator<Args>... column_iters)
+        : iters_(std::make_tuple(column_iters...)) {}
+
+    auto operator*() -> reference { return dereference(); }
+    auto operator++() -> Iterator & {
+      advance();
+      return *this;
+    }
+    auto operator++(int) -> Iterator {
+      Iterator tmp = *this;
+      advance();
+      return tmp;
+    }
+    friend auto operator==(const Iterator &lhs, const Iterator &rhs) -> bool {
+      return lhs.equal(rhs);
+    };
+    friend auto operator!=(const Iterator &lhs, const Iterator &rhs) -> bool {
+      return lhs.not_equal(rhs);
+    };
+
+   private:
+    std::tuple<Column::Iterator<Args>...> iters_;
+
+    auto dereference() -> reference {
+      return dereference_impl(std::index_sequence_for<Args...>());
+    }
+    template <size_t... Is>
+    auto dereference_impl(std::index_sequence<Is...> /**/) -> reference {
+      return std::tie(*std::get<Is>(iters_)...);
+    }
+
+    void advance() { return advance_impl(std::index_sequence_for<Args...>()); }
+    template <size_t... Is>
+    auto advance_impl(std::index_sequence<Is...> /**/) {
+      ([&] { ++std::get<Is>(iters_); }(), ...);
+    }
+
+    auto equal(const Iterator &other) const -> bool {
+      return equal_impl(other, std::index_sequence_for<Args...>());
+    }
+    template <size_t... Is>
+    auto equal_impl(const Iterator &other,
+                    std::index_sequence<Is...> /**/) const -> bool {
+      return (... && (std::get<Is>(iters_) == std::get<Is>(other.iters_)));
+    }
+
+    auto not_equal(const Iterator &other) const -> bool {
+      return not_equal_impl(other, std::index_sequence_for<Args...>());
+    }
+    template <size_t... Is>
+    auto not_equal_impl(const Iterator &other,
+                        std::index_sequence<Is...> /**/) const -> bool {
+      return (... || (std::get<Is>(iters_) != std::get<Is>(other.iters_)));
+    }
+  };
+
+  template <typename... Args>
+  auto begin() -> Iterator<Args...> {
+    return Iterator<Args...>(get_column<Args>().template begin<Args>()...);
+  }
+  template <typename... Args>
+  auto end() -> Iterator<Args...> {
+    return Iterator<Args...>(get_column<Args>().template end<Args>()...);
+  }
 
  private:
   TableId table_id_;
