@@ -10,7 +10,7 @@ class QueryTest : public testing::Test {
   }
 };
 
-TEST_F(QueryTest, Next) {
+TEST_F(QueryTest, QueryWithinTheSameArchetype) {
   auto world = World();
   world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
   world.spawn_entity_with<int, float, std::string>(3, 4.0, "World");
@@ -29,4 +29,29 @@ TEST_F(QueryTest, Next) {
   EXPECT_EQ(s2, "World");
 
   EXPECT_TRUE(query.done());
+}
+
+TEST_F(QueryTest, QueryAcrossArchetypes) {
+  struct A {};
+  auto world = World();
+  world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
+  world.spawn_entity_with<int, float, std::string>(2, 3.0, "from");
+  world.spawn_entity_with<int, double, std::string>(3, 4.0, "the");
+  world.spawn_entity_with<int, char, std::string>(4, 'x', "other");
+  world.spawn_entity_with<int, A, std::string>(5, A{}, "side");
+
+  auto query = this->create_query<int, std::string>(world);
+  std::vector<int> is;
+  std::vector<std::string> ss;
+  while (!query.done()) {
+    auto [i, s] = query.next();
+    is.emplace_back(i);
+    ss.emplace_back(s);
+  }
+  EXPECT_EQ(is, std::vector({1, 2, 3, 4, 5}));
+  EXPECT_EQ(ss[0], "Hello");
+  EXPECT_EQ(ss[1], "from");
+  EXPECT_EQ(ss[2], "the");
+  EXPECT_EQ(ss[3], "other");
+  EXPECT_EQ(ss[4], "side");
 }

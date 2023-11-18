@@ -26,15 +26,14 @@ class Query {
   }
 
   auto next() -> std::tuple<Args&...> {
-    if (!table_iter_.done()) {
-      auto current_iter = table_iter_;
-      ++table_iter_;
-      return *current_iter;
+    if (table_iter_.done()) {
+      ++archetype_index_;
+      fetch_iter();
     }
 
-    ++archetype_index_;
-    fetch_iter();
-    return *table_iter_;
+    auto current_iter = table_iter_;
+    ++table_iter_;
+    return *current_iter;
   }
 
  private:
