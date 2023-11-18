@@ -5,6 +5,20 @@
 #include "ecs/world.h"
 
 template <typename... Args>
+Query<Args...>::Query(Query&& query) noexcept
+    : table_iter_{std::move(query.table_iter_)},
+      archetype_index_{std::exchange(query.archetype_index_, 0)},
+      archetypes_{std::move(query.archetypes_)},
+      world_{query.world_} {}
+template <typename... Args>
+auto Query<Args...>::operator=(Query&& query) noexcept -> Query& {
+  table_iter_ = std::move(query.table_iter_);
+  archetype_index_ = std::exchange(query.archetype_index_, 0);
+  archetypes_ = std::move(query.archetypes_);
+  world_ = query.world_;
+}
+
+template <typename... Args>
 Query<Args...>::Query(World& world) : world_{world} {
   archetypes_ = std::move(world_.archetypes().finder().get<Args...>());
   fetch_iter();
@@ -12,6 +26,9 @@ Query<Args...>::Query(World& world) : world_{world} {
 
 template <typename... Args>
 auto Query<Args...>::done() const -> bool {
+  if (archetype_index_ >= archetypes_.size()) {
+    return true;
+  }
   return archetype_index_ == archetypes_.size() - 1 && table_iter_.done();
 }
 

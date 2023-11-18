@@ -12,6 +12,13 @@ template <typename... Args>
 class Query : public BaseQuery {
  public:
   explicit Query(World& world);
+  ~Query() override = default;
+
+  Query(const Query&) = delete;
+  Query(Query&& /*query*/) noexcept;
+  auto operator=(const Query&) -> Query& = delete;
+  auto operator=(Query&& /*query*/) noexcept -> Query&;
+
   [[nodiscard]] auto done() const -> bool;
   auto next() -> std::tuple<Args&...>;
 

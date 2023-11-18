@@ -10,6 +10,21 @@ class QueryTest : public testing::Test {
   }
 };
 
+TEST_F(QueryTest, MoveQuery) {
+  auto world = World();
+  world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
+  world.spawn_entity_with<int, float, std::string>(3, 4.0, "World");
+
+  auto query1 = this->create_query<int, float, std::string>(world);
+  auto query2 = std::move(query1);
+  EXPECT_TRUE(query1.done());
+  EXPECT_FALSE(query2.done());
+
+  Query<int, float, std::string> query3{std::move(query2)};
+  EXPECT_TRUE(query2.done());
+  EXPECT_FALSE(query3.done());
+}
+
 TEST_F(QueryTest, QueryWithinTheSameArchetype) {
   auto world = World();
   world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
