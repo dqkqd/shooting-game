@@ -19,6 +19,7 @@ Checks: "
   -cppcoreguidelines-pro-type-reinterpret-cast,
   -cppcoreguidelines-avoid-magic-numbers,
   -readability-magic-numbers,
+  -bugprone-suspicious-include
   "
 
 CheckOptions:

@@ -1,7 +1,11 @@
 #ifndef ECS_QUERY_H
 #define ECS_QUERY_H
 
-#include "ecs/world.h"
+#include <tuple>
+
+#include "ecs/table.h"
+
+class World;
 
 class BaseQuery {
  public:
@@ -16,43 +20,20 @@ class BaseQuery {
 template <typename... Args>
 class Query {
  public:
-  explicit Query(World& world) : world_{world} {
-    archetypes_ = std::move(world_.archetypes().finder().get<Args...>());
-    fetch_iter();
-  }
-
-  [[nodiscard]] auto done() const -> bool {
-    return archetype_index_ == archetypes_.size() - 1 && table_iter_.done();
-  }
-
-  auto next() -> std::tuple<Args&...> {
-    if (table_iter_.done()) {
-      ++archetype_index_;
-      fetch_iter();
-    }
-
-    auto current_iter = table_iter_;
-    ++table_iter_;
-    return *current_iter;
-  }
+  explicit Query(World& world);
+  [[nodiscard]] auto done() const -> bool;
+  auto next() -> std::tuple<Args&...>;
 
  private:
-  size_t archetype_index_{};
+  std::size_t archetype_index_{};
   Table::Iterator<Args...> table_iter_;
   std::vector<ArchetypeId> archetypes_;
   World& world_;
 
-  void reset() {
-    archetype_index_ = 0;
-    fetch_iter();
-  }
-
-  void fetch_iter() {
-    table_iter_ = world_.archetypes()
-                      .get_by_id_unchecked(archetypes_[archetype_index_])
-                      .table()
-                      .begin<Args...>();
-  }
+  void reset();
+  void fetch_iter();
 };
+
+#include "../../src/ecs/query.cpp"
 
 #endif
