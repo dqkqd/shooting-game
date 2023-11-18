@@ -5,6 +5,8 @@
 
 class Query {
  public:
+  Query() = delete;
+
   Query(Archetypes& archetypes, std::vector<ArchetypeId>&& matched_archetypes)
       : archetypes_{archetypes},
         matched_archetypes_{std::move(matched_archetypes)} {}
