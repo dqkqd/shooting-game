@@ -19,7 +19,7 @@ auto Archetypes::add_archetype(Archetype&& archetype) -> ArchetypeId {
   archetype.set_archetype_id(archetype_id);
 
   auto components = archetype.components().clone();
-  for (const auto& component_id : components.as_raw()) {
+  for (const auto& component_id : components.components()) {
     finder_.add(component_id, archetype_id);
   }
 

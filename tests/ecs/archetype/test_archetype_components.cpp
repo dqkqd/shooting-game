@@ -38,8 +38,6 @@ TEST(ArchetypeComponents, CloneWith) {
   auto cloned = components.clone_with<std::string>();
   EXPECT_EQ(cloned,
             (ArchetypeComponents::from_types<int, float, char, std::string>()));
-  // duplicated components
-  EXPECT_FALSE((components.clone_with<int, int>()).has_value());
   // existed component
   EXPECT_FALSE((components.clone_with<float>()).has_value());
 }
@@ -48,8 +46,6 @@ TEST(ArchetypeComponents, CloneWithout) {
   auto components = ArchetypeComponents::from_types<int, float, char>();
   auto cloned = components.clone_without<int, char>();
   EXPECT_EQ(cloned, (ArchetypeComponents::from_types<float>()));
-  // duplicated components
-  EXPECT_FALSE((components.clone_without<int, int>()).has_value());
   // non existed component
   EXPECT_FALSE((components.clone_without<std::string>()).has_value());
 }

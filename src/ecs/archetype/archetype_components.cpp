@@ -1,7 +1,5 @@
 #include "ecs/archetype/archetype_components.h"
 
-#include <utility>
-
 ArchetypeComponents::ArchetypeComponents(
     ArchetypeComponents &&archetype_components) noexcept
     : components_{std::exchange(archetype_components.components_, {})} {}
@@ -13,27 +11,8 @@ auto ArchetypeComponents::operator=(
   return *this;
 }
 
-auto operator==(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
-    -> bool {
-  return lhs.components_ == rhs.components_;
-}
-auto operator<(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
-    -> bool {
-  return lhs.components_ < rhs.components_;
-}
-
-auto ArchetypeComponents::clone() const -> ArchetypeComponents {
-  return ArchetypeComponents::from_set(std::set{components_});
-}
-
 auto ArchetypeComponents::size() const -> size_t { return components_.size(); }
-
-auto ArchetypeComponents::has_component(ComponentId component_id) const
-    -> bool {
-  return components_.count(component_id) > 0;
-}
-
-auto ArchetypeComponents::as_raw() const -> const std::set<ComponentId> & {
+auto ArchetypeComponents::components() const -> const std::set<ComponentId> & {
   return components_;
 }
 
@@ -48,6 +27,35 @@ auto ArchetypeComponents::from_set(std::set<ComponentId> &&components)
   ArchetypeComponents archetype_components;
   archetype_components.components_ = std::move(components);
   return archetype_components;
+}
+
+auto ArchetypeComponents::clone() const -> ArchetypeComponents {
+  return from_set(std::set{components_});
+}
+
+auto ArchetypeComponents::merge(ArchetypeComponents &&other) const
+    -> ArchetypeComponents {
+  std::set<ComponentId> intersection{components()};
+  intersection.merge(other.components_);
+  return from_set(std::move(intersection));
+}
+
+auto ArchetypeComponents::remove(ArchetypeComponents &&other) const
+    -> ArchetypeComponents {
+  std::set<ComponentId> different{components()};
+  for (const auto &id : other.components()) {
+    different.erase(id);
+  }
+  return from_set(std::move(different));
+}
+
+auto operator==(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
+    -> bool {
+  return lhs.components_ == rhs.components_;
+}
+auto operator<(const ArchetypeComponents &lhs, const ArchetypeComponents &rhs)
+    -> bool {
+  return lhs.components_ < rhs.components_;
 }
 
 template <>
