@@ -29,6 +29,7 @@ class ArchetypesFinder {
         results.emplace_back(archetype_id);
       }
     }
+    std::reverse(results.begin(), results.end());
     return results;
   }
 
