@@ -39,6 +39,11 @@ class ArchetypesFinder {
 class Archetypes {
  public:
   Archetypes() = default;
+  Archetypes(const Archetypes &) = delete;
+  Archetypes(Archetypes &&) = delete;
+  auto operator=(const Archetypes &) -> Archetypes & = delete;
+  auto operator=(Archetypes &&) -> Archetypes & = delete;
+  ~Archetypes() = default;
 
   auto get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype &;
   auto finder() -> ArchetypesFinder & { return finder_; }
