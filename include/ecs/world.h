@@ -8,8 +8,6 @@
 #include "ecs/entity.h"
 #include "ecs/query/query.h"
 
-class BaseQuery;
-
 class World {
  public:
   World() = default;
