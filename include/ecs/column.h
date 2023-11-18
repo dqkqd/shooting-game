@@ -89,7 +89,7 @@ class Column {
     using pointer = T *;
     using reference = T &;
 
-    explicit Iterator(pointer ptr) : ptr_{ptr} {}
+    explicit Iterator(pointer ptr = nullptr) : ptr_{ptr} {}
 
     auto operator*() const -> reference { return *ptr_; }
     auto operator->() -> pointer { return ptr_; }
