@@ -6,6 +6,9 @@
 #include "ecs/archetype/archetype.h"
 #include "ecs/archetype/archetypes.h"
 #include "ecs/entity.h"
+#include "ecs/query/base.h"
+
+class BaseQuery;
 
 class World {
  public:
@@ -27,10 +30,18 @@ class World {
   auto remove_component_from_entity(EntityId entity_id)
       -> std::optional<EntityLocation>;
 
+  // TODO(khanhdq): return query id, and use map instead
+  template <typename... Args>
+  void add_query();
+
+  template <typename... Args>
+  auto run_query(size_t index) -> std::tuple<Args&...>;
+
   auto archetypes() -> Archetypes& { return archetypes_; }
 
  private:
   Archetypes archetypes_;
+  std::vector<std::unique_ptr<BaseQuery>> queries_{};
   std::unordered_map<EntityId, EntityLocation> entities_;
 };
 

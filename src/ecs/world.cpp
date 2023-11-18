@@ -62,3 +62,14 @@ auto World::remove_component_from_entity(EntityId entity_id)
               entity_id, archetypes_.get_by_id_unchecked(prev_archetype_id));
   return new_location;
 }
+
+template <typename... Args>
+void World::add_query() {
+  queries_.emplace_back(std::make_unique<Query<Args...>>(*this));
+}
+
+template <typename... Args>
+auto World::run_query(size_t index) -> std::tuple<Args&...> {
+  auto& query = dynamic_cast<Query<Args...>&>(*queries_[index]);
+  return query.next();
+}
