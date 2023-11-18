@@ -1,6 +1,8 @@
 #ifndef ECS_COLUMN_H
 #define ECS_COLUMN_H
 
+#include <spdlog/fmt/fmt.h>
+
 #include <cstddef>
 #include <optional>
 #include <stdexcept>
@@ -8,7 +10,6 @@
 
 #include "ecs/counter.h"
 #include "ecs/primitive.h"
-#include "fmt/core.h"
 
 class Column;
 using ColumnCounter = Counter<Column>;

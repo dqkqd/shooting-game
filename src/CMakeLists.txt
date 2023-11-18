@@ -17,14 +17,6 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 option(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(
-    fmt
-    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-    GIT_TAG 10.1.1
-    GIT_SHALLOW TRUE
-    GIT_PROGRESS TRUE
-    EXCLUDE_FROM_ALL
-    )
-FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_TAG v1.x
@@ -49,7 +41,6 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
     )
 
-FetchContent_MakeAvailable(fmt)
 FetchContent_MakeAvailable(spdlog)
 FetchContent_MakeAvailable(SDL3)
 FetchContent_MakeAvailable(SDL3_image)
@@ -57,4 +48,4 @@ FetchContent_MakeAvailable(SDL3_image)
 add_library(GAME_SOURCE ${SOURCE_FILES})
 
 target_include_directories(GAME_SOURCE PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(GAME_SOURCE PUBLIC fmt::fmt spdlog::spdlog SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(GAME_SOURCE PUBLIC spdlog::spdlog SDL3::SDL3 SDL3_image::SDL3_image)

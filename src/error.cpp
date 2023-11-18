@@ -1,8 +1,9 @@
 #include "error.h"
 
+#include <spdlog/fmt/fmt.h>
+
 #include "SDL3_image/SDL_image.h"
 #include "SDL_error.h"
-#include "fmt/core.h"
 
 GameError::GameError(const char* msg) : error_msg_{msg} {}
 
