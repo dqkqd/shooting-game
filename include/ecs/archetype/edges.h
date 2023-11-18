@@ -1,5 +1,5 @@
-#ifndef ECS_ARCHETYPE_ARCHETYPE_EDGES_H
-#define ECS_ARCHETYPE_ARCHETYPE_EDGES_H
+#ifndef ECS_ARCHETYPE_EDGES_H
+#define ECS_ARCHETYPE_EDGES_H
 
 #include "ecs/column.h"
 #include "ecs/primitive.h"
@@ -7,11 +7,18 @@
 class ArchetypeEdges {
  public:
   ArchetypeEdges() = default;
-  ArchetypeEdges(const ArchetypeEdges &) = delete;
-  ArchetypeEdges(ArchetypeEdges &&) noexcept;
-  auto operator=(const ArchetypeEdges &) -> ArchetypeEdges & = delete;
-  auto operator=(ArchetypeEdges &&) noexcept -> ArchetypeEdges &;
   ~ArchetypeEdges() = default;
+
+  ArchetypeEdges(const ArchetypeEdges&) = delete;
+  auto operator=(const ArchetypeEdges&) -> ArchetypeEdges& = delete;
+
+  ArchetypeEdges(ArchetypeEdges&& edges) noexcept
+      : edges_{std::move(edges.edges_)} {}
+
+  auto operator=(ArchetypeEdges&& edges) noexcept -> ArchetypeEdges& {
+    edges_ = std::move(edges.edges_);
+    return *this;
+  }
 
   template <typename T>
   void add(ArchetypeId archetype_id) {

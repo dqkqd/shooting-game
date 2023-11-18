@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "ecs/archetype/archetype.h"
-#include "ecs/archetype/archetype_edges.h"
 
 TEST(ArchetypeEdges, AddAndGet) {
   auto edges = ArchetypeEdges();
