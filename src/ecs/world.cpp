@@ -66,8 +66,7 @@ auto World::remove_component_from_entity(EntityId entity_id)
 template <typename... Args>
 void World::add_query() {
   auto matched_archetypes = archetypes_.finder().get<Args...>();
-  Query query{&archetypes_, std::move(matched_archetypes)};
-  queries_.emplace_back(std::move(query));
+  queries_.emplace_back(archetypes_, std::move(matched_archetypes));
 }
 
 template <typename... Args>

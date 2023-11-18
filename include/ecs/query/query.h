@@ -5,7 +5,7 @@
 
 class Query {
  public:
-  Query(Archetypes* archetypes, std::vector<ArchetypeId>&& matched_archetypes)
+  Query(Archetypes& archetypes, std::vector<ArchetypeId>&& matched_archetypes)
       : archetypes_{archetypes},
         matched_archetypes_{std::move(matched_archetypes)} {}
 
@@ -18,11 +18,7 @@ class Query {
       : matched_archetypes_{std::move(query.matched_archetypes_)},
         archetypes_{query.archetypes_} {}
 
-  auto operator=(Query&& query) noexcept -> Query& {
-    matched_archetypes_ = std::move(query.matched_archetypes_);
-    archetypes_ = query.archetypes_;
-    return *this;
-  }
+  auto operator=(Query&& query) noexcept -> Query& = delete;
 
   template <typename... Args>
   auto iter() -> QueryIterator<Args...> {
@@ -31,8 +27,7 @@ class Query {
 
  private:
   std::vector<ArchetypeId> matched_archetypes_{};
-  // TODO(khanhdq): make this shared ptr
-  Archetypes* archetypes_;
+  Archetypes& archetypes_;
 
   void reset();
 };

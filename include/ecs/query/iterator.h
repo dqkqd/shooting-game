@@ -6,7 +6,7 @@
 template <typename... Args>
 class QueryIterator {
  public:
-  QueryIterator(Archetypes* archetypes,
+  QueryIterator(Archetypes& archetypes,
                 std::vector<ArchetypeId>& matched_archetypes)
       : archetypes_{archetypes}, matched_archetypes_{matched_archetypes} {
     fetch_iter();
@@ -40,7 +40,7 @@ class QueryIterator {
  private:
   std::size_t archetype_index_{};
   std::vector<ArchetypeId>& matched_archetypes_;
-  Archetypes* archetypes_;
+  Archetypes& archetypes_;
   Table::Iterator<Args...> table_iter_;
 
   void reset() {
@@ -51,7 +51,7 @@ class QueryIterator {
   void fetch_iter() {
     auto archetype_id = matched_archetypes_[archetype_index_];
     table_iter_ =
-        archetypes_->get_by_id_unchecked(archetype_id).table().begin<Args...>();
+        archetypes_.get_by_id_unchecked(archetype_id).table().begin<Args...>();
   }
 };
 
