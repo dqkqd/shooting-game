@@ -79,4 +79,17 @@ class TableIterator {
   }
 };
 
+template <class... Args>
+class TableIteratorWrapper {
+ public:
+  TableIteratorWrapper(TableIterator<Args...> begin, TableIterator<Args...> end)
+      : begin_{begin}, end_{end} {}
+  auto begin() -> TableIterator<Args...> { return begin_; }
+  auto end() -> TableIterator<Args...> { return end_; }
+
+ private:
+  TableIterator<Args...> begin_;
+  TableIterator<Args...> end_;
+};
+
 #endif

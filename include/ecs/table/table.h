@@ -51,6 +51,8 @@ class Table {
   auto move_row_to_other(size_t row, Table &other) -> std::optional<size_t>;
 
   template <typename... Args>
+  auto iter() -> TableIteratorWrapper<Args...>;
+  template <typename... Args>
   auto begin() -> TableIterator<Args...>;
   template <typename... Args>
   auto end() -> TableIterator<Args...>;
@@ -183,6 +185,11 @@ auto Table::add_row(Args &&...components) -> size_t {
   assert(all_heights_equal_ && height_ > 0);
 
   return height_ - 1;
+}
+
+template <typename... Args>
+auto Table::iter() -> TableIteratorWrapper<Args...> {
+  return {begin<Args...>(), end<Args...>()};
 }
 
 template <typename... Args>

@@ -57,12 +57,9 @@ TEST_F(TableIteratorTest, Done) {
 }
 
 TEST_F(TableIteratorTest, Loop) {
-  auto iter = this->table.begin<int, float>();
   std::vector<int> is;
   std::vector<float> fs;
-  for (auto it = this->table.begin<int, float>();  // NOLINT
-       it != this->table.end<int, float>(); ++it) {
-    auto [u, v] = *it;
+  for (auto [u, v] : table.iter<int, float>()) {
     is.push_back(u);
     fs.push_back(v);
   }
