@@ -59,9 +59,9 @@ TEST(Column, AddElement) {
   int_column.push<int>(30);
   EXPECT_EQ(int_column.size(), 3);
 
-  EXPECT_EQ(int_column.get_data_unchecked<int>(0), 15);
-  EXPECT_EQ(int_column.get_data_unchecked<int>(1), 45);
-  EXPECT_EQ(int_column.get_data_unchecked<int>(2), 30);
+  EXPECT_EQ(int_column.data_at<int>(0), 15);
+  EXPECT_EQ(int_column.data_at<int>(1), 45);
+  EXPECT_EQ(int_column.data_at<int>(2), 30);
   EXPECT_EQ(int_column.get_data<int>(0), 15);
   EXPECT_EQ(int_column.get_data<int>(1), 45);
   EXPECT_EQ(int_column.get_data<int>(2), 30);

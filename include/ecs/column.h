@@ -68,7 +68,7 @@ class Column {
   [[nodiscard]] auto capacity() const -> size_t;
 
   template <class T>
-  auto get_data_unchecked(size_t row) -> std::decay_t<T> & {
+  auto data_at(size_t row) -> std::decay_t<T> & {
     return *std::launder(reinterpret_cast<std::decay_t<T> *>(get_ptr_at(row)));
   }
 
@@ -77,7 +77,7 @@ class Column {
     if (row >= size_) {
       return {};
     }
-    std::reference_wrapper<T> data = get_data_unchecked<T>(row);
+    std::reference_wrapper<T> data = data_at<T>(row);
     return std::move(data);
   }
 

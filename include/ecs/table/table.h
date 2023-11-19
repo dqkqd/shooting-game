@@ -116,7 +116,7 @@ class Table {
 
   template <class T>
   auto get_data_unchecked(size_t row) -> T & {
-    return get_column<T>().template get_data_unchecked<T>(row);
+    return get_column<T>().template data_at<T>(row);
   }
 
   // add component to a column without increase height

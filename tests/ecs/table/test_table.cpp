@@ -56,15 +56,13 @@ TEST(Table, GetColumn) {
   table.add_row<std::string>("World");
 
   EXPECT_EQ(table.get_column(ColumnCounter::id<std::string>())
-                .get_data_unchecked<std::string>(0),
+                .data_at<std::string>(0),
             "Hello");
   EXPECT_EQ(table.get_column(ColumnCounter::id<std::string>())
-                .get_data_unchecked<std::string>(1),
+                .data_at<std::string>(1),
             "World");
-  EXPECT_EQ(table.get_column<std::string>().get_data_unchecked<std::string>(0),
-            "Hello");
-  EXPECT_EQ(table.get_column<std::string>().get_data_unchecked<std::string>(1),
-            "World");
+  EXPECT_EQ(table.get_column<std::string>().data_at<std::string>(0), "Hello");
+  EXPECT_EQ(table.get_column<std::string>().data_at<std::string>(1), "World");
 }
 
 TEST(Table, GetAllComponents) {
