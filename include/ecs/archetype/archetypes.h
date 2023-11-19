@@ -40,7 +40,7 @@ class Archetypes {
 
  private:
   std::vector<Archetype> archetypes_;
-  std::map<ArchetypeComponents, ArchetypeId> by_components_;
+  std::map<Components, ArchetypeId> by_components_;
   ArchetypesFinder finder_;
 
   [[nodiscard]] auto new_archetype_id() const -> ArchetypeId;
@@ -68,7 +68,7 @@ template <typename T, typename... Args>
 auto Archetypes::get() -> std::optional<ArchetypeId> {
   static_assert(all_types_are_different<T, Args...>());
 
-  auto it = by_components_.find(ArchetypeComponents::from_types<T, Args...>());
+  auto it = by_components_.find(Components::from_types<T, Args...>());
   if (it == by_components_.end()) {
     return {};
   }

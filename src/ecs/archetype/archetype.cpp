@@ -4,7 +4,7 @@
 Archetype::Archetype(ArchetypeId archetype_id, Table &&table)
     : archetype_id_{archetype_id},
       table_{std::move(table)},
-      components_{ArchetypeComponents::from_vec(table_.components())} {}
+      components_{Components::from_vec(table_.components())} {}
 
 Archetype::Archetype(Archetype &&archetype) noexcept
     : archetype_id_{std::exchange(archetype.archetype_id_,
@@ -29,9 +29,7 @@ auto Archetype::archetype_id() const -> ArchetypeId { return archetype_id_; }
 
 auto Archetype::table_id() const -> TableId { return table_.table_id(); }
 
-auto Archetype::components() const -> const ArchetypeComponents & {
-  return components_;
-}
+auto Archetype::components() const -> const Components & { return components_; }
 
 auto Archetype::table() -> Table & { return table_; }
 

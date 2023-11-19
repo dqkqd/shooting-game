@@ -34,7 +34,7 @@ class World {
 
  private:
   Archetypes archetypes_;
-  std::map<ArchetypeComponents, Query> queries_;
+  std::map<Components, Query> queries_;
   std::unordered_map<EntityId, EntityLocation> entities_;
 };
 
@@ -101,7 +101,7 @@ auto World::remove_component_from_entity(EntityId entity_id)
 
 template <typename... Args>
 auto World::query() -> QueryIterator<Args...> {
-  auto components = ArchetypeComponents::from_types<Args...>();
+  auto components = Components::from_types<Args...>();
 
   auto it = queries_.find(components);
   if (it != queries_.end()) {

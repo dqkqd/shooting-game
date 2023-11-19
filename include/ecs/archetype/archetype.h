@@ -1,8 +1,8 @@
 #ifndef ECS_ARCHETYPE_ARCHETYPE_H
 #define ECS_ARCHETYPE_ARCHETYPE_H
 
-#include "ecs/archetype/components.h"
 #include "ecs/archetype/edges.h"
+#include "ecs/component.h"
 #include "ecs/entity.h"
 #include "ecs/table.h"
 
@@ -16,7 +16,7 @@ class Archetype {
 
   [[nodiscard]] auto archetype_id() const -> ArchetypeId;
   [[nodiscard]] auto table_id() const -> TableId;
-  [[nodiscard]] auto components() const -> const ArchetypeComponents &;
+  [[nodiscard]] auto components() const -> const Components &;
   [[nodiscard]] auto table() -> Table &;
   [[nodiscard]] auto is_empty() const -> bool;
   [[nodiscard]] auto is_valid() const -> bool;
@@ -66,7 +66,7 @@ class Archetype {
  private:
   ArchetypeId archetype_id_;
   Table table_;
-  ArchetypeComponents components_;
+  Components components_;
   std::unordered_map<EntityId, EntityLocation> locations_;
 
   ArchetypeEdges next_edges_;

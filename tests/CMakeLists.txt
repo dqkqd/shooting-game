@@ -17,10 +17,10 @@ add_executable(
     test
     ecs/archetype/test_archetype.cpp
     ecs/archetype/test_archetypes.cpp
-    ecs/archetype/test_components.cpp
     ecs/archetype/test_edges.cpp
     ecs/archetype/test_finder.cpp
     ecs/test_column.cpp
+    ecs/test_component.cpp
     ecs/test_counter.cpp
     ecs/test_query.cpp
     ecs/test_table.cpp

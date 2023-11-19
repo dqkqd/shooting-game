@@ -27,8 +27,7 @@ TEST(Archetype, ComponentsMustBeSorted) {
   auto archetype = Archetype::create_archetype<A1, A2, A3>(0);
   std::vector expected{ColumnCounter::id<A1>(), ColumnCounter::id<A2>(),
                        ColumnCounter::id<A3>()};
-  EXPECT_EQ(archetype.components(),
-            ArchetypeComponents::from_vec(std::move(expected)));
+  EXPECT_EQ(archetype.components(), Components::from_vec(std::move(expected)));
 }
 
 TEST(Archetype, AddEntity) {
@@ -55,8 +54,7 @@ TEST(Archetype, MoveConstructor) {
             next_archetype.archetype_id());
   EXPECT_EQ(archetype2.get_prev_edge<float>(), prev_archetype.archetype_id());
   EXPECT_TRUE((archetype2.has_components<int, float>()));
-  EXPECT_EQ(archetype2.components(),
-            (ArchetypeComponents::from_types<int, float>()));
+  EXPECT_EQ(archetype2.components(), (Components::from_types<int, float>()));
   EXPECT_NE(archetype2.archetype_id(), INVALID_ARCHETYPE_ID);
 
   EXPECT_TRUE(archetype1.is_empty());
@@ -74,8 +72,7 @@ TEST(Archetype, MoveConstructor) {
   EXPECT_EQ(archetype3.get_prev_edge<float>(), prev_archetype.archetype_id());
   EXPECT_TRUE(archetype3.location(10).has_value());
   EXPECT_TRUE((archetype3.has_components<int, float>()));
-  EXPECT_EQ(archetype3.components(),
-            (ArchetypeComponents::from_types<int, float>()));
+  EXPECT_EQ(archetype3.components(), (Components::from_types<int, float>()));
   EXPECT_NE(archetype3.archetype_id(), INVALID_ARCHETYPE_ID);
 
   EXPECT_TRUE(archetype2.is_empty());
