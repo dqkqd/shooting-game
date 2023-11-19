@@ -1,9 +1,5 @@
 #include "ecs/archetype/archetypes.h"
 
-void ArchetypesFinder::add(ComponentId component_id, ArchetypeId archetype_id) {
-  by_component_[component_id].emplace_back(archetype_id);
-}
-
 auto Archetypes::size() const -> size_t { return archetypes_.size(); }
 
 auto Archetypes::get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype& {
