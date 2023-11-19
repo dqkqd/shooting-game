@@ -5,7 +5,7 @@
 
 #include <set>
 
-#include "ecs/column.h"
+#include "ecs/column/column.h"
 #include "ecs/primitive.h"
 
 class Components {

@@ -3,7 +3,7 @@
 
 #include <iterator>
 
-#include "ecs/column.h"
+#include "ecs/column/column.h"
 
 template <typename... Args>
 class TableIterator {
@@ -16,7 +16,7 @@ class TableIterator {
 
   TableIterator() = default;
   explicit TableIterator(std::size_t max_rows,
-                         Column::Iterator<Args>... column_iters)
+                         ColumnIterator<Args>... column_iters)
       : max_rows_{max_rows}, iters_(std::make_tuple(column_iters...)) {}
 
   [[nodiscard]] auto done() const -> bool { return current_row_ == max_rows_; }
@@ -43,7 +43,7 @@ class TableIterator {
  private:
   size_t max_rows_{};
   size_t current_row_{};
-  std::tuple<Column::Iterator<Args>...> iters_;
+  std::tuple<ColumnIterator<Args>...> iters_;
 
   auto dereference() -> reference {
     return dereference_impl(std::index_sequence_for<Args...>());

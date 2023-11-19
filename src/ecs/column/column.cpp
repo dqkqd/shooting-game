@@ -1,4 +1,4 @@
-#include "ecs/column.h"
+#include "ecs/column/column.h"
 
 #include <cstdint>
 #include <cstring>

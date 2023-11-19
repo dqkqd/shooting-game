@@ -1,7 +1,7 @@
 #ifndef ECS_ARCHETYPE_FINDER_H
 #define ECS_ARCHETYPE_FINDER_H
 
-#include "ecs/column.h"
+#include "ecs/column/column.h"
 #include "ecs/primitive.h"
 
 class ArchetypesFinder {

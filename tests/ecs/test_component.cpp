@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "ecs/column.h"
+#include "ecs/column/column.h"
 #include "ecs/component.h"
 
 class ComponentsTest : public testing::Test {

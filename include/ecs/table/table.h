@@ -1,7 +1,6 @@
 #ifndef ECS_TABLE_TABLE_H
 #define ECS_TABLE_TABLE_H
 
-#include "ecs/column.h"
 #include "ecs/component.h"
 #include "ecs/primitive.h"
 #include "ecs/table/iterator.h"
