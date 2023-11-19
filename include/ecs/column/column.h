@@ -50,6 +50,8 @@ class Column {
   void push_unknown(void *item);
   auto remove(size_t row) -> bool;
 
+  void push_from(Column &other, size_t other_row);
+
   /* iterator helper */
   template <class T>
   auto begin() -> ColumnIterator<T>;

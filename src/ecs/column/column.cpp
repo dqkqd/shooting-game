@@ -44,6 +44,12 @@ void Column::push_unknown(void *item) {
   ++size_;
 };
 
+void Column::push_from(Column &other, size_t other_row) {
+  grow();
+  std::memcpy(get_ptr_at(size_), other.get_ptr_at(other_row), layout_);
+  ++size_;
+}
+
 auto Column::remove(size_t row) -> bool {
   if (row >= size_) {
     return false;

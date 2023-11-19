@@ -79,14 +79,38 @@ TEST(Column, AddTooManyElement) {
   }
 }
 
-TEST(Column, AddUnknownElementToColumn) {
-  auto column = Column::create_column<int>();
+TEST(Column, PushDataFromOtherColumn) {
+  struct Card {
+    int id;
+  };
+  struct Person {
+    int age;
+    Card card;
+    [[nodiscard]] auto get() const -> int { return age + card.id; }
+  };
 
-  int item = 10;
-  column.push_unknown(&item);
+  auto column1 = Column::create_column<Person>();
+  {
+    auto column2 = Column::create_column<Person>();
+    column2.push<Person>(Person{.age = 10, .card = Card{.id = 1}});
+    column2.push<Person>(Person{.age = 20, .card = Card{.id = 2}});
+    column2.push<Person>(Person{.age = 30, .card = Card{.id = 3}});
+    column2.push<Person>(Person{.age = 40, .card = Card{.id = 4}});
+    column2.push<Person>(Person{.age = 50, .card = Card{.id = 5}});
 
-  EXPECT_EQ(column.size(), 1);
-  EXPECT_EQ(column.get_data<int>(0), 10);
+    column1.push_from(column2, 4);
+    column1.push_from(column2, 3);
+    column1.push_from(column2, 2);
+    column1.push_from(column2, 1);
+    column1.push_from(column2, 0);
+  }
+
+  // data still persist after out of scope
+  EXPECT_EQ(column1.get_data<Person>(0).get(), 55);
+  EXPECT_EQ(column1.get_data<Person>(1).get(), 44);
+  EXPECT_EQ(column1.get_data<Person>(2).get(), 33);
+  EXPECT_EQ(column1.get_data<Person>(3).get(), 22);
+  EXPECT_EQ(column1.get_data<Person>(4).get(), 11);
 }
 
 TEST(Column, AddTooManyUnknownElement) {
