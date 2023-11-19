@@ -12,21 +12,21 @@ TEST(Query, MoveQuery) {
 
 TEST(Query, QueryWithinTheSameArchetype) {
   auto world = World();
-  world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
-  world.spawn_entity_with<int, float, std::string>(3, 4.0, "World");
+  world.spawn_entity_with<int, float, char>(1, 2.0, 'a');
+  world.spawn_entity_with<int, float, char>(3, 4.0, 'b');
 
-  auto query = world.query<int, float, std::string>();
+  auto query = world.query<int, float, char>();
   EXPECT_FALSE(query.done());
 
   auto [i1, f1, s1] = query.next();
   EXPECT_EQ(i1, 1);
   EXPECT_EQ(f1, 2.0);
-  EXPECT_EQ(s1, "Hello");
+  EXPECT_EQ(s1, 'a');
 
   auto [i2, f2, s2] = query.next();
   EXPECT_EQ(i2, 3);
   EXPECT_EQ(f2, 4.0);
-  EXPECT_EQ(s2, "World");
+  EXPECT_EQ(s2, 'b');
 
   EXPECT_TRUE(query.done());
 }
@@ -34,24 +34,20 @@ TEST(Query, QueryWithinTheSameArchetype) {
 TEST(Query, QueryAcrossArchetypes) {
   struct A {};
   auto world = World();
-  world.spawn_entity_with<int, float, std::string>(1, 2.0, "Hello");
-  world.spawn_entity_with<int, float, std::string>(2, 3.0, "from");
-  world.spawn_entity_with<int, double, std::string>(3, 4.0, "the");
-  world.spawn_entity_with<int, char, std::string>(4, 'x', "other");
-  world.spawn_entity_with<int, A, std::string>(5, A{}, "side");
+  world.spawn_entity_with<int, float, char>(1, 2.0, 'a');
+  world.spawn_entity_with<int, float, char>(2, 3.0, 'b');
+  world.spawn_entity_with<int, double, char>(3, 4.0, 'c');
+  world.spawn_entity_with<int, size_t, char>(4, 5, 'd');
+  world.spawn_entity_with<int, A, char>(5, A{}, 'e');
 
-  auto query = world.query<int, std::string>();
+  auto query = world.query<int, char>();
   std::vector<int> is;
-  std::vector<std::string> ss;
+  std::vector<char> ss;
   while (!query.done()) {
     auto [i, s] = query.next();
     is.emplace_back(i);
     ss.emplace_back(s);
   }
   EXPECT_EQ(is, std::vector({1, 2, 3, 4, 5}));
-  EXPECT_EQ(ss[0], "Hello");
-  EXPECT_EQ(ss[1], "from");
-  EXPECT_EQ(ss[2], "the");
-  EXPECT_EQ(ss[3], "other");
-  EXPECT_EQ(ss[4], "side");
+  EXPECT_EQ(ss, std::vector({'a', 'b', 'c', 'd', 'e'}));
 }

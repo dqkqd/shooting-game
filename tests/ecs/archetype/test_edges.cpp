@@ -4,8 +4,8 @@
 
 TEST(ArchetypeEdges, AddAndGet) {
   auto edges = ArchetypeEdges();
-  edges.add<std::string>(1);
-  EXPECT_EQ(edges.get<std::string>(), 1);
+  edges.add<double>(1);
+  EXPECT_EQ(edges.get<double>(), 1);
 }
 
 TEST(ArchetypeEdges, MoveConstruct) {

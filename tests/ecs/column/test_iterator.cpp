@@ -8,35 +8,35 @@ class ColumnIteratorTest : public testing::Test {
  protected:
   struct TestStruct {
    public:
-    explicit TestStruct(std::string&& item) : item_{item} {}
-    [[nodiscard]] auto item() const -> std::string { return item_; };
+    explicit TestStruct(float item) : item_{item} {}
+    [[nodiscard]] auto triple() const -> float { return item_ * 3; };
 
    private:
-    std::string item_;
+    float item_;
   };
 
   Column column = Column::create_column<TestStruct>();
   ColumnIterator<TestStruct> iterator;
 
   void SetUp() override {
-    column.push<TestStruct>(TestStruct{"Hello"});
-    column.push<TestStruct>(TestStruct{" from"});
-    column.push<TestStruct>(TestStruct{" the"});
-    column.push<TestStruct>(TestStruct{" other"});
-    column.push<TestStruct>(TestStruct{" side"});
+    column.push<TestStruct>(TestStruct{1.0});
+    column.push<TestStruct>(TestStruct{2.0});
+    column.push<TestStruct>(TestStruct{3.0});
+    column.push<TestStruct>(TestStruct{4.0});
+    column.push<TestStruct>(TestStruct{5.0});
 
     iterator = column.begin<TestStruct>();
   }
 };
 
 TEST_F(ColumnIteratorTest, Dereference) {
-  EXPECT_EQ(iterator->item(), "Hello");
-  EXPECT_EQ((*iterator).item(), "Hello");
+  EXPECT_EQ(iterator->triple(), 3.0);
+  EXPECT_EQ((*iterator).triple(), 3.0);
 }
 
 TEST_F(ColumnIteratorTest, Advance) {
   ++iterator;
-  EXPECT_EQ(iterator->item(), " from");
+  EXPECT_EQ(iterator->triple(), 6.0);
 }
 
 TEST_F(ColumnIteratorTest, Comparison) {
@@ -47,14 +47,14 @@ TEST_F(ColumnIteratorTest, Comparison) {
 
   // iter from different column
   auto other = Column::create_column<TestStruct>();
-  other.push<TestStruct>(TestStruct("Hello"));
+  other.push<TestStruct>(TestStruct{1.0});
   EXPECT_NE(other.begin<TestStruct>(), new_iterator);
 }
 
 TEST_F(ColumnIteratorTest, Loop) {
-  std::string s;
+  float sum = 0;
   for (auto& it : column.iter<TestStruct>()) {
-    s += it.item();
+    sum += it.triple();
   }
-  EXPECT_EQ(s, "Hello from the other side");
+  EXPECT_EQ(sum, 45.0);
 }

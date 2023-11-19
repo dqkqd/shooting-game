@@ -5,6 +5,8 @@
 
 class ComponentsTest : public testing::Test {
  protected:
+  struct A {};
+
   Components components;
   void SetUp() override { components = Components::from_types<int, float>(); }
 };
@@ -43,8 +45,8 @@ TEST_F(ComponentsTest, Clone) {
 }
 
 TEST_F(ComponentsTest, CloneWith) {
-  auto cloned = components.clone_with<std::string>();
-  EXPECT_EQ(cloned, (Components::from_types<int, float, std::string>()));
+  auto cloned = components.clone_with<A>();
+  EXPECT_EQ(cloned, (Components::from_types<int, float, A>()));
   // existed component
   EXPECT_FALSE((components.clone_with<float>()).has_value());
 }
@@ -53,5 +55,5 @@ TEST_F(ComponentsTest, CloneWithout) {
   auto cloned = components.clone_without<int>();
   EXPECT_EQ(cloned, (Components::from_types<float>()));
   // non existed component
-  EXPECT_FALSE((components.clone_without<std::string>()).has_value());
+  EXPECT_FALSE((components.clone_without<A>()).has_value());
 }

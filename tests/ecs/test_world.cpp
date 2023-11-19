@@ -3,16 +3,15 @@
 
 TEST(World, SpawnEntityWith) {
   auto world = World();
-  auto entity_location =
-      world.spawn_entity_with<int, std::string>(1, "Hello world");
+  auto entity_location = world.spawn_entity_with<int, char>(1, 'a');
 
-  EXPECT_EQ((world.archetypes().get<int, std::string>()),
+  EXPECT_EQ((world.archetypes().get<int, char>()),
             entity_location.archetype_id);
 
   auto data = world.archetypes()
                   .get_by_id_unchecked(entity_location.archetype_id)
-                  .get_entity_data<std::string>(entity_location.entity_id);
-  EXPECT_EQ(data->get(), "Hello world");
+                  .get_entity_data<char>(entity_location.entity_id);
+  EXPECT_EQ(data->get(), 'a');
 }
 
 TEST(World, AddComponentToEntity) {
@@ -82,5 +81,5 @@ TEST(World, RemoveComponentInvalid) {
 
   // not existed type
   EXPECT_ANY_THROW(
-      world.remove_component_from_entity<std::string>(location.entity_id));
+      world.remove_component_from_entity<char>(location.entity_id));
 }

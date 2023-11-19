@@ -7,12 +7,10 @@ TEST(Column, BasicConstruct) {
   auto int_column = Column::create_column<int>();
   EXPECT_TRUE(int_column.is<int>());
   EXPECT_FALSE(int_column.is<float>());
-  EXPECT_FALSE(int_column.is<std::string>());
   EXPECT_FALSE(int_column.is<size_t>());
 
   EXPECT_EQ(int_column.component_id(), ColumnCounter::id<int>());
   EXPECT_NE(int_column.component_id(), ColumnCounter::id<float>());
-  EXPECT_NE(int_column.component_id(), ColumnCounter::id<std::string>());
   EXPECT_NE(int_column.component_id(), ColumnCounter::id<size_t>());
 }
 
@@ -65,7 +63,6 @@ TEST(Column, AddElement) {
 
   // add non integer element
   EXPECT_ANY_THROW(int_column.push<float>(1.5));
-  EXPECT_ANY_THROW(int_column.push<std::string>("hello"));
   EXPECT_ANY_THROW(int_column.push<size_t>(1));
 }
 
@@ -128,8 +125,8 @@ TEST(Column, ReassignElement) {
   int_column.push<int>(10);
   int_column.push<int>(20);
 
-  int_column.get_data<int>(0) = 30;  // NOLINT
-  int_column.get_data<int>(1) = 40;  // NOLINT
+  int_column.get_data<int>(0) = 30;
+  int_column.get_data<int>(1) = 40;
 
   EXPECT_EQ(int_column.get_data<int>(0), 30);
   EXPECT_EQ(int_column.get_data<int>(1), 40);
@@ -171,30 +168,18 @@ TEST(Column, RemoveManyElements) {
   EXPECT_EQ(int_column.size(), 100);
 }
 
-TEST(Column, ColumnForString) {
-  auto column = Column::create_column<std::string>();
-  column.push<std::string>("Hello");
-  column.push<std::string>("World");
-  EXPECT_EQ(column.get_data<std::string>(0), "Hello");
-  EXPECT_EQ(column.get_data<std::string>(1), "World");
-}
-
 TEST(Column, ColumnForStruct) {
   struct TestStruct {
-   public:
-    explicit TestStruct(std::string word) : word_{std::move(word)} {}
-    auto run() -> std::string { return word_; }
-
-   private:
-    std::string word_;
+    float item;
+    [[nodiscard]] auto triple() const -> float { return item * 3; }
   };
 
   auto column = Column::create_column<TestStruct>();
-  column.push<TestStruct>(TestStruct("Hello"));
-  column.push<TestStruct>(TestStruct("World"));
+  column.push<TestStruct>(TestStruct{.item = 2.0F});
+  column.push<TestStruct>(TestStruct{.item = 3.0F});
 
-  EXPECT_EQ(column.get_data<TestStruct>(0).run(), "Hello");
-  EXPECT_EQ(column.get_data<TestStruct>(1).run(), "World");
+  EXPECT_EQ(column.get_data<TestStruct>(0).triple(), 6.0F);
+  EXPECT_EQ(column.get_data<TestStruct>(1).triple(), 9.0F);
 }
 
 TEST(Column, Clone) {

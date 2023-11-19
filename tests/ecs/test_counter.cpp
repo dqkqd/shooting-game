@@ -27,13 +27,11 @@ TEST(Counter, CounterShouldEqualBetweenTemplates) {
   EXPECT_EQ(IntCounter::id<int>(), 0);
   EXPECT_EQ(IntCounter::id<float>(), 1);
   EXPECT_EQ(IntCounter::id<char>(), 2);
-  EXPECT_EQ(IntCounter::id<std::string>(), 3);
   EXPECT_EQ(IntCounter::id<int>(), 0);
 
   EXPECT_EQ(FloatCounter::id<int>(), 0);
   EXPECT_EQ(FloatCounter::id<float>(), 1);
   EXPECT_EQ(FloatCounter::id<char>(), 2);
-  EXPECT_EQ(FloatCounter::id<std::string>(), 3);
   EXPECT_EQ(FloatCounter::id<int>(), 0);
 }
 

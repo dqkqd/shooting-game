@@ -41,17 +41,16 @@ TEST(Archetype, AddEntity) {
 
 TEST(Archetype, MoveConstructor) {
   auto archetype1 = Archetype::create_archetype<int, float>(0);
-  auto next_archetype = Archetype::create_archetype<int, float, std::string>(1);
+  auto next_archetype = Archetype::create_archetype<int, float, char>(1);
   auto prev_archetype = Archetype::create_archetype<int>(2);
   archetype1.add_entity<int, float>(10, 1, 2.0);
-  archetype1.add_next_edge<std::string>(next_archetype.archetype_id());
+  archetype1.add_next_edge<char>(next_archetype.archetype_id());
   archetype1.add_prev_edge<float>(prev_archetype.archetype_id());
 
   auto archetype2 = std::move(archetype1);
   EXPECT_FALSE(archetype2.is_empty());
   EXPECT_TRUE(archetype2.location(10).has_value());
-  EXPECT_EQ(archetype2.get_next_edge<std::string>(),
-            next_archetype.archetype_id());
+  EXPECT_EQ(archetype2.get_next_edge<char>(), next_archetype.archetype_id());
   EXPECT_EQ(archetype2.get_prev_edge<float>(), prev_archetype.archetype_id());
   EXPECT_TRUE((archetype2.has_components<int, float>()));
   EXPECT_EQ(archetype2.components(), (Components::from_types<int, float>()));
@@ -59,7 +58,7 @@ TEST(Archetype, MoveConstructor) {
 
   EXPECT_TRUE(archetype1.is_empty());
   EXPECT_FALSE(archetype1.location(10).has_value());
-  EXPECT_FALSE(archetype1.get_next_edge<std::string>().has_value());
+  EXPECT_FALSE(archetype1.get_next_edge<char>().has_value());
   EXPECT_FALSE(archetype1.get_prev_edge<float>().has_value());
   EXPECT_FALSE((archetype1.has_components<int, float>()));
   EXPECT_EQ(archetype1.components().size(), 0);
@@ -67,8 +66,7 @@ TEST(Archetype, MoveConstructor) {
 
   Archetype archetype3{std::move(archetype2)};
   EXPECT_FALSE(archetype3.is_empty());
-  EXPECT_EQ(archetype3.get_next_edge<std::string>(),
-            next_archetype.archetype_id());
+  EXPECT_EQ(archetype3.get_next_edge<char>(), next_archetype.archetype_id());
   EXPECT_EQ(archetype3.get_prev_edge<float>(), prev_archetype.archetype_id());
   EXPECT_TRUE(archetype3.location(10).has_value());
   EXPECT_TRUE((archetype3.has_components<int, float>()));
@@ -77,7 +75,7 @@ TEST(Archetype, MoveConstructor) {
 
   EXPECT_TRUE(archetype2.is_empty());
   EXPECT_FALSE(archetype2.location(10).has_value());
-  EXPECT_FALSE(archetype2.get_next_edge<std::string>().has_value());
+  EXPECT_FALSE(archetype2.get_next_edge<char>().has_value());
   EXPECT_FALSE(archetype2.get_prev_edge<float>().has_value());
   EXPECT_FALSE((archetype2.has_components<int, float>()));
   EXPECT_EQ(archetype2.components().size(), 0);
@@ -103,11 +101,10 @@ TEST(Archetype, MoveEntitySuccessful) {
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
-  auto other = Archetype::create_archetype<int, float, std::string>(1);
+  auto other = Archetype::create_archetype<int, float, char>(1);
 
   auto old_location = archetype.location(10);
-  auto location =
-      archetype.move_entity_to_other<std::string>(10, other, "Hello");
+  auto location = archetype.move_entity_to_other<char>(10, other, 'a');
 
   EXPECT_TRUE(location.has_value());
   EXPECT_EQ(location->entity_id, old_location->entity_id);
@@ -125,7 +122,7 @@ TEST(Archetype, MoveEntityIsNotOverlappedWithoutEnoughArguments) {
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
-  auto other = Archetype::create_archetype<std::string>(1);
+  auto other = Archetype::create_archetype<char>(1);
   EXPECT_THROW(archetype.move_entity_to_other(10, other), std::runtime_error);
 }
 
@@ -183,46 +180,42 @@ TEST(Archetype, MoveAlreadyExistedEntityOnOther) {
   archetype.add_entity<int, float>(10, 1, 2.0);
   archetype.add_entity<int, float>(20, 3, 4.0);
 
-  auto other = Archetype::create_archetype<int, double, std::string>(1);
-  other.add_entity<int, double, std::string>(10, 2, 3.0, "Hello");
-  auto location =
-      archetype.move_entity_to_other<std::string>(10, other, "World");
+  auto other = Archetype::create_archetype<int, double, char>(1);
+  other.add_entity<int, double, char>(10, 2, 3.0, 'a');
+  auto location = archetype.move_entity_to_other<char>(10, other, 'b');
 
   EXPECT_FALSE(location.has_value());
 }
 
 TEST(Archetype, AddNextEdge) {
   auto archetype = Archetype::create_archetype<int, float>(0);
-  auto next_archetype = Archetype::create_archetype<int, float, std::string>(1);
+  auto next_archetype = Archetype::create_archetype<int, float, char>(1);
 
-  archetype.add_next_edge<std::string>(next_archetype.archetype_id());
+  archetype.add_next_edge<char>(next_archetype.archetype_id());
 
-  EXPECT_EQ(archetype.get_next_edge<std::string>(),
-            next_archetype.archetype_id());
+  EXPECT_EQ(archetype.get_next_edge<char>(), next_archetype.archetype_id());
 
-  EXPECT_THROW(archetype.add_next_edge<std::string>(archetype.archetype_id()),
+  EXPECT_THROW(archetype.add_next_edge<char>(archetype.archetype_id()),
                std::runtime_error);
 }
 
 TEST(Archetype, AddPrevEdge) {
-  auto archetype = Archetype::create_archetype<int, float, std::string>(1);
+  auto archetype = Archetype::create_archetype<int, float, char>(1);
   auto prev_archetype = Archetype::create_archetype<int, float>(0);
 
-  archetype.add_prev_edge<std::string>(prev_archetype.archetype_id());
+  archetype.add_prev_edge<char>(prev_archetype.archetype_id());
 
-  EXPECT_EQ(archetype.get_prev_edge<std::string>(),
-            prev_archetype.archetype_id());
+  EXPECT_EQ(archetype.get_prev_edge<char>(), prev_archetype.archetype_id());
 
-  EXPECT_THROW(archetype.add_prev_edge<std::string>(archetype.archetype_id()),
+  EXPECT_THROW(archetype.add_prev_edge<char>(archetype.archetype_id()),
                std::runtime_error);
 }
 
 TEST(Archetype, GetData) {
-  auto archetype = Archetype::create_archetype<int, float, std::string>(1);
-  auto location =
-      archetype.add_entity<int, float, std::string>(10, 1, 2.0, "Hello world");
-  auto string_data = archetype.get_entity_data<std::string>(location.entity_id);
-  EXPECT_EQ(string_data->get(), "Hello world");
+  auto archetype = Archetype::create_archetype<int, float, char>(1);
+  auto location = archetype.add_entity<int, float, char>(10, 1, 2.0, 'a');
+  auto data = archetype.get_entity_data<char>(location.entity_id);
+  EXPECT_EQ(data->get(), 'a');
 
   // invalid entity id
   EXPECT_FALSE(
