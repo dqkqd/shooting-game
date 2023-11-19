@@ -1,11 +1,6 @@
 #include "ecs/column/column.h"
 
-#include <cstdint>
-#include <cstring>
-#include <memory>
 #include <utility>
-
-#include "ecs/primitive.h"
 
 Column::Column(Column &&column) noexcept
     : layout_{std::exchange(column.layout_, INVALID_LAYOUT)},
