@@ -13,7 +13,7 @@ class TableIteratorTest : public testing::Test {
 };
 
 TEST_F(TableIteratorTest, Get) {
-  auto iter = this->table.begin<int, float>();
+  auto iter = table.begin<int, float>();
 
   auto [i, f] = *iter;
   EXPECT_EQ(i, 1);
@@ -21,14 +21,14 @@ TEST_F(TableIteratorTest, Get) {
 }
 
 TEST_F(TableIteratorTest, GetSubset) {
-  auto iter = this->table.begin<int>();
+  auto iter = table.begin<int>();
 
   auto [i] = *iter;
   EXPECT_EQ(i, 1);
 }
 
 TEST_F(TableIteratorTest, Advance) {
-  auto iter = this->table.begin<int, float>();
+  auto iter = table.begin<int, float>();
 
   ++iter;
   auto [i, f] = *iter;
@@ -37,20 +37,20 @@ TEST_F(TableIteratorTest, Advance) {
 }
 
 TEST_F(TableIteratorTest, Modify) {
-  auto iter = this->table.begin<int, float>();
+  auto iter = table.begin<int, float>();
 
   auto [i, f] = *iter;
   i = 10;
   f = 20;
 
-  auto iter2 = this->table.begin<int, float>();
+  auto iter2 = table.begin<int, float>();
   auto [i2, f2] = *iter;
   EXPECT_EQ(i2, 10);
   EXPECT_EQ(f2, 20);
 }
 
 TEST_F(TableIteratorTest, Done) {
-  auto iter = this->table.begin<int, float>();
+  auto iter = table.begin<int, float>();
   iter++;
   iter++;
   EXPECT_TRUE(iter.done());
