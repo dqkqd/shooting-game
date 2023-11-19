@@ -71,6 +71,12 @@ TEST_F(TableTest, GetData) {
   EXPECT_EQ(table.get_data<std::string>(1), "from");
 }
 
+TEST_F(TableTest, GetDataRow) {
+  EXPECT_EQ(
+      (table.get_data_row<int, float, char, std::string>(0)),
+      (std::make_tuple<int, float, char, std::string>(1, 1.0, 'a', "Hello")));
+}
+
 TEST_F(TableTest, HasMultipleComponents) {
   EXPECT_TRUE(table.has_components<int>());
   EXPECT_TRUE((table.has_components<float, int>()));
