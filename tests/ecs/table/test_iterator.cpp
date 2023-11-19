@@ -2,50 +2,70 @@
 
 #include "ecs/table/table.h"
 
-TEST(TableIterator, Basic) {
-  auto table = Table::create_table<int, float>();
-  table.add_row<int, float>(1, 2.0);
-  table.add_row<int, float>(3, 4.0);
+class TableIteratorTest : public testing::Test {
+ protected:
+  Table table = Table::create_table<int, float>();
 
-  auto iter = table.begin<int, float>();
+  void SetUp() override {
+    table.add_row<int, float>(1, 2.0);
+    table.add_row<int, float>(3, 4.0);
+  }
+};
 
-  // get values
-  auto [i1, f1] = *iter;
-  EXPECT_EQ(i1, 1);
-  EXPECT_EQ(f1, 2.0);
+TEST_F(TableIteratorTest, Get) {
+  auto iter = this->table.begin<int, float>();
 
-  // advance then get value
+  auto [i, f] = *iter;
+  EXPECT_EQ(i, 1);
+  EXPECT_EQ(f, 2.0);
+}
+
+TEST_F(TableIteratorTest, GetSubset) {
+  auto iter = this->table.begin<int>();
+
+  auto [i] = *iter;
+  EXPECT_EQ(i, 1);
+}
+
+TEST_F(TableIteratorTest, Advance) {
+  auto iter = this->table.begin<int, float>();
+
   ++iter;
+  auto [i, f] = *iter;
+  EXPECT_EQ(i, 3);
+  EXPECT_EQ(f, 4.0);
+}
+
+TEST_F(TableIteratorTest, Modify) {
+  auto iter = this->table.begin<int, float>();
+
+  auto [i, f] = *iter;
+  i = 10;
+  f = 20;
+
+  auto iter2 = this->table.begin<int, float>();
   auto [i2, f2] = *iter;
-  EXPECT_EQ(i2, 3);
-  EXPECT_EQ(f2, 4.0);
+  EXPECT_EQ(i2, 10);
+  EXPECT_EQ(f2, 20);
+}
 
-  // value could be modified
-  i2 = 5;
-  f2 = 8.0;
-  auto [i3, f3] = *iter;
-  EXPECT_EQ(i3, 5);
-  EXPECT_EQ(f3, 8.0);
-
-  ++iter;
-  // iter is now done
+TEST_F(TableIteratorTest, Done) {
+  auto iter = this->table.begin<int, float>();
+  iter++;
+  iter++;
   EXPECT_TRUE(iter.done());
+}
 
-  // iter could be looped
+TEST_F(TableIteratorTest, Loop) {
+  auto iter = this->table.begin<int, float>();
   std::vector<int> is;
   std::vector<float> fs;
-  for (auto it = table.begin<int, float>();  // NOLINT
-       it != table.end<int, float>(); ++it) {
+  for (auto it = this->table.begin<int, float>();  // NOLINT
+       it != this->table.end<int, float>(); ++it) {
     auto [u, v] = *it;
     is.push_back(u);
     fs.push_back(v);
   }
-  EXPECT_EQ(is, std::vector({1, 5}));
-  EXPECT_EQ(fs, std::vector({2.0F, 8.0F}));
-
-  // iter could be subset of type
-  auto [i4] = *table.begin<int>();
-  EXPECT_EQ(i4, 1);
-  auto [f4] = *table.begin<float>();
-  EXPECT_EQ(f4, 2.0F);
+  EXPECT_EQ(is, std::vector({1, 3}));
+  EXPECT_EQ(fs, std::vector({2.0F, 4.0F}));
 }
