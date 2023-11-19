@@ -2,6 +2,7 @@
 #define ECS_TABLE_H
 
 #include "ecs/column.h"
+#include "ecs/component.h"
 #include "ecs/primitive.h"
 
 class Table;
@@ -24,6 +25,7 @@ class Table {
                   "All column types must be pairwise different");
 
     auto table = Table();
+    table.components_ = std::move(Components::from_types<Args...>());
     table.width_ = sizeof...(Args);
     (
         [&] {
@@ -45,6 +47,8 @@ class Table {
     }
 
     auto table = create_table<T>();
+    table.components_ = std::move(components_.template clone_with<T>().value());
+
     for (const auto &[id, column] : columns_) {
       table.columns_.emplace(id, column.clone());
       ++table.width_;
@@ -67,6 +71,9 @@ class Table {
     }
 
     auto table = Table();
+    table.components_ =
+        std::move(components_.template clone_without<T>().value());
+
     for (const auto &[id, column] : columns_) {
       if (id == ComponentCounter::id<T>()) {
         continue;
@@ -83,7 +90,7 @@ class Table {
   [[nodiscard]] auto width() const -> size_t;
   [[nodiscard]] auto height() const -> size_t;
 
-  [[nodiscard]] auto components() const -> std::vector<ComponentId>;
+  [[nodiscard]] auto components() const -> const Components &;
 
   [[nodiscard]] auto has_component_id(ComponentId component_id) const -> bool;
 
@@ -239,6 +246,7 @@ class Table {
 
  private:
   TableId table_id_;
+  Components components_{};
   std::unordered_map<ComponentId, Column> columns_{};
 
   size_t width_;

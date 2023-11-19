@@ -4,7 +4,7 @@
 Archetype::Archetype(ArchetypeId archetype_id, Table &&table)
     : archetype_id_{archetype_id},
       table_{std::move(table)},
-      components_{Components::from_vec(table_.components())} {}
+      components_{table_.components().clone()} {}
 
 Archetype::Archetype(Archetype &&archetype) noexcept
     : archetype_id_{std::exchange(archetype.archetype_id_,

@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+#include "ecs/component.h"
 #include "ecs/primitive.h"
 #include "ecs/table.h"
 
@@ -12,20 +13,35 @@ TEST(Table, Constructor) {
 }
 
 TEST(Table, TestMove) {
-  auto table1 = Table::create_table<int>();
-  table1.add_row<int>(1);
-  table1.add_row<int>(2);
+  auto table1 = Table::create_table<int, float>();
+  table1.add_row<int, float>(1, 3.0);
+  table1.add_row<int, float>(2, 4.0);
 
   auto table2 = std::move(table1);
   EXPECT_TRUE(table2.is_valid());
   EXPECT_FALSE(table2.is_empty());
-  EXPECT_EQ(table2.width(), 1);
+  EXPECT_EQ(table2.width(), 2);
   EXPECT_EQ(table2.height(), 2);
+  EXPECT_EQ(table2.components(), (Components::from_types<int, float>()));
 
   EXPECT_FALSE(table1.is_valid());
   EXPECT_TRUE(table1.is_empty());
   EXPECT_EQ(table1.width(), 0);
   EXPECT_EQ(table1.height(), 0);
+  EXPECT_EQ(table1.components(), Components::from_types());
+
+  Table table3{std::move(table2)};
+  EXPECT_TRUE(table3.is_valid());
+  EXPECT_FALSE(table3.is_empty());
+  EXPECT_EQ(table3.width(), 2);
+  EXPECT_EQ(table3.height(), 2);
+  EXPECT_EQ(table3.components(), (Components::from_types<int, float>()));
+
+  EXPECT_FALSE(table2.is_valid());
+  EXPECT_TRUE(table2.is_empty());
+  EXPECT_EQ(table2.width(), 0);
+  EXPECT_EQ(table2.height(), 0);
+  EXPECT_EQ(table2.components(), Components::from_types());
 }
 
 TEST(Table, ShouldHaveDifferentId) {
@@ -53,13 +69,8 @@ TEST(Table, GetColumn) {
 
 TEST(Table, GetAllComponents) {
   auto table = Table::create_table<int, float, std::string>();
-  std::set<ComponentId> expected{ColumnCounter::id<int>(),
-                                 ColumnCounter::id<float>(),
-                                 ColumnCounter::id<std::string>()};
-  EXPECT_EQ(table.components().size(), 3);
-  for (auto component_id : table.components()) {
-    EXPECT_TRUE(expected.find(component_id) != expected.end());
-  }
+  EXPECT_EQ(table.components(),
+            (Components::from_types<int, float, std::string>()));
 };
 
 TEST(Table, GetData) {
