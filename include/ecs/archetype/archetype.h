@@ -108,7 +108,7 @@ auto Archetype::get_entity_data(EntityId entity_id) -> OptionalRef<T> {
     return {};
   }
 
-  return std::ref(table_.get_data_unchecked<T>(it->second.table_row));
+  return std::ref(table_.get_data<T>(it->second.table_row));
 }
 
 template <typename... Args>
@@ -152,11 +152,8 @@ auto Archetype::move_entity_to_other(EntityId entity_id, Archetype &other,
   }
 
   // Adding missing components
-  if (sizeof...(Args) > 0) {
-    other.table_.add_components<Args...>(std::move(components)...);
-  }
+  other.table_.add_data<Args...>(std::move(components)...);
 
-  other.table_.reset_height();
   auto new_height = other.table_.height();
 
   if (!other.is_valid() || old_height + 1 != new_height) {

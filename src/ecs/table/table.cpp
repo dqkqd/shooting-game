@@ -36,10 +36,6 @@ auto Table::height() const -> size_t { return height_; }
 
 auto Table::components() const -> const Components& { return components_; }
 
-auto Table::has_component_id(ComponentId component_id) const -> bool {
-  return columns_.find(component_id) != columns_.end();
-}
-
 auto Table::get_column(ComponentId component_id) -> Column& {
   auto it = columns_.find(component_id);
   if (it == columns_.end()) {
@@ -49,7 +45,7 @@ auto Table::get_column(ComponentId component_id) -> Column& {
   return it->second;
 }
 
-auto Table::add_component(ComponentId component_id, void* item) -> size_t {
+auto Table::add_unknown_data(ComponentId component_id, void* item) -> size_t {
   all_heights_equal_ = false;
   auto& column = get_column(component_id);
   column.push_unknown(item);
@@ -76,8 +72,8 @@ auto Table::move_row_to_other(size_t row, Table& other)
   size_t height = other.height();
   bool at_least_one_column_is_moved = false;
   for (auto& [component_id, column] : columns_) {
-    if (other.has_component_id(component_id)) {
-      height = other.add_component(component_id, column.get_ptr_at(row));
+    if (other.components_.has_component(component_id)) {
+      height = other.add_unknown_data(component_id, column.get_ptr_at(row));
     }
   }
   other.reset_height();
@@ -102,4 +98,9 @@ void Table::reset_height() {
     height_ = min_height;
     all_heights_equal_ = true;
   }
+}
+
+void Table::add_column(ComponentId component_id, Column&& column) {
+  columns_.emplace(component_id, std::forward<Column>(column));
+  ++width_;
 }

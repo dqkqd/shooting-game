@@ -75,8 +75,8 @@ TEST(Table, GetData) {
   auto table = Table::create_table<std::string>();
   table.add_row<std::string>("Hello");
   table.add_row<std::string>("World");
-  EXPECT_EQ(table.get_data_unchecked<std::string>(0), "Hello");
-  EXPECT_EQ(table.get_data_unchecked<std::string>(1), "World");
+  EXPECT_EQ(table.get_data<std::string>(0), "Hello");
+  EXPECT_EQ(table.get_data<std::string>(1), "World");
 }
 
 TEST(Table, HasMultipleComponents) {
@@ -85,24 +85,10 @@ TEST(Table, HasMultipleComponents) {
   struct A3 {};
   struct A4 {};
   auto table = Table::create_table<A1, A2, A3>();
-  auto id1 = ColumnCounter::id<A1>();
-  auto id2 = ColumnCounter::id<A2>();
-  auto id3 = ColumnCounter::id<A3>();
-  auto id4 = ColumnCounter::id<A4>();
-
-  EXPECT_TRUE(table.has_components(id1));
-  EXPECT_TRUE(table.has_components(id1, id2));
-  EXPECT_TRUE(table.has_components(id1, id2, id3));
-  EXPECT_FALSE(table.has_components(id1, id2, id3, id4));
-
   EXPECT_TRUE(table.has_components<A1>());
-  // gtest doesn't understand this kind of template function
-  auto has_a1_a2 = table.has_components<A1, A2>();
-  EXPECT_TRUE(has_a1_a2);
-  auto has_a1_a2_a3 = table.has_components<A1, A2, A3>();
-  EXPECT_TRUE(has_a1_a2_a3);
-  auto has_a1_a2_a3_a4 = table.has_components<A1, A2, A3, A4>();
-  EXPECT_FALSE(has_a1_a2_a3_a4);
+  EXPECT_TRUE((table.has_components<A1, A2>()));
+  EXPECT_TRUE((table.has_components<A1, A2, A3>()));
+  EXPECT_FALSE((table.has_components<A1, A2, A3, A4>()));
 }
 
 TEST(Table, AddRow) {
@@ -111,10 +97,10 @@ TEST(Table, AddRow) {
   EXPECT_EQ((table.add_row<int, std::string>(2, "World")), 1);
 
   EXPECT_EQ(table.height(), 2);
-  EXPECT_EQ(table.get_data_unchecked<int>(0), 1);
-  EXPECT_EQ(table.get_data_unchecked<int>(1), 2);
-  EXPECT_EQ(table.get_data_unchecked<std::string>(0), "Hello");
-  EXPECT_EQ(table.get_data_unchecked<std::string>(1), "World");
+  EXPECT_EQ(table.get_data<int>(0), 1);
+  EXPECT_EQ(table.get_data<int>(1), 2);
+  EXPECT_EQ(table.get_data<std::string>(0), "Hello");
+  EXPECT_EQ(table.get_data<std::string>(1), "World");
 
   // mismatch type
   EXPECT_ANY_THROW((table.add_row<int, float>(0, 1.0)));
@@ -143,9 +129,9 @@ TEST(Table, RemoveRow) {
 
   EXPECT_TRUE(table.remove_row(2));
   EXPECT_EQ(table.height(), 4);
-  EXPECT_EQ(table.get_data_unchecked<int>(2), 50);
-  EXPECT_EQ(table.get_data_unchecked<std::string>(2), "side");
-  EXPECT_EQ(table.get_data_unchecked<A>(2).run(), "side");
+  EXPECT_EQ(table.get_data<int>(2), 50);
+  EXPECT_EQ(table.get_data<std::string>(2), "side");
+  EXPECT_EQ(table.get_data<A>(2).run(), "side");
 
   // no height mismatch
   EXPECT_TRUE(table.is_valid());
@@ -167,15 +153,15 @@ TEST(Table, MoveRowToOtherSameComponentTypes) {
   EXPECT_TRUE(table.is_valid());
   EXPECT_TRUE(other.is_valid());
 
-  EXPECT_EQ(other.get_data_unchecked<int>(0), 3);
-  EXPECT_EQ(other.get_data_unchecked<float>(0), 4.0);
+  EXPECT_EQ(other.get_data<int>(0), 3);
+  EXPECT_EQ(other.get_data<float>(0), 4.0);
 
-  EXPECT_EQ(table.get_data_unchecked<int>(0), 1);
-  EXPECT_EQ(table.get_data_unchecked<float>(0), 2.0);
-  EXPECT_EQ(table.get_data_unchecked<int>(1), 7);
-  EXPECT_EQ(table.get_data_unchecked<float>(1), 8.0);
-  EXPECT_EQ(table.get_data_unchecked<int>(2), 5);
-  EXPECT_EQ(table.get_data_unchecked<float>(2), 6.0);
+  EXPECT_EQ(table.get_data<int>(0), 1);
+  EXPECT_EQ(table.get_data<float>(0), 2.0);
+  EXPECT_EQ(table.get_data<int>(1), 7);
+  EXPECT_EQ(table.get_data<float>(1), 8.0);
+  EXPECT_EQ(table.get_data<int>(2), 5);
+  EXPECT_EQ(table.get_data<float>(2), 6.0);
 }
 
 TEST(Table, MoveRowToOtherHasFewerComponentTypes) {
@@ -194,14 +180,14 @@ TEST(Table, MoveRowToOtherHasFewerComponentTypes) {
   EXPECT_TRUE(table.is_valid());
   EXPECT_TRUE(other.is_valid());
 
-  EXPECT_EQ(other.get_data_unchecked<int>(0), 3);
+  EXPECT_EQ(other.get_data<int>(0), 3);
 
-  EXPECT_EQ(table.get_data_unchecked<int>(0), 1);
-  EXPECT_EQ(table.get_data_unchecked<float>(0), 2.0);
-  EXPECT_EQ(table.get_data_unchecked<int>(1), 7);
-  EXPECT_EQ(table.get_data_unchecked<float>(1), 8.0);
-  EXPECT_EQ(table.get_data_unchecked<int>(2), 5);
-  EXPECT_EQ(table.get_data_unchecked<float>(2), 6.0);
+  EXPECT_EQ(table.get_data<int>(0), 1);
+  EXPECT_EQ(table.get_data<float>(0), 2.0);
+  EXPECT_EQ(table.get_data<int>(1), 7);
+  EXPECT_EQ(table.get_data<float>(1), 8.0);
+  EXPECT_EQ(table.get_data<int>(2), 5);
+  EXPECT_EQ(table.get_data<float>(2), 6.0);
 }
 
 TEST(Table, MoveRowToOtherHasDifferentComponentTypes) {
