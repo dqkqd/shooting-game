@@ -59,9 +59,6 @@ TEST(Column, AddElement) {
   int_column.push<int>(30);
   EXPECT_EQ(int_column.size(), 3);
 
-  EXPECT_EQ(int_column.data_at<int>(0), 15);
-  EXPECT_EQ(int_column.data_at<int>(1), 45);
-  EXPECT_EQ(int_column.data_at<int>(2), 30);
   EXPECT_EQ(int_column.get_data<int>(0), 15);
   EXPECT_EQ(int_column.get_data<int>(1), 45);
   EXPECT_EQ(int_column.get_data<int>(2), 30);
@@ -107,8 +104,8 @@ TEST(Column, ReassignElement) {
   int_column.push<int>(10);
   int_column.push<int>(20);
 
-  int_column.get_data<int>(0)->get() = 30;  // NOLINT
-  int_column.get_data<int>(1)->get() = 40;  // NOLINT
+  int_column.get_data<int>(0) = 30;  // NOLINT
+  int_column.get_data<int>(1) = 40;  // NOLINT
 
   EXPECT_EQ(int_column.get_data<int>(0), 30);
   EXPECT_EQ(int_column.get_data<int>(1), 40);
@@ -154,8 +151,8 @@ TEST(Column, ColumnForString) {
   auto column = Column::create_column<std::string>();
   column.push<std::string>("Hello");
   column.push<std::string>("World");
-  EXPECT_EQ(column.get_data<std::string>(0)->get(), "Hello");  // NOLINT
-  EXPECT_EQ(column.get_data<std::string>(1)->get(), "World");  // NOLINT
+  EXPECT_EQ(column.get_data<std::string>(0), "Hello");
+  EXPECT_EQ(column.get_data<std::string>(1), "World");
 }
 
 TEST(Column, ColumnForStruct) {
@@ -172,8 +169,8 @@ TEST(Column, ColumnForStruct) {
   column.push<TestStruct>(TestStruct("Hello"));
   column.push<TestStruct>(TestStruct("World"));
 
-  EXPECT_EQ(column.get_data<TestStruct>(0)->get().run(), "Hello");  // NOLINT
-  EXPECT_EQ(column.get_data<TestStruct>(1)->get().run(), "World");  // NOLINT
+  EXPECT_EQ(column.get_data<TestStruct>(0).run(), "Hello");
+  EXPECT_EQ(column.get_data<TestStruct>(1).run(), "World");
 }
 
 TEST(Column, Iterator) {

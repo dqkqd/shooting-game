@@ -68,17 +68,11 @@ class Column {
   [[nodiscard]] auto capacity() const -> size_t;
 
   template <class T>
-  auto data_at(size_t row) -> std::decay_t<T> & {
-    return *std::launder(reinterpret_cast<std::decay_t<T> *>(get_ptr_at(row)));
-  }
-
-  template <class T>
-  auto get_data(size_t row) -> std::optional<std::reference_wrapper<T>> {
+  auto get_data(size_t row) -> std::decay_t<T> & {
     if (row >= size_) {
-      return {};
+      throw std::out_of_range(fmt::format("Could not get data at row {}", row));
     }
-    std::reference_wrapper<T> data = data_at<T>(row);
-    return std::move(data);
+    return *std::launder(reinterpret_cast<std::decay_t<T> *>(get_ptr_at(row)));
   }
 
   template <class T>

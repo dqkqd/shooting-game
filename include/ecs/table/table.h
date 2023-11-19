@@ -150,7 +150,7 @@ auto Table::get_column() -> Column & {
 
 template <class T>
 auto Table::get_data(size_t row) -> T & {
-  return get_column<T>().template data_at<T>(row);
+  return get_column<T>().template get_data<T>(row);
 }
 
 template <typename... Args>
