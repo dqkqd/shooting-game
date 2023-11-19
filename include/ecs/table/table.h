@@ -69,8 +69,6 @@ class Table {
   template <class T>
   auto get_column() -> Column &;
   auto get_column(ComponentId component_id) -> Column &;
-
-  auto add_unknown_data(ComponentId component_id, void *item) -> size_t;
 };
 
 /* put the definition here since these are template methods */

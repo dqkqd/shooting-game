@@ -45,13 +45,6 @@ auto Table::get_column(ComponentId component_id) -> Column& {
   return it->second;
 }
 
-auto Table::add_unknown_data(ComponentId component_id, void* item) -> size_t {
-  all_heights_equal_ = false;
-  auto& column = get_column(component_id);
-  column.push_unknown(item);
-  return column.size();
-}
-
 auto Table::remove_row(size_t row) -> bool {
   if (row >= height_) {
     return false;
@@ -69,19 +62,19 @@ auto Table::move_row_to_other(size_t row, Table& other)
     return {};
   }
 
-  size_t height = other.height();
   bool at_least_one_column_is_moved = false;
   for (auto& [component_id, column] : columns_) {
     if (other.components_.has_component(component_id)) {
-      height = other.add_unknown_data(component_id, column.get_ptr_at(row));
+      other.get_column(component_id).push_from(column, row);
     }
   }
   other.reset_height();
   remove_row(row);
-  return height;
+  return other.height() - 1;
 }
 
 void Table::reset_height() {
+  all_heights_equal_ = true;
   if (columns_.empty()) {
     return;
   }
@@ -92,12 +85,13 @@ void Table::reset_height() {
   for (auto& [_, column] : columns_) {
     min_height = std::min(min_height, column.size());
     max_height = std::max(max_height, column.size());
+    if (min_height < max_height) {
+      all_heights_equal_ = false;
+      break;
+    }
   }
 
-  if (min_height == max_height) {
-    height_ = min_height;
-    all_heights_equal_ = true;
-  }
+  height_ = min_height;
 }
 
 void Table::add_column(ComponentId component_id, Column&& column) {

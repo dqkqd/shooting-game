@@ -47,10 +47,8 @@ class Column {
   void push(T &&item);
   template <class T>
   void push_unchecked(T &&item);
-  void push_unknown(void *item);
-  auto remove(size_t row) -> bool;
-
   void push_from(Column &other, size_t other_row);
+  auto remove(size_t row) -> bool;
 
   /* iterator helper */
   template <class T>

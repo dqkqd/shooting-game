@@ -33,12 +33,6 @@ auto Column::clone() const -> Column {
   return std::move(Column(layout_, component_id_));
 }
 
-void Column::push_unknown(void *item) {
-  grow();
-  std::memcpy(get_ptr_at(size_), item, layout_);
-  ++size_;
-};
-
 void Column::push_from(Column &other, size_t other_row) {
   grow();
   std::memcpy(get_ptr_at(size_), other.get_ptr_at(other_row), layout_);

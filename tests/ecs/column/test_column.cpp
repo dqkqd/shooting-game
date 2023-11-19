@@ -113,7 +113,10 @@ TEST(Column, PushDataFromOtherColumn) {
 TEST(Column, AddTooManyUnknownElement) {
   auto int_column = Column::create_column<int>();
   for (int i = 0; i < 1000; ++i) {
-    int_column.push_unknown(&i);
+    auto int_column2 = Column::create_column<int>();
+    auto x = i;
+    int_column2.push<int>(std::forward<int>(x));
+    int_column.push_from(int_column2, 0);
   }
   for (int i = 0; i < 1000; ++i) {
     EXPECT_EQ(int_column.get_data<int>(i), i);
