@@ -8,7 +8,6 @@ set(SOURCE_FILES
     ecs/archetype/archetypes.cpp
     ecs/column.cpp
     ecs/table.cpp
-    ecs/world.cpp
     error.cpp
 )
 
