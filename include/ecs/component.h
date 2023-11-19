@@ -22,6 +22,16 @@ class Components {
   [[nodiscard]] auto size() const -> size_t;
   [[nodiscard]] auto components() const -> const std::set<ComponentId> &;
 
+  [[nodiscard]] auto has_component(ComponentId component_id) const -> bool {
+    return components_.count(component_id) > 0;
+  }
+  template <typename... Args>
+  [[nodiscard]] auto has_components() const -> bool {
+    static_assert(all_types_are_different<Args...>());
+    return sizeof...(Args) > 0 &&
+           (... && has_component(ComponentCounter::id<Args>()));
+  }
+
   static auto from_vec(std::vector<ComponentId> &&components) -> Components;
   static auto from_set(std::set<ComponentId> &&components) -> Components;
 
