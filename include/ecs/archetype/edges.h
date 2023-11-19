@@ -26,7 +26,7 @@ class ArchetypeEdges {
   }
 
   template <typename T>
-  auto get() -> std::optional<ArchetypeId> {
+  auto get() const -> std::optional<ArchetypeId> {
     auto it = edges_.find(ComponentCounter::id<T>());
     if (it == edges_.end()) {
       return {};

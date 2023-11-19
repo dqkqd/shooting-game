@@ -26,18 +26,19 @@ auto Archetype::operator=(Archetype &&archetype) noexcept -> Archetype & {
 }
 
 auto Archetype::archetype_id() const -> ArchetypeId { return archetype_id_; }
-auto Archetype::table_id() const -> TableId { return table_.table_id(); }
-auto Archetype::is_empty() const -> bool { return table_.is_empty(); }
-auto Archetype::is_valid() const -> bool {
-  return archetype_id_ != INVALID_ARCHETYPE_ID && table_.is_valid();
-}
 
-void Archetype::set_archetype_id(ArchetypeId archetype_id) {
-  archetype_id_ = archetype_id;
-}
+auto Archetype::table_id() const -> TableId { return table_.table_id(); }
 
 auto Archetype::components() const -> const ArchetypeComponents & {
   return components_;
+}
+
+auto Archetype::table() -> Table & { return table_; }
+
+auto Archetype::is_empty() const -> bool { return table_.is_empty(); }
+
+auto Archetype::is_valid() const -> bool {
+  return archetype_id_ != INVALID_ARCHETYPE_ID && table_.is_valid();
 }
 
 auto Archetype::location(EntityId entity_id) const
@@ -47,4 +48,8 @@ auto Archetype::location(EntityId entity_id) const
     return {};
   }
   return it->second;
+}
+
+void Archetype::set_archetype_id(ArchetypeId archetype_id) {
+  archetype_id_ = archetype_id;
 }

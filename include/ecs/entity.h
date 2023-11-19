@@ -18,4 +18,11 @@ class Entity {
   EntityId id_;
 };
 
+struct EntityLocation {
+  EntityId entity_id;
+  ArchetypeId archetype_id;
+  TableId table_id;
+  size_t table_row;
+};
+
 #endif
