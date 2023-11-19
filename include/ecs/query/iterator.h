@@ -41,7 +41,7 @@ class QueryIterator {
   std::size_t archetype_index_{};
   std::vector<ArchetypeId>& matched_archetypes_;
   Archetypes& archetypes_;
-  Table::Iterator<Args...> table_iter_;
+  TableIterator<Args...> table_iter_;
 
   void reset() {
     archetype_index_ = 0;

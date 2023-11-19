@@ -5,9 +5,9 @@ set(SOURCE_FILES
     components/graphic.cpp
     ecs/archetype/archetype.cpp
     ecs/archetype/archetypes.cpp
+    ecs/table/table.cpp
     ecs/column.cpp
     ecs/component.cpp
-    ecs/table.cpp
     error.cpp
 )
 

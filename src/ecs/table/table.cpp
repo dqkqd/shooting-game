@@ -1,5 +1,5 @@
 
-#include "ecs/table.h"
+#include "ecs/table/table.h"
 
 #include <limits>
 #include <stdexcept>

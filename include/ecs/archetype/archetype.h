@@ -4,7 +4,7 @@
 #include "ecs/archetype/edges.h"
 #include "ecs/component.h"
 #include "ecs/entity.h"
-#include "ecs/table.h"
+#include "ecs/table/table.h"
 
 class Archetype {
  public:
