@@ -39,14 +39,8 @@ class Table {
   template <typename T, typename... Args>
   auto has_components() const -> bool;
 
-  template <class T>
-  auto get_column() -> Column &;
-  auto get_column(ComponentId component_id) -> Column &;
-
-  /* add data without increase height */
   template <typename... Args>
   void add_data(Args &&...components);
-
   template <class T>
   auto get_data(size_t row) -> T &;
 
@@ -69,7 +63,12 @@ class Table {
   bool all_heights_equal_ = true;
 
   void reset_height();
+
   void add_column(ComponentId component_id, Column &&column);
+  template <class T>
+  auto get_column() -> Column &;
+  auto get_column(ComponentId component_id) -> Column &;
+
   auto add_unknown_data(ComponentId component_id, void *item) -> size_t;
 };
 

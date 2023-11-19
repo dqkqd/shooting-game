@@ -50,21 +50,6 @@ TEST(Table, ShouldHaveDifferentId) {
   EXPECT_NE(table1.table_id(), table2.table_id());
 }
 
-TEST(Table, GetColumn) {
-  auto table = Table::create_table<std::string>();
-  table.add_row<std::string>("Hello");
-  table.add_row<std::string>("World");
-
-  EXPECT_EQ(table.get_column(ColumnCounter::id<std::string>())
-                .get_data<std::string>(0),
-            "Hello");
-  EXPECT_EQ(table.get_column(ColumnCounter::id<std::string>())
-                .get_data<std::string>(1),
-            "World");
-  EXPECT_EQ(table.get_column<std::string>().get_data<std::string>(0), "Hello");
-  EXPECT_EQ(table.get_column<std::string>().get_data<std::string>(1), "World");
-}
-
 TEST(Table, GetAllComponents) {
   auto table = Table::create_table<int, float, std::string>();
   EXPECT_EQ(table.components(),
