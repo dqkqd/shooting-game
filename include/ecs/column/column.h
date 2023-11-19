@@ -3,11 +3,6 @@
 
 #include <spdlog/fmt/fmt.h>
 
-#include <cstddef>
-#include <optional>
-#include <stdexcept>
-#include <typeinfo>
-
 #include "ecs/column/iterator.h"
 #include "ecs/counter.h"
 #include "ecs/primitive.h"
@@ -29,39 +24,12 @@ class Column {
 
   ~Column();
 
+  /* factory */
   template <class T>
-  static auto create_column() -> Column {
-    return Column{sizeof(T), ColumnCounter::id<T>()};
-  }
+  static auto create_column() -> Column;
 
   // clone a column without copying its content
   [[nodiscard]] auto clone() const -> Column;
-
-  template <class T>
-  auto is() -> bool {
-    return ColumnCounter::id<T>() == component_id_;
-  }
-
-  template <class T>
-  void push(T &&item) {
-    if (!is<T>()) {
-      throw std::runtime_error(fmt::format(
-          "Can not add data with type `{}` to column", typeid(T).name()));
-    }
-    push_unchecked<T>(std::forward<T>(item));
-  }
-
-  template <class T>
-  void push_unchecked(T &&item) {
-    grow();
-    // placement new
-    new (get_ptr_at(size_)) T{std::forward<T>(item)};
-    ++size_;
-  }
-
-  void push_unknown(void *item);
-
-  auto remove(size_t row) -> bool;
 
   [[nodiscard]] auto component_id() const -> ComponentId;
   [[nodiscard]] auto is_valid() const -> bool;
@@ -69,36 +37,28 @@ class Column {
   [[nodiscard]] auto capacity() const -> size_t;
 
   template <class T>
-  auto get_data(size_t row) -> std::decay_t<T> & {
-    if (row >= size_) {
-      throw std::out_of_range(fmt::format("Could not get data at row {}", row));
-    }
-    return *std::launder(reinterpret_cast<std::decay_t<T> *>(get_ptr_at(row)));
-  }
+  [[nodiscard]] auto is() const -> bool;
 
   template <class T>
-  auto iter() -> ColumnIteratorWrapper<T> {
-    return {begin<T>(), end<T>()};
-  }
+  auto get_data(size_t row) -> std::decay_t<T> &;
 
+  /* data inserting and removing */
   template <class T>
-  auto begin() -> ColumnIterator<T> {
-    return ColumnIterator<T>(static_cast<T *>(data_));
-  }
+  void push(T &&item);
+  template <class T>
+  void push_unchecked(T &&item);
+  void push_unknown(void *item);
+  auto remove(size_t row) -> bool;
 
+  /* iterator helper */
   template <class T>
-  auto end() -> ColumnIterator<T> {
-    return ColumnIterator<T>(static_cast<T *>(data_) + size_);
-  }
+  auto begin() -> ColumnIterator<T>;
+  template <class T>
+  auto end() -> ColumnIterator<T>;
+  template <class T>
+  auto iter() -> ColumnIteratorWrapper<T>;
 
  private:
-  [[nodiscard]] auto offset(size_t row) const -> size_t;
-  auto get_ptr_at(size_t row) -> void *;
-
-  void reserve(size_t capacity);
-  void grow();
-  void shrink();
-
   int layout_;
   ComponentId component_id_;
 
@@ -108,6 +68,66 @@ class Column {
 
   static constexpr size_t INITIAL_CAPACITY = 4;
   static constexpr int INVALID_LAYOUT = 0;
+
+  [[nodiscard]] auto offset(size_t row) const -> size_t;
+  auto get_ptr_at(size_t row) -> void *;
+
+  /* size manipulation */
+  void reserve(size_t capacity);
+  void grow();
+  void shrink();
 };
+
+/* put the definition here since these are template methods */
+
+template <class T>
+auto Column::create_column() -> Column {
+  return Column{sizeof(T), ColumnCounter::id<T>()};
+}
+
+template <class T>
+auto Column::is() const -> bool {
+  return ColumnCounter::id<T>() == component_id_;
+}
+
+template <class T>
+void Column::push(T &&item) {
+  if (!is<T>()) {
+    throw std::runtime_error(fmt::format(
+        "Can not add data with type `{}` to column", typeid(T).name()));
+  }
+  push_unchecked<T>(std::forward<T>(item));
+}
+
+template <class T>
+void Column::push_unchecked(T &&item) {
+  grow();
+  // placement new
+  new (get_ptr_at(size_)) T{std::forward<T>(item)};
+  ++size_;
+}
+
+template <class T>
+auto Column::get_data(size_t row) -> std::decay_t<T> & {
+  if (row >= size_) {
+    throw std::out_of_range(fmt::format("Could not get data at row {}", row));
+  }
+  return *std::launder(reinterpret_cast<std::decay_t<T> *>(get_ptr_at(row)));
+}
+
+template <class T>
+auto Column::begin() -> ColumnIterator<T> {
+  return ColumnIterator<T>(static_cast<T *>(data_));
+}
+
+template <class T>
+auto Column::end() -> ColumnIterator<T> {
+  return ColumnIterator<T>(static_cast<T *>(data_) + size_);
+}
+
+template <class T>
+auto Column::iter() -> ColumnIteratorWrapper<T> {
+  return {begin<T>(), end<T>()};
+}
 
 #endif
