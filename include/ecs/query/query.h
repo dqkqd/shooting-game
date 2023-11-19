@@ -30,8 +30,6 @@ class Query {
  private:
   std::vector<ArchetypeId> matched_archetypes_{};
   Archetypes& archetypes_;
-
-  void reset();
 };
 
 #endif
