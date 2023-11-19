@@ -55,8 +55,8 @@ class Archetypes {
 
 template <typename T, typename... Args>
 auto Archetypes::add() -> std::optional<ArchetypeId> {
-  static_assert(all_types_are_different<T, Args...>(),
-                "All column types must be pairwise different");
+  static_assert(all_types_are_different<T, Args...>());
+
   auto archetype = Archetype::create_archetype<T, Args...>();
   if (by_components_.count(archetype.components())) {
     return {};
@@ -66,8 +66,8 @@ auto Archetypes::add() -> std::optional<ArchetypeId> {
 
 template <typename T, typename... Args>
 auto Archetypes::get() -> std::optional<ArchetypeId> {
-  static_assert(all_types_are_different<T, Args...>(),
-                "All column types must be pairwise different");
+  static_assert(all_types_are_different<T, Args...>());
+
   auto it = by_components_.find(ArchetypeComponents::from_types<T, Args...>());
   if (it == by_components_.end()) {
     return {};
@@ -77,8 +77,8 @@ auto Archetypes::get() -> std::optional<ArchetypeId> {
 
 template <typename T, typename... Args>
 auto Archetypes::get_or_add() -> ArchetypeId {
-  static_assert(all_types_are_different<T, Args...>(),
-                "All column types must be pairwise different");
+  static_assert(all_types_are_different<T, Args...>());
+
   auto archetype = Archetype::create_archetype<T, Args...>();
   auto it = by_components_.find(archetype.components());
   if (it != by_components_.end()) {
