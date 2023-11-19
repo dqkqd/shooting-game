@@ -8,11 +8,9 @@ class ColumnIteratorTest : public testing::Test {
  protected:
   struct TestStruct {
    public:
-    explicit TestStruct(float item) : item_{item} {}
-    [[nodiscard]] auto triple() const -> float { return item_ * 3; };
-
-   private:
-    float item_;
+    float item;
+    explicit TestStruct(float item) : item{item} {}
+    [[nodiscard]] auto triple() const -> float { return item * 3; };
   };
 
   Column column = Column::create_column<TestStruct>();
@@ -37,6 +35,14 @@ TEST_F(ColumnIteratorTest, Dereference) {
 TEST_F(ColumnIteratorTest, Advance) {
   ++iterator;
   EXPECT_EQ(iterator->triple(), 6.0);
+}
+
+TEST_F(ColumnIteratorTest, Modify) {
+  EXPECT_EQ(iterator->triple(), 3.0);
+  (iterator->item) += 10;
+  EXPECT_EQ(iterator->triple(), 33.0);
+  (*iterator).item += 10;
+  EXPECT_EQ(iterator->triple(), 63.0);
 }
 
 TEST_F(ColumnIteratorTest, Comparison) {
