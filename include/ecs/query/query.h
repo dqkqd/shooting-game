@@ -23,8 +23,20 @@ class Query {
   auto operator=(Query&& query) noexcept -> Query& = delete;
 
   template <typename... Args>
-  auto iter() -> QueryIterator<Args...> {
+  auto iter() -> QueryIteratorWrapper<Args...> {
+    return {begin<Args...>(), end<Args...>()};
+  }
+
+  template <typename... Args>
+  auto begin() -> QueryIterator<Args...> {
     return QueryIterator<Args...>(archetypes_, matched_archetypes_);
+  }
+
+  template <typename... Args>
+  auto end() -> QueryIterator<Args...> {
+    auto query = QueryIterator<Args...>(archetypes_, matched_archetypes_);
+    query.close();
+    return query;
   }
 
  private:
