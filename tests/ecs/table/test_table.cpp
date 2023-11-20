@@ -64,12 +64,7 @@ TEST_F(TableTest, GetAllComponents) {
 };
 
 TEST_F(TableTest, GetData) {
-  EXPECT_EQ(table.get_data<char>(0), 'a');
-  EXPECT_EQ(table.get_data<char>(1), 'b');
-}
-
-TEST_F(TableTest, GetDataRow) {
-  EXPECT_EQ((table.get_data_row<int, float, char>(0)),
+  EXPECT_EQ((table.get_data<int, float, char>(0)),
             (std::make_tuple<int, float, char>(1, 1.0, 'a')));
 }
 
@@ -86,8 +81,8 @@ TEST_F(TableTest, AddData) {
 
   EXPECT_EQ(table.height(), 6);
   EXPECT_TRUE(table.is_valid());
-  EXPECT_EQ(table.get_data<int>(5), 6);
-  EXPECT_EQ(table.get_data<char>(5), 'x');
+  EXPECT_EQ(table.get_data<int>(5), std::make_tuple(6));
+  EXPECT_EQ(table.get_data<char>(5), std::make_tuple('x'));
 
   // not enough components, table now has invalid height
   table.add_data<int, float>(7, 7.0);
@@ -97,8 +92,8 @@ TEST_F(TableTest, AddData) {
   // missing components were added
   EXPECT_TRUE(table.is_valid());
   EXPECT_EQ(table.height(), 7);
-  EXPECT_EQ(table.get_data<int>(6), 7);
-  EXPECT_EQ(table.get_data<char>(6), 'y');
+  EXPECT_EQ(table.get_data<int>(6), std::make_tuple(7));
+  EXPECT_EQ(table.get_data<char>(6), std::make_tuple('y'));
 }
 
 TEST_F(TableTest, AddRow) {
@@ -107,8 +102,8 @@ TEST_F(TableTest, AddRow) {
 
   EXPECT_EQ(table.height(), 6);
   EXPECT_TRUE(table.is_valid());
-  EXPECT_EQ(table.get_data<int>(5), 80);
-  EXPECT_EQ(table.get_data<char>(5), 'x');
+  EXPECT_EQ(table.get_data<int>(5), std::make_tuple(80));
+  EXPECT_EQ(table.get_data<char>(5), std::make_tuple('x'));
 
   // mismatch type
   EXPECT_ANY_THROW((table.add_row<int, float>(0, 1.0)));
@@ -124,8 +119,8 @@ TEST_F(TableTest, RemoveRow) {
   EXPECT_EQ(table.height(), 4);
 
   // row 5 switch with row 2
-  EXPECT_EQ(table.get_data<int>(2), 5);
-  EXPECT_EQ(table.get_data<char>(2), 'e');
+  EXPECT_EQ(table.get_data<int>(2), std::make_tuple(5));
+  EXPECT_EQ(table.get_data<char>(2), std::make_tuple('e'));
 
   // remove invalid row
   EXPECT_FALSE(table.remove_row(10));
@@ -148,12 +143,12 @@ TEST_F(TableTest, MoveRowToOtherSameComponentTypes) {
   EXPECT_TRUE(other.is_valid());
 
   // other's row 1 = table's row 2 (old)
-  EXPECT_EQ(other.get_data<int>(0), 2);
+  EXPECT_EQ(other.get_data<int>(0), std::make_tuple(2));
 
-  EXPECT_EQ(table.get_data<int>(0), 1);
-  EXPECT_EQ(table.get_data<int>(1), 5);
-  EXPECT_EQ(table.get_data<int>(2), 3);
-  EXPECT_EQ(table.get_data<int>(3), 4);
+  EXPECT_EQ(table.get_data<int>(0), std::make_tuple(1));
+  EXPECT_EQ(table.get_data<int>(1), std::make_tuple(5));
+  EXPECT_EQ(table.get_data<int>(2), std::make_tuple(3));
+  EXPECT_EQ(table.get_data<int>(3), std::make_tuple(4));
 }
 
 TEST_F(TableTest, MoveRowToOtherHasFewerComponentTypes) {
@@ -166,9 +161,9 @@ TEST_F(TableTest, MoveRowToOtherHasFewerComponentTypes) {
   EXPECT_TRUE(table.is_valid());
   EXPECT_TRUE(other.is_valid());
 
-  EXPECT_EQ(other.get_data<int>(0), 2);
-  EXPECT_EQ(other.get_data<float>(0), 2.0);
-  EXPECT_EQ(other.get_data<char>(0), 'b');
+  EXPECT_EQ(other.get_data<int>(0), std::make_tuple(2));
+  EXPECT_EQ(other.get_data<float>(0), std::make_tuple(2.0));
+  EXPECT_EQ(other.get_data<char>(0), std::make_tuple('b'));
 }
 
 TEST_F(TableTest, MoveRowToOtherHasDifferentComponentTypes) {
@@ -186,7 +181,8 @@ TEST_F(TableTest, MoveRowToOtherHasSomeTableComponentTypes) {
   auto other = Table::create_table<int, double>();
   table.move_row_to_other(1, other);
 
-  // since other has some of table's component types, other must be invalid
+  // since other has some of table's component types, other must be
+  // invalid
   EXPECT_FALSE(other.is_valid());
   EXPECT_EQ(table.height(), 4);
   EXPECT_TRUE(table.is_valid());

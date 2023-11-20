@@ -108,7 +108,8 @@ auto Archetype::get_entity_data(EntityId entity_id) -> OptionalRef<T> {
     return {};
   }
 
-  return std::ref(table_.get_data<T>(it->second.table_row));
+  auto [data] = table_.get_data<T>(it->second.table_row);
+  return std::ref(data);
 }
 
 template <typename... Args>

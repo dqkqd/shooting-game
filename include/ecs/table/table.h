@@ -40,10 +40,8 @@ class Table {
 
   template <typename... Args>
   void add_data(Args &&...components);
-  template <class T>
-  auto get_data(size_t row) -> T &;  // TODO(khanhdq): remove
   template <typename... Args>
-  auto get_data_row(size_t row) -> std::tuple<Args &...>;
+  auto get_data(size_t row) -> std::tuple<Args &...>;
 
   template <typename... Args>
   auto add_row(Args &&...components) -> size_t;
@@ -148,13 +146,8 @@ auto Table::get_column() -> Column & {
   return get_column(ComponentCounter::id<T>());
 }
 
-template <class T>
-auto Table::get_data(size_t row) -> T & {
-  return get_column<T>().template get_data<T>(row);
-}
-
 template <typename... Args>
-auto Table::get_data_row(size_t row) -> std::tuple<Args &...> {
+auto Table::get_data(size_t row) -> std::tuple<Args &...> {
   return std::tie(get_column<Args>().template get_data<Args>(row)...);
 }
 
