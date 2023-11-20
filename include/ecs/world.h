@@ -108,7 +108,7 @@ auto World::query() -> QueryIterator<Args...> {
     return it->second.template iter<Args...>();
   }
 
-  auto matched_archetypes = archetypes_.finder().get<Args...>();
+  auto matched_archetypes = archetypes_.finder().find<Args...>();
 
   auto [added_it, _] = queries_.emplace(
       std::move(components), Query(archetypes_, std::move(matched_archetypes)));

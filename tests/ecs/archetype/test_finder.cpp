@@ -11,19 +11,19 @@ TEST(ArchetypesFinder, AddAndGet) {
   archetypes_finder.add(ComponentCounter::id<float>(), 3);
   archetypes_finder.add(ComponentCounter::id<float>(), 4);
 
-  auto int_lookup_result = archetypes_finder.get<int>();
+  auto int_lookup_result = archetypes_finder.find<int>();
   EXPECT_EQ(int_lookup_result, (std::vector{1, 2, 3}));
 
-  auto float_lookup_result = archetypes_finder.get<float>();
+  auto float_lookup_result = archetypes_finder.find<float>();
   EXPECT_EQ(float_lookup_result, (std::vector{2, 3, 4}));
 
-  auto int_and_float_lookup_result = archetypes_finder.get<int, float>();
+  auto int_and_float_lookup_result = archetypes_finder.find<int, float>();
   EXPECT_EQ(int_and_float_lookup_result, (std::vector{2, 3}));
 }
 
 TEST(ArchetypesFinder, FoundNothing) {
   auto archetypes_finder = ArchetypesFinder();
   archetypes_finder.add(ComponentCounter::id<int>(), 1);
-  auto result = archetypes_finder.get<float>();
+  auto result = archetypes_finder.find<float>();
   EXPECT_TRUE(result.empty());
 }

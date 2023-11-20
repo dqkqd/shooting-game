@@ -13,7 +13,15 @@ class ArchetypesFinder {
   }
 
   template <typename... Args>
-  auto get() const -> std::vector<ArchetypeId> {
+  auto find() const -> std::vector<ArchetypeId> {
+    /* find all archetypes which has all Args components
+    **
+    ** count number of components each archetype has.
+    ** If the total components (count) of an archetype equals the number of
+    ** components passed in, then these archetypes are what we are looking for
+    */
+
+    // find the count
     std::unordered_map<ArchetypeId, int> archetypes_occurrences;
     (
         [&] {
@@ -25,13 +33,18 @@ class ArchetypesFinder {
           }
         }(),
         ...);
+
+    // check if number of archetypes equal passed in components
     std::vector<ArchetypeId> results;
     for (const auto &[archetype_id, count] : archetypes_occurrences) {
       if (count == sizeof...(Args)) {
         results.emplace_back(archetype_id);
       }
     }
+
+    // output should be sort (by reversing)
     std::reverse(results.begin(), results.end());
+
     return results;
   }
 
