@@ -11,7 +11,7 @@ TEST(World, SpawnEntityWith) {
   auto data = world.archetypes()
                   .get_by_id_unchecked(entity_location.archetype_id)
                   .get_entity_data<char>(entity_location.entity_id);
-  EXPECT_EQ(data->get(), 'a');
+  EXPECT_EQ(data, std::make_tuple('a'));
 }
 
 TEST(World, AddComponentToEntity) {
@@ -26,7 +26,7 @@ TEST(World, AddComponentToEntity) {
   auto new_data = world.archetypes()
                       .get_by_id_unchecked(new_location->archetype_id)
                       .get_entity_data<float>(new_location->entity_id);
-  EXPECT_EQ(new_data->get(), 2.0);
+  EXPECT_EQ(new_data, std::make_tuple(2.0));
 
   auto old_data = world.archetypes()
                       .get_by_id_unchecked(old_location.archetype_id)
@@ -58,7 +58,7 @@ TEST(World, RemoveComponentFromEntity) {
   auto new_data = world.archetypes()
                       .get_by_id_unchecked(new_location->archetype_id)
                       .get_entity_data<int>(new_location->entity_id);
-  EXPECT_EQ(new_data->get(), 4);
+  EXPECT_EQ(new_data, std::make_tuple(4));
 
   auto removed_data = world.archetypes()
                           .get_by_id_unchecked(new_location->archetype_id)

@@ -215,7 +215,13 @@ TEST(Archetype, GetData) {
   auto archetype = Archetype::create_archetype<int, float, char>(1);
   auto location = archetype.add_entity<int, float, char>(10, 1, 2.0, 'a');
   auto data = archetype.get_entity_data<char>(location.entity_id);
-  EXPECT_EQ(data->get(), 'a');
+  EXPECT_EQ(data, std::make_tuple('a'));
+
+  // data could be modified
+  auto [v] = *data;
+  v = 'c';
+  EXPECT_EQ(archetype.get_entity_data<char>(location.entity_id),
+            std::make_tuple('c'));
 
   // invalid entity id
   EXPECT_FALSE(
@@ -224,4 +230,16 @@ TEST(Archetype, GetData) {
   // invalid type
   EXPECT_FALSE(
       archetype.get_entity_data<double>(location.entity_id).has_value());
+}
+
+TEST(Archetype, ModifyEntityData) {
+  auto archetype = Archetype::create_archetype<int, float, char>(1);
+  auto location = archetype.add_entity<int, float, char>(10, 1, 2.0, 'a');
+  auto data = archetype.get_entity_data<char>(location.entity_id);
+  EXPECT_EQ(data, std::make_tuple('a'));
+
+  auto [v] = *data;
+  v = 'c';
+  EXPECT_EQ(archetype.get_entity_data<char>(location.entity_id),
+            std::make_tuple('c'));
 }

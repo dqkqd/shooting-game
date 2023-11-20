@@ -42,8 +42,9 @@ class Archetype {
       -> Archetype;
 
   /* entities manipulation */
-  template <typename T>
-  [[nodiscard]] auto get_entity_data(EntityId entity_id) -> OptionalRef<T>;
+  template <typename... Args>
+  [[nodiscard]] auto get_entity_data(EntityId entity_id)
+      -> std::optional<std::tuple<Args &...>>;
 
   template <typename... Args>
   auto add_entity(EntityId entity_id, Args &&...components) -> EntityLocation;
@@ -97,19 +98,21 @@ auto Archetype::clone_without(ArchetypeId archetype_id) const -> Archetype {
   return Archetype(archetype_id, table_.clone_without<T>());
 }
 
-template <typename T>
-auto Archetype::get_entity_data(EntityId entity_id) -> OptionalRef<T> {
+template <typename... Args>
+auto Archetype::get_entity_data(EntityId entity_id)
+    -> std::optional<std::tuple<Args &...>> {
+  static_assert(all_types_are_different<Args...>());
+
   auto it = locations_.find(entity_id);
   if (it == locations_.end()) {
     return {};
   }
 
-  if (!table_.has_components<T>()) {
+  if (!table_.has_components<Args...>()) {
     return {};
   }
 
-  auto [data] = table_.get_data<T>(it->second.table_row);
-  return std::ref(data);
+  return table_.get_data<Args...>(it->second.table_row);
 }
 
 template <typename... Args>
