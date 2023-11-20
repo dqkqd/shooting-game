@@ -20,3 +20,10 @@ TEST(ArchetypesFinder, AddAndGet) {
   auto int_and_float_lookup_result = archetypes_finder.get<int, float>();
   EXPECT_EQ(int_and_float_lookup_result, (std::vector{2, 3}));
 }
+
+TEST(ArchetypesFinder, FoundNothing) {
+  auto archetypes_finder = ArchetypesFinder();
+  archetypes_finder.add(ComponentCounter::id<int>(), 1);
+  auto result = archetypes_finder.get<float>();
+  EXPECT_TRUE(result.empty());
+}

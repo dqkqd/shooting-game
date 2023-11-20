@@ -17,9 +17,11 @@ class ArchetypesFinder {
     std::unordered_map<ArchetypeId, int> archetypes_occurrences;
     (
         [&] {
-          for (const auto &archetype_id :
-               by_component_.at(ComponentCounter::id<Args>())) {
-            ++archetypes_occurrences[archetype_id];
+          auto it = by_component_.find(ComponentCounter::id<Args>());
+          if (it != by_component_.end()) {
+            for (const auto &archetype_id : it->second) {
+              ++archetypes_occurrences[archetype_id];
+            }
           }
         }(),
         ...);

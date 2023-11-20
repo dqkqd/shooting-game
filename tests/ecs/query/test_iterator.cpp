@@ -173,3 +173,14 @@ TEST_F(QueryIteratorTest, LoopWithMultipleArchetypes) {
   EXPECT_EQ(ts[3].triple(), 12.0);
   EXPECT_EQ(ts[4].triple(), 15.0);
 }
+
+TEST_F(QueryIteratorTest, NoResultFound) {
+  Query query =
+      Query(world.archetypes(), world.archetypes().finder().get<double>());
+
+  std::vector<double> ds;
+  for (auto [d] : query.iter<double>()) {
+    ds.push_back(d);
+  }
+  EXPECT_TRUE(ds.empty());
+}
