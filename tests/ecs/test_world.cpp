@@ -99,3 +99,63 @@ TEST(World, Query) {
   EXPECT_EQ(is, std::vector({1, 2, 3}));
   EXPECT_EQ(cs, std::vector({'a', 'b', 'c'}));
 }
+
+void test_system(QueryIteratorWrapper<int, float> q) {
+  for (auto [i, c] : q) {
+    i *= 2;
+    c *= 3;
+  }
+}
+
+TEST(World, SystemOverSingleArchetype) {
+  auto world = World();
+  world.spawn_entity_with<int, float>(1, 1.0);
+  world.spawn_entity_with<int, float>(2, 2.0);
+  world.spawn_entity_with<int, float>(3, 3.0);
+
+  world.add_system(test_system);
+
+  world.run_systems();
+
+  std::vector<int> is;
+  std::vector<float> fs;
+  for (auto [i, f] : world.query<int, float>()) {
+    is.push_back(i);
+    fs.push_back(f);
+  }
+  EXPECT_EQ(is, std::vector({2, 4, 6}));
+  EXPECT_EQ(fs, std::vector({3.0F, 6.0F, 9.0F}));
+
+  world.run_systems();
+
+  is.clear();
+  fs.clear();
+  for (auto [i, f] : world.query<int, float>()) {
+    is.push_back(i);
+    fs.push_back(f);
+  }
+  EXPECT_EQ(is, std::vector({4, 8, 12}));
+  EXPECT_EQ(fs, std::vector({9.0F, 18.0F, 27.0F}));
+}
+
+TEST(World, SystemAcrossMultipleArchetypes) {
+  auto world = World();
+  world.spawn_entity_with<int, float>(1, 1.0);
+  world.spawn_entity_with<int, float, char>(2, 2.0, 'a');
+
+  auto system = [](QueryIteratorWrapper<int, float> query) {
+    for (auto [i, _] : query) {
+      i += 2;
+    }
+  };
+
+  world.add_system(*system);
+
+  world.run_systems();
+
+  std::vector<int> is;
+  for (auto [i, f] : world.query<int, float>()) {
+    is.push_back(i);
+  }
+  EXPECT_EQ(is, std::vector({3, 4}));
+}

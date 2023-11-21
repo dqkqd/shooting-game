@@ -32,10 +32,31 @@ class World {
 
   auto archetypes() -> Archetypes& { return archetypes_; }
 
+  template <typename... Args>
+  void add_system(void (*func)(QueryIteratorWrapper<Args...>)) {
+    // setup
+    query<Args...>();
+    systems_.emplace_back([=]() {
+      /* run here */
+      auto q = query<Args...>();
+      func(q);
+    });
+  }
+
+  void run_systems() {
+    for (auto& system : systems_) {
+      system();
+    }
+  }
+
  private:
+  using System = std::function<void()>;
+
   Archetypes archetypes_;
   std::map<Components, Query> queries_;
   std::unordered_map<EntityId, EntityLocation> entities_;
+
+  std::vector<System> systems_;
 };
 
 /* put the definition here since these are template methods */
