@@ -19,7 +19,9 @@ class Archetypes {
   [[nodiscard]] auto size() const -> size_t;
   [[nodiscard]] auto get_by_id_unchecked(ArchetypeId archetype_id)
       -> Archetype &;
-  [[nodiscard]] auto finder() -> ArchetypesFinder &;
+
+  template <typename... Args>
+  [[nodiscard]] auto find() const -> std::vector<ArchetypeId>;
 
   template <typename T, typename... Args>
   [[nodiscard]] auto add() -> std::optional<ArchetypeId>;
@@ -52,6 +54,11 @@ class Archetypes {
 };
 
 /* put these definition here since they are template methods */
+
+template <typename... Args>
+auto Archetypes::find() const -> std::vector<ArchetypeId> {
+  return finder_.find<Args...>();
+}
 
 template <typename T, typename... Args>
 auto Archetypes::add() -> std::optional<ArchetypeId> {

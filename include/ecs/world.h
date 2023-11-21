@@ -114,9 +114,8 @@ void World::add_query() {
   if (queries_.count(components) > 0) {
     return;
   }
-  queries_.emplace(
-      std::move(components),
-      QueryWrapper(archetypes_, archetypes_.finder().find<Args...>()));
+  queries_.emplace(std::move(components),
+                   QueryWrapper(archetypes_, archetypes_.find<Args...>()));
 }
 
 template <typename... Args>

@@ -6,8 +6,6 @@ auto Archetypes::get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype& {
   return archetypes_[archetype_id];
 }
 
-auto Archetypes::finder() -> ArchetypesFinder& { return finder_; }
-
 auto Archetypes::new_archetype_id() const -> ArchetypeId {
   return static_cast<ArchetypeId>(size());
 }
