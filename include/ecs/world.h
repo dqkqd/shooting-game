@@ -28,7 +28,7 @@ class World {
       -> std::optional<EntityLocation>;
 
   template <typename... Args>
-  auto query() -> QueryIterator<Args...>;
+  auto query() -> QueryIteratorWrapper<Args...>;
 
   auto archetypes() -> Archetypes& { return archetypes_; }
 
@@ -100,7 +100,7 @@ auto World::remove_component_from_entity(EntityId entity_id)
 }
 
 template <typename... Args>
-auto World::query() -> QueryIterator<Args...> {
+auto World::query() -> QueryIteratorWrapper<Args...> {
   auto components = Components::from_types<Args...>();
 
   auto it = queries_.find(components);

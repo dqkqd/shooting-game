@@ -83,3 +83,19 @@ TEST(World, RemoveComponentInvalid) {
   EXPECT_ANY_THROW(
       world.remove_component_from_entity<char>(location.entity_id));
 }
+
+TEST(World, Query) {
+  auto world = World();
+  world.spawn_entity_with<int, char>(1, 'a');
+  world.spawn_entity_with<int, char>(2, 'b');
+  world.spawn_entity_with<int, char>(3, 'c');
+
+  std::vector<int> is;
+  std::vector<char> cs;
+  for (auto [i, c] : world.query<int, char>()) {
+    is.push_back(i);
+    cs.push_back(c);
+  }
+  EXPECT_EQ(is, std::vector({1, 2, 3}));
+  EXPECT_EQ(cs, std::vector({'a', 'b', 'c'}));
+}
