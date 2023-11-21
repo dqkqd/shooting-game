@@ -15,9 +15,12 @@ class TableIterator {
   using reference = std::tuple<Args &...>;
 
   TableIterator() = default;
-  explicit TableIterator(std::size_t max_rows,
+  explicit TableIterator(std::size_t current_row,  // NOLINT
+                         std::size_t max_rows,
                          ColumnIterator<Args>... column_iters)
-      : max_rows_{max_rows}, iters_(std::make_tuple(column_iters...)) {}
+      : current_row_{current_row},
+        max_rows_{max_rows},
+        iters_(std::make_tuple(column_iters...)) {}
 
   [[nodiscard]] auto done() const -> bool { return current_row_ == max_rows_; }
 

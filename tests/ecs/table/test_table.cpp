@@ -214,3 +214,11 @@ TEST_F(TableTest, CloneWithout) {
 
   EXPECT_THROW(clone.clone_without<double>(), std::runtime_error);
 }
+
+TEST_F(TableTest, CreateIterator) {
+  auto begin = table.begin<int, float>();
+  EXPECT_FALSE(begin.done());
+
+  auto end = table.end<int, float>();
+  EXPECT_TRUE(end.done());
+}

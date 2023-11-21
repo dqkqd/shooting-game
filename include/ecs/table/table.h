@@ -187,12 +187,12 @@ auto Table::iter() -> TableIteratorWrapper<Args...> {
 
 template <typename... Args>
 auto Table::begin() -> TableIterator<Args...> {
-  return TableIterator<Args...>(height_,
+  return TableIterator<Args...>(0, height_,
                                 get_column<Args>().template begin<Args>()...);
 }
 template <typename... Args>
 auto Table::end() -> TableIterator<Args...> {
-  return TableIterator<Args...>(height_,
+  return TableIterator<Args...>(height_, height_,
                                 get_column<Args>().template end<Args>()...);
 }
 
