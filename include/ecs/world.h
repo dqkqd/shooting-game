@@ -28,12 +28,12 @@ class World {
       -> std::optional<EntityLocation>;
 
   template <typename... Args>
-  auto query() -> QueryIteratorWrapper<Args...>;
+  auto query() -> Query<Args...>;
 
   auto archetypes() -> Archetypes& { return archetypes_; }
 
   template <typename... Args>
-  void add_system(void (*func)(QueryIteratorWrapper<Args...>)) {
+  void add_system(void (*func)(Query<Args...>)) {
     // setup
     query<Args...>();
     systems_.emplace_back([=]() {
@@ -53,7 +53,7 @@ class World {
   using System = std::function<void()>;
 
   Archetypes archetypes_;
-  std::map<Components, Query> queries_;
+  std::map<Components, QueryWrapper> queries_;
   std::unordered_map<EntityId, EntityLocation> entities_;
 
   std::vector<System> systems_;
@@ -121,19 +121,20 @@ auto World::remove_component_from_entity(EntityId entity_id)
 }
 
 template <typename... Args>
-auto World::query() -> QueryIteratorWrapper<Args...> {
+auto World::query() -> Query<Args...> {
   auto components = Components::from_types<Args...>();
 
   auto it = queries_.find(components);
   if (it != queries_.end()) {
-    return it->second.template iter<Args...>();
+    return it->second.template query<Args...>();
   }
 
   auto matched_archetypes = archetypes_.finder().find<Args...>();
 
   auto [added_it, _] = queries_.emplace(
-      std::move(components), Query(archetypes_, std::move(matched_archetypes)));
-  return added_it->second.template iter<Args...>();
+      std::move(components),
+      QueryWrapper(archetypes_, std::move(matched_archetypes)));
+  return added_it->second.template query<Args...>();
 }
 
 #endif

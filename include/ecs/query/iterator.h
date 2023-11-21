@@ -95,19 +95,4 @@ class QueryIterator {
   }
 };
 
-template <class... Args>
-class QueryIteratorWrapper {
-  static_assert(all_types_are_different<Args...>());
-
- public:
-  QueryIteratorWrapper(QueryIterator<Args...> begin, QueryIterator<Args...> end)
-      : begin_{begin}, end_{end} {}
-  auto begin() -> QueryIterator<Args...> { return begin_; }
-  auto end() -> QueryIterator<Args...> { return end_; }
-
- private:
-  QueryIterator<Args...> begin_;
-  QueryIterator<Args...> end_;
-};
-
 #endif

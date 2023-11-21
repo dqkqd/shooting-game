@@ -33,9 +33,9 @@ class QueryIteratorTest : public testing::Test {
 };
 
 TEST_F(QueryIteratorTest, Get) {
-  Query query =
-      Query(world.archetypes(),
-            world.archetypes().finder().find<int, char, TestStruct>());
+  QueryWrapper query =
+      QueryWrapper(world.archetypes(),
+                   world.archetypes().finder().find<int, char, TestStruct>());
   auto iter = query.begin<int, char, TestStruct>();
   auto [i, c, t] = *iter;
   EXPECT_EQ(i, 1);
@@ -44,17 +44,17 @@ TEST_F(QueryIteratorTest, Get) {
 }
 
 TEST_F(QueryIteratorTest, GetWithMultipleArchetypes) {
-  Query query =
-      Query(world.archetypes(), world.archetypes().finder().find<TestStruct>());
+  QueryWrapper query = QueryWrapper(
+      world.archetypes(), world.archetypes().finder().find<TestStruct>());
   auto iter = query.begin<TestStruct>();
   auto [t] = *iter;
   EXPECT_EQ(t.triple(), 3);
 }
 
 TEST_F(QueryIteratorTest, Advance) {
-  Query query =
-      Query(world.archetypes(),
-            world.archetypes().finder().find<int, char, TestStruct>());
+  QueryWrapper query =
+      QueryWrapper(world.archetypes(),
+                   world.archetypes().finder().find<int, char, TestStruct>());
   auto iter = query.begin<int, char, TestStruct>();
   ++iter;
   auto [i1, c1, t1] = *iter;
@@ -70,8 +70,8 @@ TEST_F(QueryIteratorTest, Advance) {
 }
 
 TEST_F(QueryIteratorTest, AdvanceWithMultipleArchetypes) {
-  Query query =
-      Query(world.archetypes(), world.archetypes().finder().find<TestStruct>());
+  QueryWrapper query = QueryWrapper(
+      world.archetypes(), world.archetypes().finder().find<TestStruct>());
   auto iter = query.begin<TestStruct>();
 
   ++iter;
@@ -92,9 +92,9 @@ TEST_F(QueryIteratorTest, AdvanceWithMultipleArchetypes) {
 }
 
 TEST_F(QueryIteratorTest, Modify) {
-  Query query =
-      Query(world.archetypes(),
-            world.archetypes().finder().find<int, char, TestStruct>());
+  QueryWrapper query =
+      QueryWrapper(world.archetypes(),
+                   world.archetypes().finder().find<int, char, TestStruct>());
   auto iter1 = query.begin<int, char, TestStruct>();
   auto [i1, c1, t1] = *iter1;
   i1 = 10;
@@ -109,8 +109,8 @@ TEST_F(QueryIteratorTest, Modify) {
 }
 
 TEST_F(QueryIteratorTest, ModifyWithMultipleArchetypes) {
-  Query query =
-      Query(world.archetypes(), world.archetypes().finder().find<TestStruct>());
+  QueryWrapper query = QueryWrapper(
+      world.archetypes(), world.archetypes().finder().find<TestStruct>());
   auto iter1 = query.begin<TestStruct>();
   auto [t1] = *iter1;
   t1 = TestStruct{10};
@@ -121,9 +121,9 @@ TEST_F(QueryIteratorTest, ModifyWithMultipleArchetypes) {
 }
 
 TEST_F(QueryIteratorTest, Done) {
-  Query query =
-      Query(world.archetypes(),
-            world.archetypes().finder().find<int, char, TestStruct>());
+  QueryWrapper query =
+      QueryWrapper(world.archetypes(),
+                   world.archetypes().finder().find<int, char, TestStruct>());
   auto iter = query.begin<int, char, TestStruct>();
   ++iter;
   ++iter;
@@ -132,8 +132,8 @@ TEST_F(QueryIteratorTest, Done) {
 }
 
 TEST_F(QueryIteratorTest, DoneWithMultipleArchetypes) {
-  Query query =
-      Query(world.archetypes(), world.archetypes().finder().find<TestStruct>());
+  QueryWrapper query = QueryWrapper(
+      world.archetypes(), world.archetypes().finder().find<TestStruct>());
   auto iter = query.begin<TestStruct>();
   ++iter;
   ++iter;
@@ -144,13 +144,13 @@ TEST_F(QueryIteratorTest, DoneWithMultipleArchetypes) {
 }
 
 TEST_F(QueryIteratorTest, Loop) {
-  Query query =
-      Query(world.archetypes(),
-            world.archetypes().finder().find<int, char, TestStruct>());
+  QueryWrapper query =
+      QueryWrapper(world.archetypes(),
+                   world.archetypes().finder().find<int, char, TestStruct>());
   std::vector<int> is;
   std::vector<char> cs;
   std::vector<TestStruct> ts;
-  for (auto [i, c, t] : query.iter<int, char, TestStruct>()) {
+  for (auto [i, c, t] : query.query<int, char, TestStruct>()) {
     is.push_back(i);
     cs.push_back(c);
     ts.push_back(t);
@@ -164,11 +164,11 @@ TEST_F(QueryIteratorTest, Loop) {
 }
 
 TEST_F(QueryIteratorTest, LoopWithMultipleArchetypes) {
-  Query query =
-      Query(world.archetypes(), world.archetypes().finder().find<TestStruct>());
+  QueryWrapper query = QueryWrapper(
+      world.archetypes(), world.archetypes().finder().find<TestStruct>());
 
   std::vector<TestStruct> ts;
-  for (auto [t] : query.iter<TestStruct>()) {
+  for (auto [t] : query.query<TestStruct>()) {
     ts.push_back(t);
   }
 
@@ -180,11 +180,11 @@ TEST_F(QueryIteratorTest, LoopWithMultipleArchetypes) {
 }
 
 TEST_F(QueryIteratorTest, NoResultFound) {
-  Query query =
-      Query(world.archetypes(), world.archetypes().finder().find<double>());
+  QueryWrapper query = QueryWrapper(world.archetypes(),
+                                    world.archetypes().finder().find<double>());
 
   std::vector<double> ds;
-  for (auto [d] : query.iter<double>()) {
+  for (auto [d] : query.query<double>()) {
     ds.push_back(d);
   }
   EXPECT_TRUE(ds.empty());

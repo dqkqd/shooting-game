@@ -3,27 +3,43 @@
 
 #include "ecs/query/iterator.h"
 
+template <class... Args>
 class Query {
- public:
-  Query() = delete;
+  static_assert(all_types_are_different<Args...>());
 
-  Query(Archetypes& archetypes, std::vector<ArchetypeId>&& matched_archetypes)
+ public:
+  Query(QueryIterator<Args...> begin, QueryIterator<Args...> end)
+      : begin_{begin}, end_{end} {}
+  auto begin() -> QueryIterator<Args...> { return begin_; }
+  auto end() -> QueryIterator<Args...> { return end_; }
+
+ private:
+  QueryIterator<Args...> begin_;
+  QueryIterator<Args...> end_;
+};
+
+class QueryWrapper {
+ public:
+  QueryWrapper() = delete;
+
+  QueryWrapper(Archetypes& archetypes,
+               std::vector<ArchetypeId>&& matched_archetypes)
       : archetypes_{archetypes},
         matched_archetypes_{std::move(matched_archetypes)} {}
 
-  ~Query() = default;
+  ~QueryWrapper() = default;
 
-  Query(const Query&) = delete;
-  auto operator=(const Query&) -> Query& = delete;
+  QueryWrapper(const QueryWrapper&) = delete;
+  auto operator=(const QueryWrapper&) -> QueryWrapper& = delete;
 
-  Query(Query&& query) noexcept
+  QueryWrapper(QueryWrapper&& query) noexcept
       : matched_archetypes_{std::move(query.matched_archetypes_)},
         archetypes_{query.archetypes_} {}
 
-  auto operator=(Query&& query) noexcept -> Query& = delete;
+  auto operator=(QueryWrapper&& query) noexcept -> QueryWrapper& = delete;
 
   template <typename... Args>
-  auto iter() -> QueryIteratorWrapper<Args...> {
+  auto query() -> Query<Args...> {
     return {begin<Args...>(), end<Args...>()};
   }
 

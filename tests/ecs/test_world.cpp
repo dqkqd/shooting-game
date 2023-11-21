@@ -100,7 +100,7 @@ TEST(World, Query) {
   EXPECT_EQ(cs, std::vector({'a', 'b', 'c'}));
 }
 
-void test_system(QueryIteratorWrapper<int, float> q) {
+void test_system(Query<int, float> q) {
   for (auto [i, c] : q) {
     i *= 2;
     c *= 3;
@@ -143,7 +143,7 @@ TEST(World, SystemAcrossMultipleArchetypes) {
   world.spawn_entity_with<int, float>(1, 1.0);
   world.spawn_entity_with<int, float, char>(2, 2.0, 'a');
 
-  auto system = [](QueryIteratorWrapper<int, float> query) {
+  auto system = [](Query<int, float> query) {
     for (auto [i, _] : query) {
       i += 2;
     }
