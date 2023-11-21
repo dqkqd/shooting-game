@@ -27,27 +27,11 @@ class World {
   auto remove_component_from_entity(EntityId entity_id)
       -> std::optional<EntityLocation>;
 
-  template <typename... Args>
-  auto query() -> Query<Args...>;
-
   auto archetypes() -> Archetypes& { return archetypes_; }
 
   template <typename... Args>
-  void add_system(void (*func)(Query<Args...>)) {
-    // setup
-    query<Args...>();
-    systems_.emplace_back([=]() {
-      /* run here */
-      auto q = query<Args...>();
-      func(q);
-    });
-  }
-
-  void run_systems() {
-    for (auto& system : systems_) {
-      system();
-    }
-  }
+  void add_system(void (*system)(Query<Args...>));
+  void run_systems();
 
  private:
   using System = std::function<void()>;
@@ -57,6 +41,11 @@ class World {
   std::unordered_map<EntityId, EntityLocation> entities_;
 
   std::vector<System> systems_;
+
+  template <typename... Args>
+  void add_query();
+  template <typename... Args>
+  auto get_query() -> Query<Args...>;
 };
 
 /* put the definition here since these are template methods */
@@ -119,22 +108,34 @@ auto World::remove_component_from_entity(EntityId entity_id)
               entity_id, archetypes_.get_by_id_unchecked(prev_archetype_id));
   return new_location;
 }
+template <typename... Args>
+void World::add_query() {
+  auto components = Components::from_types<Args...>();
+  if (queries_.count(components) > 0) {
+    return;
+  }
+  queries_.emplace(
+      std::move(components),
+      QueryWrapper(archetypes_, archetypes_.finder().find<Args...>()));
+}
 
 template <typename... Args>
-auto World::query() -> Query<Args...> {
-  auto components = Components::from_types<Args...>();
+auto World::get_query() -> Query<Args...> {
+  return queries_.at(Components::from_types<Args...>())
+      .template query<Args...>();
+}
 
-  auto it = queries_.find(components);
-  if (it != queries_.end()) {
-    return it->second.template query<Args...>();
+template <typename... Args>
+void World::add_system(void (*system)(Query<Args...>)) {
+  // setup to avoid re-calculating during game loop
+  add_query<Args...>();
+  systems_.emplace_back([=]() { system(get_query<Args...>()); });
+}
+
+inline void World::run_systems() {
+  for (auto& system : systems_) {
+    system();
   }
-
-  auto matched_archetypes = archetypes_.finder().find<Args...>();
-
-  auto [added_it, _] = queries_.emplace(
-      std::move(components),
-      QueryWrapper(archetypes_, std::move(matched_archetypes)));
-  return added_it->second.template query<Args...>();
 }
 
 #endif

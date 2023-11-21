@@ -84,22 +84,6 @@ TEST(World, RemoveComponentInvalid) {
       world.remove_component_from_entity<char>(location.entity_id));
 }
 
-TEST(World, Query) {
-  auto world = World();
-  world.spawn_entity_with<int, char>(1, 'a');
-  world.spawn_entity_with<int, char>(2, 'b');
-  world.spawn_entity_with<int, char>(3, 'c');
-
-  std::vector<int> is;
-  std::vector<char> cs;
-  for (auto [i, c] : world.query<int, char>()) {
-    is.push_back(i);
-    cs.push_back(c);
-  }
-  EXPECT_EQ(is, std::vector({1, 2, 3}));
-  EXPECT_EQ(cs, std::vector({'a', 'b', 'c'}));
-}
-
 void test_system(Query<int, float> q) {
   for (auto [i, c] : q) {
     i *= 2;
@@ -109,39 +93,26 @@ void test_system(Query<int, float> q) {
 
 TEST(World, SystemOverSingleArchetype) {
   auto world = World();
-  world.spawn_entity_with<int, float>(1, 1.0);
-  world.spawn_entity_with<int, float>(2, 2.0);
-  world.spawn_entity_with<int, float>(3, 3.0);
-
+  auto location = world.spawn_entity_with<int, float>(1, 1.0);
   world.add_system(test_system);
 
   world.run_systems();
-
-  std::vector<int> is;
-  std::vector<float> fs;
-  for (auto [i, f] : world.query<int, float>()) {
-    is.push_back(i);
-    fs.push_back(f);
-  }
-  EXPECT_EQ(is, std::vector({2, 4, 6}));
-  EXPECT_EQ(fs, std::vector({3.0F, 6.0F, 9.0F}));
+  EXPECT_EQ(world.archetypes()
+                .get_by_id_unchecked(location.archetype_id)
+                .get_entity_data<int>(location.entity_id),
+            std::make_tuple(2));
 
   world.run_systems();
-
-  is.clear();
-  fs.clear();
-  for (auto [i, f] : world.query<int, float>()) {
-    is.push_back(i);
-    fs.push_back(f);
-  }
-  EXPECT_EQ(is, std::vector({4, 8, 12}));
-  EXPECT_EQ(fs, std::vector({9.0F, 18.0F, 27.0F}));
+  EXPECT_EQ(world.archetypes()
+                .get_by_id_unchecked(location.archetype_id)
+                .get_entity_data<int>(location.entity_id),
+            std::make_tuple(4));
 }
 
 TEST(World, SystemAcrossMultipleArchetypes) {
   auto world = World();
+  auto location = world.spawn_entity_with<int, float, char>(2, 2.0, 'a');
   world.spawn_entity_with<int, float>(1, 1.0);
-  world.spawn_entity_with<int, float, char>(2, 2.0, 'a');
 
   auto system = [](Query<int, float> query) {
     for (auto [i, _] : query) {
@@ -152,10 +123,14 @@ TEST(World, SystemAcrossMultipleArchetypes) {
   world.add_system(*system);
 
   world.run_systems();
+  EXPECT_EQ(world.archetypes()
+                .get_by_id_unchecked(location.archetype_id)
+                .get_entity_data<int>(location.entity_id),
+            std::make_tuple(4));
 
-  std::vector<int> is;
-  for (auto [i, f] : world.query<int, float>()) {
-    is.push_back(i);
-  }
-  EXPECT_EQ(is, std::vector({3, 4}));
+  world.run_systems();
+  EXPECT_EQ(world.archetypes()
+                .get_by_id_unchecked(location.archetype_id)
+                .get_entity_data<int>(location.entity_id),
+            std::make_tuple(6));
 }
