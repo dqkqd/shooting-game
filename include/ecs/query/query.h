@@ -60,4 +60,26 @@ class QueryWrapper {
   Archetypes& archetypes_;
 };
 
+class Queries {
+ public:
+  template <typename... Args>
+  void add_query(Archetypes& archetypes) {
+    auto components = Components::from_types<Args...>();
+    if (queries_.count(components) > 0) {
+      return;
+    }
+    queries_.emplace(std::move(components),
+                     QueryWrapper(archetypes, archetypes.find<Args...>()));
+  }
+
+  template <typename... Args>
+  auto get_query() -> Query<Args...> {
+    return queries_.at(Components::from_types<Args...>())
+        .template query<Args...>();
+  }
+
+ private:
+  std::map<Components, QueryWrapper> queries_;
+};
+
 #endif

@@ -37,15 +37,10 @@ class World {
   using System = std::function<void()>;
 
   Archetypes archetypes_;
-  std::map<Components, QueryWrapper> queries_;
+  Queries queries_;
+
   std::unordered_map<EntityId, EntityLocation> entities_;
-
   std::vector<System> systems_;
-
-  template <typename... Args>
-  void add_query();
-  template <typename... Args>
-  auto get_query() -> Query<Args...>;
 };
 
 /* put the definition here since these are template methods */
@@ -108,27 +103,12 @@ auto World::remove_component_from_entity(EntityId entity_id)
               entity_id, archetypes_.get_by_id_unchecked(prev_archetype_id));
   return new_location;
 }
-template <typename... Args>
-void World::add_query() {
-  auto components = Components::from_types<Args...>();
-  if (queries_.count(components) > 0) {
-    return;
-  }
-  queries_.emplace(std::move(components),
-                   QueryWrapper(archetypes_, archetypes_.find<Args...>()));
-}
-
-template <typename... Args>
-auto World::get_query() -> Query<Args...> {
-  return queries_.at(Components::from_types<Args...>())
-      .template query<Args...>();
-}
 
 template <typename... Args>
 void World::add_system(void (*system)(Query<Args...>)) {
   // setup to avoid re-calculating during game loop
-  add_query<Args...>();
-  systems_.emplace_back([=]() { system(get_query<Args...>()); });
+  queries_.add_query<Args...>(archetypes_);
+  systems_.emplace_back([=]() { system(queries_.get_query<Args...>()); });
 }
 
 inline void World::run_systems() {
