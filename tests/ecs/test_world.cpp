@@ -134,3 +134,29 @@ TEST(World, SystemAcrossMultipleArchetypes) {
                 .get_entity_data<int>(location.entity_id),
             std::make_tuple(6));
 }
+
+TEST(World, WorldQueryAutoUpdateWhenArchetypeChanged) {
+  auto world = World();
+  world.spawn_entity_with<int, float>(1, 1.0);
+
+  auto system = [](Query<int> query) {
+    for (auto [i] : query) {
+      i *= 2;
+    }
+  };
+
+  world.add_system(*system);
+  auto location = world.spawn_entity_with<int>(10);
+
+  world.run_systems();
+  EXPECT_EQ(world.archetypes()
+                .get_by_id_unchecked(location.archetype_id)
+                .get_entity_data<int>(location.entity_id),
+            std::make_tuple(20));
+
+  world.run_systems();
+  EXPECT_EQ(world.archetypes()
+                .get_by_id_unchecked(location.archetype_id)
+                .get_entity_data<int>(location.entity_id),
+            std::make_tuple(40));
+}
