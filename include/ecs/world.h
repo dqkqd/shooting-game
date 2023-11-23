@@ -107,9 +107,8 @@ auto World::remove_component_from_entity(EntityId entity_id)
 template <typename... Args>
 void World::add_system(void (*system)(Query<Args...>)) {
   // setup to avoid re-calculating during game loop
-  queries_.add_query<Args...>(archetypes_);
-  systems_.emplace_back(
-      [=]() { system(queries_.get_query<Args...>(archetypes_)); });
+  queries_.add<Args...>(archetypes_);
+  systems_.emplace_back([=]() { system(queries_.get<Args...>(archetypes_)); });
 }
 
 inline void World::run_systems() {

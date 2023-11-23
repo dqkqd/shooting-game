@@ -59,7 +59,7 @@ class QueryWrapper {
 class Queries {
  public:
   template <typename... Args>
-  void add_query(Archetypes& archetypes) {
+  void add(Archetypes& archetypes) {
     auto components = Components::from_types<Args...>();
     if (queries_.count(components) > 0) {
       return;
@@ -69,7 +69,7 @@ class Queries {
   }
 
   template <typename... Args>
-  auto get_query(Archetypes& archetypes) -> Query<Args...> {
+  auto get(Archetypes& archetypes) -> Query<Args...> {
     return queries_.at(Components::from_types<Args...>())
         .template query<Args...>(archetypes);
   }
