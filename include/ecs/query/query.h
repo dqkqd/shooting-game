@@ -80,6 +80,19 @@ class Queries : public EventListener {
         .template query<Args...>(archetypes);
   }
 
+  void on_notify(Event* event) final {
+    switch (event->type()) {
+      case EventType::ADD_ARCHETYPE: {
+        auto* e = event->as<AddArchetypeEvent>();
+        for (auto& [components, query] : queries_) {
+          if (e->components().cover(components)) {
+            query.add_archetype(e->archetype_id());
+          }
+        }
+      }
+    }
+  }
+
  private:
   std::map<Components, QueryWrapper> queries_;
 };
