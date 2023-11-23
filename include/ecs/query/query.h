@@ -52,6 +52,10 @@ class QueryWrapper {
     return query;
   }
 
+  void add_archetype(ArchetypeId archetype_id) {
+    matched_archetypes_.emplace_back(archetype_id);
+  }
+
  private:
   std::vector<ArchetypeId> matched_archetypes_{};
 };

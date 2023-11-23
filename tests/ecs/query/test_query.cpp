@@ -51,3 +51,12 @@ TEST_F(QueryTest, AddAndGetQueryFromQueries) {
   auto query = queries.get<char>(world.archetypes());
   EXPECT_EQ(get_values<char>(query), std::vector({'c'}));
 }
+
+TEST_F(QueryTest, AddArchetypeToQueryWrapper) {
+  auto query = QueryWrapper({location1.archetype_id});
+  auto location = world.spawn_entity_with<int>(100);
+  EXPECT_EQ(get_values<int>(query), std::vector({2, 3}));
+
+  query.add_archetype(location.archetype_id);
+  EXPECT_EQ(get_values<int>(query), std::vector({2, 3, 100}));
+}
