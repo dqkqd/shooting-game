@@ -111,7 +111,8 @@ template <typename... Args>
 void World::add_system(void (*system)(Query<Args...>)) {
   // setup to avoid re-calculating during game loop
   queries_.add<Args...>(archetypes_);
-  systems_.emplace_back([=]() { system(queries_.get<Args...>(archetypes_)); });
+  systems_.emplace_back(
+      [system, this]() { system(queries_.get<Args...>(archetypes_)); });
 }
 
 inline void World::run_systems() {
