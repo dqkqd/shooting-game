@@ -34,17 +34,6 @@ class QueryIterator {
     return tmp;
   }
 
-  auto next() -> std::tuple<Args&...> {
-    if (table_iter_.done()) {
-      ++archetype_index_;
-      fetch();
-    }
-
-    auto current_iter = table_iter_;
-    ++table_iter_;
-    return *current_iter;
-  }
-
   [[nodiscard]] auto done() const -> bool {
     if (archetype_index_ >= matched_archetypes_.size()) {
       return true;
