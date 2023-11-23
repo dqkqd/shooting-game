@@ -6,6 +6,7 @@
 class QueryTest : public testing::Test {
  protected:
   World world;
+  Queries queries;
 
   EntityLocation location1;
   EntityLocation location2;
@@ -16,12 +17,17 @@ class QueryTest : public testing::Test {
   }
 
   template <typename T>
-  auto get_values(QueryWrapper& wrapper) -> std::vector<T> {
+  auto get_values(Query<T> query) -> std::vector<T> {
     std::vector<T> values;
-    for (auto [v] : wrapper.query<T>(world.archetypes())) {
+    for (auto [v] : query) {
       values.push_back(v);
     }
     return values;
+  };
+
+  template <typename T>
+  auto get_values(QueryWrapper& wrapper) -> std::vector<T> {
+    return get_values<T>(wrapper.query<T>(world.archetypes()));
   };
 };
 
@@ -36,4 +42,12 @@ TEST_F(QueryTest, MoveQueryWrapper) {
   QueryWrapper query3{std::move(query2)};
   EXPECT_EQ(get_values<int>(query2), std::vector<int>({}));
   EXPECT_EQ(get_values<int>(query3), std::vector({2, 3}));
+}
+
+TEST_F(QueryTest, AddAndGetQueryFromQueries) {
+  world.spawn_entity_with<char>('c');
+  queries.add<char>(world.archetypes());
+
+  auto query = queries.get<char>(world.archetypes());
+  EXPECT_EQ(get_values<char>(query), std::vector({'c'}));
 }
