@@ -43,6 +43,12 @@ auto Components::remove(Components &&other) const -> Components {
   return from_set(std::move(different));
 }
 
+auto Components::cover(const Components &other) const -> bool {
+  return size() >= other.size() &&
+         std::all_of(other.components_.begin(), other.components_.end(),
+                     [this](auto &c) { return has_component(c); });
+}
+
 auto operator==(const Components &lhs, const Components &rhs) -> bool {
   return lhs.components_ == rhs.components_;
 }

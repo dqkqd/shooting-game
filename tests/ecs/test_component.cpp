@@ -57,3 +57,14 @@ TEST_F(ComponentsTest, CloneWithout) {
   // non existed component
   EXPECT_FALSE((components.clone_without<A>()).has_value());
 }
+
+TEST_F(ComponentsTest, Cover) {
+  EXPECT_TRUE(components.cover(Components::from_types<float, int>()));
+  EXPECT_TRUE(components.cover(Components::from_types<int, float>()));
+  EXPECT_TRUE(components.cover(Components::from_types<int>()));
+  EXPECT_TRUE(components.cover(Components::from_types<float>()));
+  EXPECT_TRUE((Components::from_types<float, int, double>()).cover(components));
+  EXPECT_TRUE((Components::from_types<char, float, int>()).cover(components));
+
+  EXPECT_FALSE((Components::from_types<char, float>()).cover(components));
+}

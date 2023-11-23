@@ -68,6 +68,8 @@ class Components {
     return std::move(archetype);
   }
 
+  [[nodiscard]] auto cover(const Components &other) const -> bool;
+
   friend auto operator==(const Components &lhs, const Components &rhs) -> bool;
 
   friend auto operator<(const Components &lhs, const Components &rhs) -> bool;
