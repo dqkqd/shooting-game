@@ -21,6 +21,7 @@ add_executable(
     ecs/archetype/test_finder.cpp
     ecs/column/test_column.cpp
     ecs/column/test_iterator.cpp
+    ecs/observer/test_observer.cpp
     ecs/query/test_iterator.cpp
     ecs/query/test_query.cpp
     ecs/table/test_iterator.cpp
