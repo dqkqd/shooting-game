@@ -9,7 +9,8 @@
 
 class World {
  public:
-  World() = default;
+  World() { init(); }
+
   World(const World&) = delete;
   World(World&&) = delete;
   auto operator=(const World&) -> World& = delete;
@@ -41,6 +42,8 @@ class World {
 
   std::unordered_map<EntityId, EntityLocation> entities_;
   std::vector<System> systems_;
+
+  void init();
 };
 
 /* put the definition here since these are template methods */
@@ -115,6 +118,10 @@ inline void World::run_systems() {
   for (auto& system : systems_) {
     system();
   }
+}
+
+inline void World::init() {
+  archetypes_.event_manager().add_listener(queries_);
 }
 
 #endif

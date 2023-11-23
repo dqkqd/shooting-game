@@ -6,6 +6,7 @@
 
 #include "ecs/archetype/archetype.h"
 #include "ecs/archetype/finder.h"
+#include "ecs/observer/observer.h"
 
 class Archetypes {
  public:
@@ -40,10 +41,14 @@ class Archetypes {
   [[nodiscard]] auto get_or_add_prev_archetype(ArchetypeId archetype_id)
       -> ArchetypeId;
 
+  [[nodiscard]] auto event_manager() -> EventManager &;
+
  private:
   std::vector<Archetype> archetypes_;
   std::map<Components, ArchetypeId> by_components_;
   ArchetypesFinder finder_;
+
+  EventManager event_manager_;
 
   [[nodiscard]] auto new_archetype_id() const -> ArchetypeId;
 

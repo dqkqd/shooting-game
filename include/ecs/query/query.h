@@ -1,6 +1,8 @@
 #ifndef ECS_QUERY_QUERY_H
 #define ECS_QUERY_QUERY_H
 
+#include "ecs/observer/event.h"
+#include "ecs/observer/observer.h"
 #include "ecs/query/iterator.h"
 
 template <class... Args>
@@ -60,7 +62,7 @@ class QueryWrapper {
   std::vector<ArchetypeId> matched_archetypes_{};
 };
 
-class Queries {
+class Queries : public EventListener {
  public:
   template <typename... Args>
   void add(Archetypes& archetypes) {

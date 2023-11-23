@@ -1,5 +1,7 @@
 #include "ecs/archetype/archetypes.h"
 
+#include "ecs/observer/event.h"
+
 auto Archetypes::size() const -> size_t { return archetypes_.size(); }
 
 auto Archetypes::get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype& {
@@ -9,6 +11,8 @@ auto Archetypes::get_by_id_unchecked(ArchetypeId archetype_id) -> Archetype& {
 auto Archetypes::new_archetype_id() const -> ArchetypeId {
   return static_cast<ArchetypeId>(size());
 }
+
+auto Archetypes::event_manager() -> EventManager& { return event_manager_; }
 
 auto Archetypes::add_archetype(Archetype&& archetype) -> ArchetypeId {
   auto archetype_id = new_archetype_id();
