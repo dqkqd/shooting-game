@@ -22,10 +22,8 @@ class QueryWrapper {
  public:
   QueryWrapper() = delete;
 
-  QueryWrapper(Archetypes& archetypes,
-               std::vector<ArchetypeId>&& matched_archetypes)
-      : archetypes_{archetypes},
-        matched_archetypes_{std::move(matched_archetypes)} {}
+  explicit QueryWrapper(std::vector<ArchetypeId>&& matched_archetypes)
+      : matched_archetypes_{std::move(matched_archetypes)} {}
 
   ~QueryWrapper() = default;
 
@@ -33,31 +31,29 @@ class QueryWrapper {
   auto operator=(const QueryWrapper&) -> QueryWrapper& = delete;
 
   QueryWrapper(QueryWrapper&& query) noexcept
-      : matched_archetypes_{std::move(query.matched_archetypes_)},
-        archetypes_{query.archetypes_} {}
+      : matched_archetypes_{std::move(query.matched_archetypes_)} {}
 
   auto operator=(QueryWrapper&& query) noexcept -> QueryWrapper& = delete;
 
   template <typename... Args>
-  auto query() -> Query<Args...> {
-    return {begin<Args...>(), end<Args...>()};
+  auto query(Archetypes& archetypes) -> Query<Args...> {
+    return {begin<Args...>(archetypes), end<Args...>(archetypes)};
   }
 
   template <typename... Args>
-  auto begin() -> QueryIterator<Args...> {
-    return QueryIterator<Args...>(archetypes_, matched_archetypes_);
+  auto begin(Archetypes& archetypes) -> QueryIterator<Args...> {
+    return QueryIterator<Args...>(archetypes, matched_archetypes_);
   }
 
   template <typename... Args>
-  auto end() -> QueryIterator<Args...> {
-    auto query = QueryIterator<Args...>(archetypes_, matched_archetypes_);
+  auto end(Archetypes& archetypes) -> QueryIterator<Args...> {
+    auto query = QueryIterator<Args...>(archetypes, matched_archetypes_);
     query.close();
     return query;
   }
 
  private:
   std::vector<ArchetypeId> matched_archetypes_{};
-  Archetypes& archetypes_;
 };
 
 class Queries {
@@ -69,13 +65,13 @@ class Queries {
       return;
     }
     queries_.emplace(std::move(components),
-                     QueryWrapper(archetypes, archetypes.find<Args...>()));
+                     QueryWrapper(archetypes.find<Args...>()));
   }
 
   template <typename... Args>
-  auto get_query() -> Query<Args...> {
+  auto get_query(Archetypes& archetypes) -> Query<Args...> {
     return queries_.at(Components::from_types<Args...>())
-        .template query<Args...>();
+        .template query<Args...>(archetypes);
   }
 
  private:
