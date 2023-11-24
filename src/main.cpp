@@ -37,8 +37,7 @@ auto main() -> int {
         }
       };
 
-  world.add_system(moving_system);
-  world.add_system(render_system);
+  world.add_system(moving_system).add_system(render_system);
 
   game.run(world);
 

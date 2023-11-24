@@ -31,10 +31,10 @@ class World {
   auto archetypes() -> Archetypes& { return archetypes_; }
 
   template <typename... Args>
-  void add_system(void (*system)(Query<Args...>));
+  auto add_system(void (*system)(Query<Args...>)) -> World&;
 
   template <typename... Args>
-  void add_system(std::function<void(Query<Args...>)> system);
+  auto add_system(std::function<void(Query<Args...>)> system) -> World&;
 
   void run_systems();
 
@@ -48,6 +48,9 @@ class World {
   std::vector<System> systems_;
 
   void init();
+
+  template <typename S, typename... Args>
+  auto add_system_internal(S system) -> World&;
 };
 
 /* put the definition here since these are template methods */
@@ -111,20 +114,24 @@ auto World::remove_component_from_entity(EntityId entity_id)
   return new_location;
 }
 
-template <typename... Args>
-void World::add_system(void (*system)(Query<Args...>)) {
+template <typename S, typename... Args>
+auto World::add_system_internal(S system) -> World& {
   // setup to avoid re-calculating during game loop
   queries_.add<Args...>(archetypes_);
   systems_.emplace_back(
       [system, this]() { system(queries_.get<Args...>(archetypes_)); });
+  return *this;
 }
 
 template <typename... Args>
-void World::add_system(std::function<void(Query<Args...>)> system) {
-  // setup to avoid re-calculating during game loop
-  queries_.add<Args...>(archetypes_);
-  systems_.emplace_back(
-      [system, this]() { system(queries_.get<Args...>(archetypes_)); });
+auto World::add_system(void (*system)(Query<Args...>)) -> World& {
+  return add_system_internal<void (*)(Query<Args...>), Args...>(system);
+}
+
+template <typename... Args>
+auto World::add_system(std::function<void(Query<Args...>)> system) -> World& {
+  return add_system_internal<std::function<void(Query<Args...>)>, Args...>(
+      system);
 }
 
 inline void World::run_systems() {
