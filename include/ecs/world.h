@@ -32,6 +32,10 @@ class World {
 
   template <typename... Args>
   void add_system(void (*system)(Query<Args...>));
+
+  template <typename... Args>
+  void add_system(std::function<void(Query<Args...>)> system);
+
   void run_systems();
 
  private:
@@ -109,6 +113,14 @@ auto World::remove_component_from_entity(EntityId entity_id)
 
 template <typename... Args>
 void World::add_system(void (*system)(Query<Args...>)) {
+  // setup to avoid re-calculating during game loop
+  queries_.add<Args...>(archetypes_);
+  systems_.emplace_back(
+      [system, this]() { system(queries_.get<Args...>(archetypes_)); });
+}
+
+template <typename... Args>
+void World::add_system(std::function<void(Query<Args...>)> system) {
   // setup to avoid re-calculating during game loop
   queries_.add<Args...>(archetypes_);
   systems_.emplace_back(
