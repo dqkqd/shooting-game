@@ -1,14 +1,9 @@
 set(SOURCE_FILES
-    game.cpp
-    graphic.cpp
-    entity.cpp
-    components/graphic.cpp
     ecs/archetype/archetype.cpp
     ecs/archetype/archetypes.cpp
     ecs/column/column.cpp
     ecs/table/table.cpp
     ecs/component.cpp
-    error.cpp
 )
 
 include(FetchContent)
