@@ -2,8 +2,7 @@
 #define ERROR_H
 
 #include <exception>
-#include <iomanip>
-#include <stdexcept>
+#include <string>
 
 class GameError : public std::exception {
  public:

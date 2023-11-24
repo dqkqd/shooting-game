@@ -105,7 +105,7 @@ auto Table::clone_with() const -> Table {
     table.add_column(id, column.clone());
   }
 
-  return std::move(table);
+  return table;
 }
 
 template <typename T>
@@ -133,7 +133,7 @@ auto Table::clone_without() const -> Table {
     table.add_column(id, column.clone());
   }
 
-  return std::move(table);
+  return table;
 }
 
 template <typename T, typename... Args>

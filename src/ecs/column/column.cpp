@@ -29,9 +29,7 @@ Column::~Column() {
   free(data_);  // NOLINT
 }
 
-auto Column::clone() const -> Column {
-  return std::move(Column(layout_, component_id_));
-}
+auto Column::clone() const -> Column { return Column(layout_, component_id_); }
 
 void Column::push_from(Column &other, size_t other_row) {
   grow();

@@ -2,14 +2,13 @@
 
 #include "ecs/column/column.h"
 #include "ecs/column/iterator.h"
-#include "ecs/primitive.h"
 
 class ColumnIteratorTest : public testing::Test {
  protected:
   struct TestStruct {
    public:
     float item;
-    explicit TestStruct(float item) : item{item} {}
+    explicit TestStruct(float float_item) : item{float_item} {}
     [[nodiscard]] auto triple() const -> float { return item * 3; };
   };
 

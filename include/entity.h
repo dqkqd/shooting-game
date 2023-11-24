@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "SDL_render.h"
 #include "components/graphic.h"
 #include "graphic.h"
 

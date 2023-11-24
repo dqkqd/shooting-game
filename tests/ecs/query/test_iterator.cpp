@@ -7,7 +7,7 @@ class QueryIteratorTest : public testing::Test {
   struct TestStruct {
    public:
     float item;
-    explicit TestStruct(float item) : item{item} {}
+    explicit TestStruct(float float_item) : item{float_item} {}
     [[nodiscard]] auto triple() const -> float { return item * 3; };
   };
 
@@ -97,7 +97,7 @@ TEST_F(QueryIteratorTest, Modify) {
   t1 = TestStruct{10};
 
   auto iter2 = query.begin<int, char, TestStruct>(world.archetypes());
-  auto [i2, c2, t2] = *iter1;
+  auto [i2, c2, t2] = *iter2;
   EXPECT_EQ(i2, 10);
   EXPECT_EQ(c2, 'x');
   EXPECT_EQ(t2.triple(), 30);
@@ -110,7 +110,7 @@ TEST_F(QueryIteratorTest, ModifyWithMultipleArchetypes) {
   t1 = TestStruct{10};
 
   auto iter2 = query.begin<TestStruct>(world.archetypes());
-  auto [t2] = *iter1;
+  auto [t2] = *iter2;
   EXPECT_EQ(t2.triple(), 30);
 }
 

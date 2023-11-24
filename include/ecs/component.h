@@ -32,7 +32,8 @@ class Components {
            (... && has_component(ComponentCounter::id<Args>()));
   }
 
-  static auto from_vec(std::vector<ComponentId> &&components) -> Components;
+  static auto from_vec(const std::vector<ComponentId> &components)
+      -> Components;
   static auto from_set(std::set<ComponentId> &&components) -> Components;
 
   template <typename... Args>
@@ -77,8 +78,8 @@ class Components {
  private:
   std::set<ComponentId> components_;
 
-  auto merge(Components &&other) const -> Components;
-  auto remove(Components &&other) const -> Components;
+  [[nodiscard]] auto merge(const Components &other) const -> Components;
+  [[nodiscard]] auto remove(const Components &other) const -> Components;
 };
 
 #endif

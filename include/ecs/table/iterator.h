@@ -3,7 +3,7 @@
 
 #include <iterator>
 
-#include "ecs/column/column.h"
+#include "ecs/column/iterator.h"
 
 template <typename... Args>
 class TableIterator {
@@ -44,8 +44,8 @@ class TableIterator {
   };
 
  private:
-  size_t max_rows_{};
   size_t current_row_{};
+  size_t max_rows_{};
   std::tuple<ColumnIterator<Args>...> iters_;
 
   auto dereference() -> reference {

@@ -1,6 +1,5 @@
 #include "entity.h"
 
-#include "SDL_render.h"
 #include "components/graphic.h"
 
 GameEntity::GameEntity(

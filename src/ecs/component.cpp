@@ -14,7 +14,8 @@ auto Components::components() const -> const std::set<ComponentId> & {
   return components_;
 }
 
-auto Components::from_vec(std::vector<ComponentId> &&components) -> Components {
+auto Components::from_vec(const std::vector<ComponentId> &components)
+    -> Components {
   return from_set({std::make_move_iterator(components.begin()),
                    std::make_move_iterator(components.end())});
 }
@@ -29,13 +30,15 @@ auto Components::clone() const -> Components {
   return from_set(std::set{components_});
 }
 
-auto Components::merge(Components &&other) const -> Components {
+auto Components::merge(const Components &other) const -> Components {
   std::set<ComponentId> intersection{components()};
-  intersection.merge(other.components_);
+  for (const auto &id : other.components()) {
+    intersection.insert(id);
+  }
   return from_set(std::move(intersection));
 }
 
-auto Components::remove(Components &&other) const -> Components {
+auto Components::remove(const Components &other) const -> Components {
   std::set<ComponentId> different{components()};
   for (const auto &id : other.components()) {
     different.erase(id);

@@ -5,11 +5,7 @@
 #include <cstddef>
 
 #include "SDL3_image/SDL_image.h"
-#include "SDL_error.h"
-#include "SDL_init.h"
-#include "SDL_log.h"
 #include "SDL_render.h"
-#include "SDL_surface.h"
 #include "SDL_video.h"
 #include "components/graphic.h"
 

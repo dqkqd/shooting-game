@@ -12,7 +12,7 @@ class ListenerTest : public EventListener {
  public:
   int id;
   int value{};
-  explicit ListenerTest(int id) : id{id} {};
+  explicit ListenerTest(int listener_id) : id{listener_id} {};
   void on_notify(Event* e [[maybe_unused]]) override { value += 1; }
 };
 

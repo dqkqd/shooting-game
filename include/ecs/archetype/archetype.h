@@ -156,7 +156,7 @@ auto Archetype::move_entity_to_other(EntityId entity_id, Archetype &other,
   }
 
   // Adding missing components
-  other.table_.add_data<Args...>(std::move(components)...);
+  other.table_.add_data<Args...>(std::forward<Args>(components)...);
 
   auto new_height = other.table_.height();
 

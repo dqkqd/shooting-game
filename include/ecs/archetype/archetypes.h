@@ -2,7 +2,6 @@
 #define ECS_ARCHETYPE_ARCHETYPES_H
 
 #include <map>
-#include <stdexcept>
 
 #include "ecs/archetype/archetype.h"
 #include "ecs/archetype/finder.h"
@@ -108,8 +107,7 @@ auto Archetypes::get_or_add_next_archetype(ArchetypeId archetype_id)
   auto archetype = archetypes_[archetype_id].clone_with<T>();
   auto it = by_components_.find(archetype.components());
   if (it != by_components_.end()) {
-    auto archetype_id = it->second;
-    return archetype_id;
+    return it->second;
   }
 
   auto next_archetype_id = add_archetype(std::move(archetype));
@@ -124,8 +122,7 @@ auto Archetypes::get_or_add_prev_archetype(ArchetypeId archetype_id)
   auto archetype = archetypes_[archetype_id].clone_without<T>();
   auto it = by_components_.find(archetype.components());
   if (it != by_components_.end()) {
-    auto archetype_id = it->second;
-    return archetype_id;
+    return it->second;
   }
 
   auto prev_archetype_id = add_archetype(std::move(archetype));

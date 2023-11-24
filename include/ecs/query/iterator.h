@@ -61,10 +61,10 @@ class QueryIterator {
   }
 
  private:
-  std::size_t archetype_index_{};
-  std::vector<ArchetypeId>& matched_archetypes_;
   Archetypes& archetypes_;
+  std::vector<ArchetypeId>& matched_archetypes_;
   TableIterator<Args...> table_iter_;
+  std::size_t archetype_index_{};
 
   void fetch() {
     if (archetype_index_ < matched_archetypes_.size()) {

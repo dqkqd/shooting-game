@@ -12,10 +12,10 @@ Table::Table() : table_id_{TableCounter::id()}, width_{0}, height_{0} {}
 
 Table::Table(Table&& table) noexcept
     : table_id_{std::exchange(table.table_id_, INVALID_TABLE_ID)},
-      components_{std::move(table.components_)},
-      columns_{std::exchange(table.columns_, {})},
       width_{std::exchange(table.width_, {})},
-      height_{std::exchange(table.height_, {})} {}
+      height_{std::exchange(table.height_, {})},
+      components_{std::move(table.components_)},
+      columns_{std::exchange(table.columns_, {})} {}
 
 auto Table::operator=(Table&& table) noexcept -> Table& {
   table_id_ = std::exchange(table.table_id_, INVALID_TABLE_ID);
@@ -62,7 +62,6 @@ auto Table::move_row_to_other(size_t row, Table& other)
     return {};
   }
 
-  bool at_least_one_column_is_moved = false;
   for (auto& [component_id, column] : columns_) {
     if (other.components_.has_component(component_id)) {
       other.get_column(component_id).push_from(column, row);
@@ -95,6 +94,6 @@ void Table::reset_height() {
 }
 
 void Table::add_column(ComponentId component_id, Column&& column) {
-  columns_.emplace(component_id, std::forward<Column>(column));
+  columns_.emplace(component_id, std::move(column));
   ++width_;
 }

@@ -1,25 +1,16 @@
-Checks: "
-  bugprone-*,
-  clang-analyzer-*,
-  google-*,
-  modernize-*,
-  performance-*,
-  portability-*,
-  cppcoreguidelines-*,
-  readability-*,
-  concurrency-*,
-  misc-*,
+Checks: "*
+  -altera-*,
+  -fuchsia-*,
+  -llvm*,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -hicpp-signed-bitwise,
+  -hicpp-use-nullptr,
   -modernize-use-nullptr,
   -readability-identifier-length,
-  -cppcoreguidelines-avoid-const-or-ref-data-members,
-  -cppcoreguidelines-avoid-non-const-global-variables,
-  -cppcoreguidelines-prefer-member-initializer,
-  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
-  -cppcoreguidelines-pro-type-vararg,
-  -cppcoreguidelines-pro-type-reinterpret-cast,
-  -cppcoreguidelines-avoid-magic-numbers,
   -readability-magic-numbers,
-  -bugprone-suspicious-include
   "
 
 CheckOptions:

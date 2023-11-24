@@ -1,8 +1,6 @@
 #ifndef GRAPHIC_H
 #define GRAPHIC_H
 
-#include <vector>
-
 #include "SDL_render.h"
 #include "SDL_video.h"
 

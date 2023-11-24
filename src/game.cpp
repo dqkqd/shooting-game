@@ -3,7 +3,6 @@
 #include <error.h>
 
 #include <memory>
-#include <stdexcept>
 
 #include "SDL3_image/SDL_image.h"
 #include "SDL_init.h"
@@ -42,9 +41,6 @@ void Game::run() {
   SDL_Event event;
 
   constexpr int DELAY = 100;
-  constexpr int RED = 255;
-  constexpr int GREEN = 255;
-  constexpr int BLUE = 255;
 
   bool quit = false;
   while (!quit) {

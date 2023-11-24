@@ -44,7 +44,7 @@ TEST_F(TableIteratorTest, Modify) {
   f = 20;
 
   auto iter2 = table.begin<int, float>();
-  auto [i2, f2] = *iter;
+  auto [i2, f2] = *iter2;
   EXPECT_EQ(i2, 10);
   EXPECT_EQ(f2, 20);
 }

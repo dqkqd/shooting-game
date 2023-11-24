@@ -3,7 +3,6 @@
 #include <stdexcept>
 
 #include "ecs/component.h"
-#include "ecs/primitive.h"
 #include "ecs/table/table.h"
 
 class TableTest : public testing::Test {

@@ -27,7 +27,7 @@ TEST(Archetype, ComponentsMustBeSorted) {
   auto archetype = Archetype::create_archetype<A1, A2, A3>(0);
   std::vector expected{ColumnCounter::id<A1>(), ColumnCounter::id<A2>(),
                        ColumnCounter::id<A3>()};
-  EXPECT_EQ(archetype.components(), Components::from_vec(std::move(expected)));
+  EXPECT_EQ(archetype.components(), Components::from_vec(expected));
 }
 
 TEST(Archetype, AddEntity) {

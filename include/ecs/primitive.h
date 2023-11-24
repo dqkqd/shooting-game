@@ -1,7 +1,6 @@
 #ifndef ECS_PRIMITIVE_H
 #define ECS_PRIMITIVE_H
 
-#include <atomic>
 #include <functional>
 #include <optional>
 #include <type_traits>

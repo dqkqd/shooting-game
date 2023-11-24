@@ -24,7 +24,7 @@ auto Archetypes::add_archetype(Archetype&& archetype) -> ArchetypeId {
   }
 
   by_components_.emplace(archetype.components().clone(), archetype_id);
-  archetypes_.emplace_back(std::forward<Archetype>(archetype));
+  archetypes_.emplace_back(std::move(archetype));
 
   auto event = AddArchetypeEvent(std::move(components), archetype_id);
   event_manager_.notify(&event);
