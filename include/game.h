@@ -17,7 +17,7 @@ class Game {
     init();
   }
 
-  bool init() {
+  auto init() -> bool {
     // TODO(khanhdq): move this out
     if (SDL_Init(SDL_INIT_VIDEO) == -1) {
       SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
