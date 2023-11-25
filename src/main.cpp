@@ -1,7 +1,7 @@
 
-#include "SDL3_image/SDL_image.h"
 #include "SDL_rect.h"
 #include "SDL_render.h"
+#include "components/texture.h"
 #include "game.h"
 
 auto main() -> int {
@@ -23,16 +23,17 @@ auto main() -> int {
         }
       };
 
-  std::function<void(Query<SDL_Texture*, SDL_FRect>)> render_system =
-      [&game](Query<SDL_Texture*, SDL_FRect> query) {
+  std::function<void(Query<Texture, SDL_FRect>)> render_system =
+      [&game](Query<Texture, SDL_FRect> query) {
         for (auto [texture, position] : query) {
-          SDL_RenderTexture(game.renderer(), texture, NULL, &position);
+          SDL_RenderTexture(game.renderer(), texture.data(), NULL, &position);
         }
       };
 
   auto world = World();
-  world.spawn_entity_with(IMG_LoadTexture(game.renderer(), "assets/ground.png"),
-                          SDL_FRect{0, 500, 800, 100});
+  auto texture = Texture::from_file(game.renderer(), "assets/ground.png");
+  assert(texture.has_value());
+  world.spawn_entity_with(std::move(*texture), SDL_FRect{0, 500, 800, 100});
   world.add_system(moving_system).add_system(render_system);
 
   game.run(world);

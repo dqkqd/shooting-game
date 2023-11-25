@@ -4,6 +4,7 @@ set(SOURCE_FILES
     ecs/column/column.cpp
     ecs/table/table.cpp
     ecs/component.cpp
+    components/texture.cpp
 )
 
 include(FetchContent)
