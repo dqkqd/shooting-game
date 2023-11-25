@@ -23,16 +23,16 @@ class ArchetypesFinder {
 
     // find the count
     std::unordered_map<ArchetypeId, int> archetypes_occurrences;
-    (
-        [&] {
-          auto it = by_component_.find(ComponentCounter::id<Args>());
-          if (it != by_component_.end()) {
-            for (const auto &archetype_id : it->second) {
-              ++archetypes_occurrences[archetype_id];
-            }
-          }
-        }(),
-        ...);
+    auto increment = [this, &archetypes_occurrences](ComponentId component_id) {
+      auto it = by_component_.find(component_id);
+      if (it != by_component_.end()) {
+        for (const auto &archetype_id : it->second) {
+          ++archetypes_occurrences[archetype_id];
+        }
+      }
+    };
+
+    (increment(ComponentCounter::id<Args>()), ...);
 
     // check if number of archetypes equal passed in components
     std::vector<ArchetypeId> results;

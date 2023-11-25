@@ -27,7 +27,9 @@ auto Components::from_set(std::set<ComponentId> &&components) -> Components {
 }
 
 auto Components::clone() const -> Components {
-  return from_set(std::set{components_});
+  std::set<ComponentId> components{std::make_move_iterator(components_.begin()),
+                                   std::make_move_iterator(components_.end())};
+  return from_set(std::move(components));
 }
 
 auto Components::merge(const Components &other) const -> Components {

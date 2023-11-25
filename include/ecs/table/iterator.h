@@ -60,7 +60,7 @@ class TableIterator {
   template <size_t... Is>
   auto advance_impl(std::index_sequence<Is...> /**/) {
     ++current_row_;
-    ([&] { ++std::get<Is>(iters_); }(), ...);
+    (++std::get<Is>(iters_), ...);
   }
 
   auto equal(const TableIterator &other) const -> bool {
