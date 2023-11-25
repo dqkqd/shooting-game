@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "SDL3_image/SDL_image.h"
 #include "SDL_events.h"
 #include "SDL_init.h"
 #include "SDL_log.h"
@@ -10,11 +11,17 @@
 #include "SDL_video.h"
 #include "ecs/world.h"
 
-class Game {
+class Game {  // NOLINT
  public:
   explicit Game(std::string&& title, int width, int height)  // NOLINT
       : title_{std::move(title)}, width_(width), height_(height) {
     init();
+  }
+  ~Game() {
+    SDL_DestroyRenderer(renderer_);
+    SDL_DestroyWindow(window_);
+    IMG_Quit();
+    SDL_Quit();
   }
 
   auto init() -> bool {
@@ -23,6 +30,12 @@ class Game {
       SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
       return false;
     }
+
+    auto img_flags = IMG_InitFlags::IMG_INIT_PNG;
+    if ((IMG_Init(img_flags) & img_flags) != img_flags) {
+      SDL_Log("IMG_Init failed: %s\n", SDL_GetError());
+      return false;
+    };
 
     window_ =
         SDL_CreateWindow(title_.c_str(), width_, height_, SDL_WINDOW_OPENGL);
