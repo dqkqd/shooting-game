@@ -42,8 +42,7 @@ class ArchetypesFinder {
       }
     }
 
-    // output should be sort (by reversing)
-    std::reverse(results.begin(), results.end());
+    std::sort(results.begin(), results.end());
 
     return results;
   }
