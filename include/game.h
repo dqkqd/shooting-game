@@ -66,6 +66,17 @@ class Game {  // NOLINT
   auto window() -> SDL_Window* { return window_; }
   auto renderer() -> SDL_Renderer* { return renderer_; }
 
+  void run_test_leak(World& world) {
+    for (int i = 0; i < 10000; ++i) {
+      SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
+      SDL_RenderClear(renderer_);
+
+      world.run_systems();
+
+      SDL_RenderPresent(renderer_);
+    }
+  }
+
  private:
   std::string title_;
   int width_;
