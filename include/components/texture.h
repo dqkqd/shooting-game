@@ -29,4 +29,12 @@ class TextureManager {
   static std::unordered_map<const char*, SDL_Texture*> textures_;
 };
 
+/* helper functions */
+struct TextureSize {
+  float w;
+  float h;
+};
+
+auto get_texture_size(SDL_Texture* texture) -> TextureSize;
+
 #endif

@@ -64,3 +64,13 @@ auto TextureManager::get(const char* key) -> std::optional<SDL_Texture*> {
   }
   return it->second;
 }
+
+auto get_texture_size(SDL_Texture* texture) -> TextureSize {
+  int w = 0;
+  int h = 0;
+  if (SDL_QueryTexture(texture, NULL, NULL, &w, &h) < 0) {
+    SDL_Log("`get_texture_size` failed: %s\n", SDL_GetError());
+    return {};
+  }
+  return {.w = static_cast<float>(w), .h = static_cast<float>(h)};
+}
