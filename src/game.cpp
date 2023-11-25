@@ -3,10 +3,12 @@
 #include "SDL3_image/SDL_image.h"
 #include "SDL_init.h"
 #include "SDL_log.h"
+#include "components/texture.h"
 
 GameBase::GameBase() { assert(init()); }
 
 GameBase::~GameBase() {
+  TextureManager::clear();
   IMG_Quit();
   SDL_Quit();
 }

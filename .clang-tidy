@@ -12,6 +12,7 @@ Checks: "*
   -hicpp-vararg,
   -hicpp-move-const-arg,
   -modernize-use-nullptr,
+  -performance-move-const-arg,
   -readability-identifier-length,
   -readability-magic-numbers,
   "

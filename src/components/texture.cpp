@@ -5,24 +5,47 @@
 #include "SDL3_image/SDL_image.h"
 #include "SDL_render.h"
 
-Texture::Texture(Texture&& texture) noexcept
-    : data_{std::exchange(texture.data_, nullptr)} {}
-auto Texture::operator=(Texture&& texture) noexcept -> Texture& {
-  data_ = std::exchange(texture.data_, nullptr);
-  return *this;
+std::unordered_map<const char*, SDL_Texture*> TextureManager::textures_{};
+
+void TextureManager::clear() {
+  for (auto [_, texture] : textures_) {
+    SDL_DestroyTexture(texture);
+  }
+  textures_.clear();
 }
-Texture::~Texture() { SDL_DestroyTexture(data_); }
 
-Texture::Texture(SDL_Texture* data) : data_{std::exchange(data, nullptr)} {}
+auto TextureManager::add(const char* key, SDL_Texture* texture)
+    -> SDL_Texture* {
+  auto [it, inserted] = textures_.emplace(key, texture);
+  if (!inserted) {
+    // duplicated texture, remove the new one to avoid memory leaked
+    SDL_DestroyTexture(texture);
+    texture = NULL;
+  }
 
-auto Texture::data() const -> SDL_Texture* { return data_; }
+  return it->second;
+}
 
-auto Texture::from_file(SDL_Renderer* renderer, const char* file)
-    -> std::optional<Texture> {
+auto TextureManager::add_from_file(SDL_Renderer* renderer, const char* file)
+    -> std::optional<SDL_Texture*> {
+  auto it = textures_.find(file);
+  if (it != textures_.end()) {
+    return it->second;
+  }
+
   auto* texture = IMG_LoadTexture(renderer, file);
   if (texture == NULL) {
-    SDL_Log("Error loading image: %s\n", IMG_GetError());
+    SDL_Log("Error loading texture: %s\n", IMG_GetError());
     return {};
   }
-  return Texture{texture};
+
+  return add(file, texture);
+}
+
+auto TextureManager::get(const char* key) -> std::optional<SDL_Texture*> {
+  auto it = textures_.find(key);
+  if (it == textures_.end()) {
+    return {};
+  }
+  return it->second;
 }

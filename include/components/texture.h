@@ -2,25 +2,29 @@
 #define COMPONENTS_H
 
 #include <optional>
+#include <unordered_map>
 
 #include "SDL_render.h"
 
-struct Texture {
-  Texture(const Texture&) = delete;
-  auto operator=(const Texture&) -> Texture& = delete;
-  Texture(Texture&&) noexcept;
-  auto operator=(Texture&&) noexcept -> Texture&;
+namespace texture_file {
 
-  ~Texture();
+constexpr char const* TOP_MIDDLE_GRASS = "assets/top-middle-grass.png";
+constexpr char const* GROUND = "assets/ground.png";
 
-  static auto from_file(SDL_Renderer* renderer, const char* file)
-      -> std::optional<Texture>;
+};  // namespace texture_file
 
-  [[nodiscard]] auto data() const -> SDL_Texture*;
+class TextureManager {
+ public:
+  static void clear();
+
+  static auto add(const char* key, SDL_Texture* texture) -> SDL_Texture*;
+  static auto add_from_file(SDL_Renderer* renderer, const char* file)
+      -> std::optional<SDL_Texture*>;
+
+  static auto get(const char* key) -> std::optional<SDL_Texture*>;
 
  private:
-  explicit Texture(SDL_Texture* data);
-  SDL_Texture* data_;
+  static std::unordered_map<const char*, SDL_Texture*> textures_;
 };
 
 #endif

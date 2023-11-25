@@ -22,17 +22,17 @@ auto main() -> int {
         }
       };
 
-  std::function<void(Query<Texture, Position>)> render_system =
-      [&game](Query<Texture, Position> query) {
+  std::function<void(Query<SDL_Texture*, Position>)> render_system =
+      [&game](Query<SDL_Texture*, Position> query) {
         for (auto [texture, position] : query) {
-          SDL_RenderTexture(game.graphic().renderer(), texture.data(), NULL,
+          SDL_RenderTexture(game.graphic().renderer(), texture, NULL,
                             &position.rect);
         }
       };
 
   auto world = World();
-  auto texture =
-      Texture::from_file(game.graphic().renderer(), "assets/ground.png");
+  auto texture = TextureManager::add_from_file(game.graphic().renderer(),
+                                               texture_file::GROUND);
   assert(texture.has_value());
   world.spawn_entity_with(std::move(*texture), Position{0, 500, 800, 100});
   world.add_system(moving_system).add_system(render_system);
