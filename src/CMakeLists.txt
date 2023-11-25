@@ -5,6 +5,8 @@ set(SOURCE_FILES
     ecs/table/table.cpp
     ecs/component.cpp
     components/texture.cpp
+    game.cpp
+    graphic.cpp
 )
 
 include(FetchContent)

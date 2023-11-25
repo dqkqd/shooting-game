@@ -8,30 +8,17 @@
 
 class Graphic {
  public:
-  explicit Graphic(std::string&& title, int width, int height)  // NOLINT
-      : title_{std::move(title)},
-        width_{width},
-        height_{height},
-        window_{SDL_CreateWindow(title_.c_str(), width_, height_,
-                                 SDL_WINDOW_OPENGL)},
-        renderer_{SDL_CreateRenderer(
-            window_, NULL,
-            SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)} {
-    ;
-  }
+  explicit Graphic(std::string&& title, int width, int height);  // NOLINT
 
-  ~Graphic() {
-    SDL_DestroyRenderer(renderer_);
-    SDL_DestroyWindow(window_);
-  };
+  ~Graphic();
 
   Graphic(const Graphic&) = default;
   Graphic(Graphic&&) = default;
   auto operator=(const Graphic&) -> Graphic& = default;
   auto operator=(Graphic&&) -> Graphic& = default;
 
-  [[nodiscard]] auto window() const -> SDL_Window* { return window_; }
-  [[nodiscard]] auto renderer() const -> SDL_Renderer* { return renderer_; }
+  [[nodiscard]] auto window() const -> SDL_Window*;
+  [[nodiscard]] auto renderer() const -> SDL_Renderer*;
 
  private:
   std::string title_;
