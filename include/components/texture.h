@@ -20,6 +20,8 @@ class TextureManager {
   static auto add(const char* key, SDL_Texture* texture) -> SDL_Texture*;
   static auto add_from_file(SDL_Renderer* renderer, const char* file)
       -> std::optional<SDL_Texture*>;
+  static auto add_from_file_unchecked(SDL_Renderer* renderer, const char* file)
+      -> SDL_Texture*;
 
   static auto get(const char* key) -> std::optional<SDL_Texture*>;
 

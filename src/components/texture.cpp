@@ -1,8 +1,11 @@
 #include "components/texture.h"
 
+#include <cassert>
 #include <utility>
 
 #include "SDL3_image/SDL_image.h"
+#include "SDL_error.h"
+#include "SDL_log.h"
 #include "SDL_render.h"
 
 std::unordered_map<const char*, SDL_Texture*> TextureManager::textures_{};
@@ -39,6 +42,18 @@ auto TextureManager::add_from_file(SDL_Renderer* renderer, const char* file)
     return {};
   }
 
+  return add(file, texture);
+}
+
+auto TextureManager::add_from_file_unchecked(SDL_Renderer* renderer,
+                                             const char* file) -> SDL_Texture* {
+  auto it = textures_.find(file);
+  if (it != textures_.end()) {
+    return it->second;
+  }
+
+  auto* texture = IMG_LoadTexture(renderer, file);
+  assert(texture != NULL);
   return add(file, texture);
 }
 
