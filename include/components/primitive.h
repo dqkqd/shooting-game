@@ -7,4 +7,9 @@ struct Position {
   SDL_FRect rect;
 };
 
+struct Speed {
+  float vx;
+  float vy;
+};
+
 #endif
