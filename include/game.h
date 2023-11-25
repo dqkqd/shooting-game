@@ -1,32 +1,26 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <string>
-
 #include "SDL3_image/SDL_image.h"
-#include "SDL_events.h"
 #include "SDL_init.h"
 #include "SDL_log.h"
-#include "SDL_render.h"
-#include "SDL_video.h"
 #include "ecs/world.h"
+#include "graphic.h"
 
-class Game {  // NOLINT
+class GameBase {
  public:
-  explicit Game(std::string&& title, int width, int height)  // NOLINT
-      : title_{std::move(title)}, width_(width), height_(height) {
-    init();
-  }
-  ~Game() {
-    SDL_DestroyRenderer(renderer_);
-    SDL_DestroyWindow(window_);
-    IMG_Quit();
-    SDL_Quit();
-  }
+  GameBase() { assert(init()); }
 
-  auto init() -> bool {
-    // TODO(khanhdq): move this out
-    if (SDL_Init(SDL_INIT_VIDEO) == -1) {
+  ~GameBase() { quit(); }
+
+  GameBase(const GameBase&) = delete;
+  GameBase(GameBase&&) = delete;
+  auto operator=(const GameBase&) -> GameBase& = delete;
+  auto operator=(GameBase&&) -> GameBase& = delete;
+
+ private:
+  static auto init() -> bool {
+    if (SDL_InitSubSystem(SDL_INIT_VIDEO) == -1) {
       SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
       return false;
     }
@@ -37,12 +31,19 @@ class Game {  // NOLINT
       return false;
     };
 
-    window_ =
-        SDL_CreateWindow(title_.c_str(), width_, height_, SDL_WINDOW_OPENGL);
-    renderer_ = SDL_CreateRenderer(
-        window_, NULL, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     return true;
   }
+
+  static void quit() {
+    IMG_Quit();
+    SDL_Quit();
+  };
+};
+
+class Game : public GameBase {
+ public:
+  explicit Game(std::string&& title, int width, int height)  // NOLINT
+      : graphic_{std::forward<std::string>(title), width, height} {}
 
   void run(World& world) {
     SDL_Event e;
@@ -54,36 +55,30 @@ class Game {  // NOLINT
         }
       }
 
-      SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-      SDL_RenderClear(renderer_);
+      SDL_SetRenderDrawColor(graphic_.renderer(), 0, 0, 0, 255);
+      SDL_RenderClear(graphic_.renderer());
 
       world.run_systems();
 
-      SDL_RenderPresent(renderer_);
+      SDL_RenderPresent(graphic_.renderer());
     }
   }
 
-  auto window() -> SDL_Window* { return window_; }
-  auto renderer() -> SDL_Renderer* { return renderer_; }
+  auto graphic() -> Graphic& { return graphic_; }
 
   void run_test_leak(World& world) {
     for (int i = 0; i < 10000; ++i) {
-      SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-      SDL_RenderClear(renderer_);
+      SDL_SetRenderDrawColor(graphic().renderer(), 0, 0, 0, 255);
+      SDL_RenderClear(graphic().renderer());
 
       world.run_systems();
 
-      SDL_RenderPresent(renderer_);
+      SDL_RenderPresent(graphic().renderer());
     }
   }
 
  private:
-  std::string title_;
-  int width_;
-  int height_;
-
-  SDL_Window* window_ = NULL;
-  SDL_Renderer* renderer_ = NULL;
+  Graphic graphic_;
 };
 
 #endif
