@@ -8,6 +8,8 @@
 
 namespace texture_file {
 
+constexpr char const* TOP_LEFT_GRASS = "assets/top-left-grass.png";
+constexpr char const* TOP_RIGHT_GRASS = "assets/top-right-grass.png";
 constexpr char const* TOP_MIDDLE_GRASS = "assets/top-middle-grass.png";
 constexpr char const* GROUND = "assets/ground.png";
 
