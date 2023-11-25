@@ -20,8 +20,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG main
-    GIT_SHALLOW TRUE
+    GIT_TAG 6ba90f77752ab0350f28fb228c5dde550244904e
     GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
     )
