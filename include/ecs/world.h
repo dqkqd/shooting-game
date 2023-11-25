@@ -34,7 +34,7 @@ class World {
   auto add_system(void (*system)(Query<Args...>)) -> World&;
 
   template <typename... Args>
-  auto add_system(std::function<void(Query<Args...>)> system) -> World&;
+  auto add_system(std::function<void(Query<Args...>)>&& system) -> World&;
 
   void run_systems();
 
@@ -129,9 +129,9 @@ auto World::add_system(void (*system)(Query<Args...>)) -> World& {
 }
 
 template <typename... Args>
-auto World::add_system(std::function<void(Query<Args...>)> system) -> World& {
-  return add_system_internal<std::function<void(Query<Args...>)>, Args...>(
-      system);
+auto World::add_system(std::function<void(Query<Args...>)>&& system) -> World& {
+  return add_system_internal<std::function<void(Query<Args...>)>&&, Args...>(
+      std::move(system));
 }
 
 inline void World::run_systems() {
