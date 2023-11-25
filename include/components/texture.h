@@ -5,10 +5,6 @@
 
 #include "SDL_render.h"
 
-struct Position {
-  SDL_FRect rect;
-};
-
 struct Texture {
   Texture(const Texture&) = delete;
   auto operator=(const Texture&) -> Texture& = delete;
