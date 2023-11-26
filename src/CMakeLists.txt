@@ -12,6 +12,15 @@ set(SOURCE_FILES
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 option(BUILD_SHARED_LIBS OFF)
+
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+    EXCLUDE_FROM_ALL
+    )
 FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
@@ -36,6 +45,7 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
     )
 
+FetchContent_MakeAvailable(json)
 FetchContent_MakeAvailable(spdlog)
 FetchContent_MakeAvailable(SDL3)
 FetchContent_MakeAvailable(SDL3_image)
@@ -43,4 +53,4 @@ FetchContent_MakeAvailable(SDL3_image)
 add_library(GAME_SOURCE ${SOURCE_FILES})
 
 target_include_directories(GAME_SOURCE PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(GAME_SOURCE PUBLIC spdlog::spdlog SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(GAME_SOURCE PUBLIC nlohmann_json::nlohmann_json spdlog::spdlog SDL3::SDL3 SDL3_image::SDL3_image)
