@@ -6,6 +6,7 @@
 #include "SDL_init.h"
 #include "SDL_render.h"
 #include "SDL_video.h"
+#include "components/texture.h"
 #include "game.h"
 
 class SDLEnvironment : public ::testing::Environment {  // NOLINT
@@ -29,6 +30,7 @@ class SDLEnvironment : public ::testing::Environment {  // NOLINT
 
   // Override this to define how to tear down the environment.
   void TearDown() override {
+    TextureManager::clear();
     SDL_DestroyRenderer(renderer());
     SDL_DestroyWindow(window());
     SDL_Quit();

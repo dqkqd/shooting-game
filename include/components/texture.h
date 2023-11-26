@@ -17,6 +17,7 @@ constexpr char const* GROUND = "assets/ground.png";
 
 class TextureManager {
  public:
+  static auto size() -> std::size_t;
   static void clear();
 
   static auto add(const char* key, SDL_Texture* texture) -> SDL_Texture*;

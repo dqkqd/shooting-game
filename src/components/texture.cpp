@@ -10,6 +10,7 @@
 
 std::unordered_map<const char*, SDL_Texture*> TextureManager::textures_{};
 
+auto TextureManager::size() -> std::size_t { return textures_.size(); }
 void TextureManager::clear() {
   for (auto [_, texture] : textures_) {
     SDL_DestroyTexture(texture);
