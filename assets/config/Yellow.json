@@ -1,0 +1,15 @@
+{
+  "columns": 4,
+  "image": "../pixel_adventure_assets/Background/Yellow.png",
+  "imageheight": 64,
+  "imagewidth": 64,
+  "margin": 0,
+  "name": "Yellow",
+  "spacing": 0,
+  "tilecount": 16,
+  "tiledversion": "1.10.2",
+  "tileheight": 16,
+  "tilewidth": 16,
+  "type": "tileset",
+  "version": "1.10"
+}

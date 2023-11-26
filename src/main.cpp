@@ -1,13 +1,14 @@
 
 #include "game.h"
-#include "tilemap.h"
+#include "tiles/tilemap.h"
 
 auto main() -> int {
-  auto game = Game("Hello", 640, 480);
+  auto game = Game("Hello", 50 * 16, 40 * 16);
 
   auto world = World();
 
-  TileMap::init(game.graphic(), world);
+  TileMap tile_map("assets/config/background.json");
+  tile_map.init(game.graphic(), world);
 
   game.run(world);
 
