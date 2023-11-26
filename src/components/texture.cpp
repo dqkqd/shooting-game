@@ -23,9 +23,7 @@ auto TextureManager::add(const char* key, SDL_Texture* texture)
   if (!inserted) {
     // duplicated texture, remove the new one to avoid memory leaked
     SDL_DestroyTexture(texture);
-    texture = NULL;
   }
-
   return it->second;
 }
 
