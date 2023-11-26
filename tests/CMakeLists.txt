@@ -29,6 +29,8 @@ add_executable(
     ecs/test_component.cpp
     ecs/test_counter.cpp
     ecs/test_world.cpp
+    components/test_texture.cpp
+    main.cpp
     )
 
 target_include_directories(test PRIVATE ${PROJECT_SOURCE_DIR}/include)
