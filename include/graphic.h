@@ -19,6 +19,8 @@ class Graphic {
 
   [[nodiscard]] auto window() const -> SDL_Window*;
   [[nodiscard]] auto renderer() const -> SDL_Renderer*;
+  [[nodiscard]] auto width() const -> int;
+  [[nodiscard]] auto height() const -> int;
 
  private:
   std::string title_;

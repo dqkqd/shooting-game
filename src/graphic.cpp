@@ -17,3 +17,5 @@ Graphic::~Graphic() {
 
 auto Graphic::window() const -> SDL_Window* { return window_; }
 auto Graphic::renderer() const -> SDL_Renderer* { return renderer_; }
+auto Graphic::width() const -> int { return width_; }
+auto Graphic::height() const -> int { return height_; }
