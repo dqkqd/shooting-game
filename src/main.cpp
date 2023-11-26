@@ -17,8 +17,8 @@ auto main() -> int {
   auto world = World();
   world.add_system(std::move(render_system));
 
-  BackGround bg(game.graphic().renderer());
-  bg.setup(world);
+  BackGround bg;
+  bg.init(game.graphic(), world);
 
   game.run(world);
 
