@@ -36,6 +36,8 @@ class World {
   template <typename... Args>
   auto add_system(std::function<void(Query<Args...>)>&& system) -> World&;
 
+  auto add_system(const std::function<void()>& system) -> World&;
+
   void run_systems();
 
  private:
@@ -132,6 +134,11 @@ template <typename... Args>
 auto World::add_system(std::function<void(Query<Args...>)>&& system) -> World& {
   return add_system_internal<std::function<void(Query<Args...>)>&&, Args...>(
       std::move(system));
+}
+
+inline auto World::add_system(const std::function<void()>& system) -> World& {
+  systems_.emplace_back([system]() { system(); });
+  return *this;
 }
 
 inline void World::run_systems() {

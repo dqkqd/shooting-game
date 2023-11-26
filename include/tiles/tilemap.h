@@ -60,6 +60,8 @@ class TileMap {
       tileset.init(graphic);
     }
 
+    std::vector<std::tuple<SDL_Texture*, TilePosition>> textures;
+
     for (int y = 0; y < data_.height; ++y) {
       for (int x = 0; x < data_.width; ++x) {
         auto pos = y * data_.width + x;
@@ -70,19 +72,19 @@ class TileMap {
             it->second.position(tile_id - it->second.data().gid);
         auto dest_position = position(x, y);
 
-        world.spawn_entity_with<SDL_Texture*, TilePosition>(
-            std::move(it->second.texture()),
-            {.src = src_position, .dest = dest_position});
+        auto texture = std::make_tuple(
+            it->second.texture(),
+            TilePosition{.src = src_position, .dest = dest_position});
+        textures.emplace_back(texture);
       }
     }
 
-    std::function<void(Query<SDL_Texture*, TilePosition>)> tile_render_system =
-        [&graphic](Query<SDL_Texture*, TilePosition> query) {
-          for (auto [query_texture, position] : query) {
-            SDL_RenderTexture(graphic.renderer(), query_texture,
-                              &position.src.rect, &position.dest.rect);
-          }
-        };
+    std::function<void()> tile_render_system = [textures, &graphic]() {
+      for (auto [query_texture, position] : textures) {
+        SDL_RenderTexture(graphic.renderer(), query_texture, &position.src.rect,
+                          &position.dest.rect);
+      }
+    };
 
     world.add_system(std::move(tile_render_system));
   }
