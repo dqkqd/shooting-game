@@ -19,40 +19,17 @@ void BackGround::init(const Graphic& graphic, World& world) {
   const auto Y = static_cast<float>(graphic.height()) -
                  std::max({left_size.h, right_size.h, middle_size.h});
 
-  const float VY = -5.0F;
-
   world.spawn_entity_with(std::move(top_left_grass_),
-                          Position{0, Y, left_size.w, left_size.h},
-                          Speed{0, -VY});
+                          Position{0, Y, left_size.w, left_size.h});
   world.spawn_entity_with(
       std::move(top_right_grass_),
       Position{static_cast<float>(graphic.width()) - right_size.w, Y,
-               right_size.w, right_size.h},
-      Speed{0, -VY});
+               right_size.w, right_size.h});
 
   auto x = left_size.w;
   while (x + right_size.w <= static_cast<float>(graphic.width())) {
     world.spawn_entity_with(std::move(top_middle_grass_),
-                            Position{x, Y, middle_size.w, middle_size.h},
-                            Speed{0, -VY});
+                            Position{x, Y, middle_size.w, middle_size.h});
     x += middle_size.w;
   }
-
-  std::function<void(Query<Position, Speed>)> moving_system =
-      [Y](Query<Position, Speed> query) {
-        for (auto [position, speed] : query) {
-          position.rect.x += speed.vx;
-          position.rect.y += speed.vy;
-
-          if (position.rect.y <= 0) {
-            position.rect.y = 0;
-            speed.vy = -speed.vy;
-          } else if (position.rect.y >= Y) {
-            position.rect.y = Y;
-            speed.vy = -speed.vy;
-          }
-        }
-      };
-
-  world.add_system(std::move(moving_system));
 }
