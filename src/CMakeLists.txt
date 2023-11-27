@@ -5,6 +5,7 @@ set(SOURCE_FILES
     ecs/table/table.cpp
     ecs/component.cpp
     components/texture.cpp
+    tiles/tilemap.cpp
     game.cpp
     graphic.cpp
 )
