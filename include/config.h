@@ -18,4 +18,9 @@ constexpr int PLAYER_FRAMES_DELAY = 3;
 constexpr int PLAYER_SPRITE_WIDTH = 44;
 constexpr int PLAYER_SPRITE_HEIGHT = 30;
 
+/* physics constants */
+constexpr float PHYSIC_SCALE = 10000;
+constexpr float DEFAULT_GRAVITY = 9.8;
+constexpr float TICK_OFFSET = 1.0 / 60;
+
 #endif

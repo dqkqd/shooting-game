@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "SDL_render.h"
+#include "components/physics.h"
 #include "components/primitive.h"
 #include "components/texture.h"
 #include "config.h"
@@ -28,21 +29,24 @@ class NormalAnimation {
 };
 
 inline void init(Graphic& graphic, World& world) {
-  world.spawn_entity_with<SDL_Texture*, NormalAnimation>(
+  auto start_position = Position{(GAME_WIDTH - PLAYER_SPRITE_WIDTH) / 2.0, 0,
+                                 PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT};
+  world.spawn_entity_with(
       TextureManager::add_from_file_unchecked(graphic.renderer(), PLAYER_IMAGE),
-      NormalAnimation());
+      std::move(start_position), NormalAnimation(), Falling());
 
-  std::function<void(Query<SDL_Texture*, NormalAnimation>)> system =
-      [&graphic](Query<SDL_Texture*, NormalAnimation> query) {
-        for (auto [texture, animation] : query) {
-          auto src = animation.position();
-          auto dest = Position{(GAME_WIDTH - PLAYER_SPRITE_WIDTH) / 2.0, 466,
-                               PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT};
-          SDL_RenderTextureRotated(graphic.renderer(), texture, &src.rect,
-                                   &dest.rect, 0, NULL,
-                                   SDL_RendererFlip::SDL_FLIP_HORIZONTAL);
-        }
-      };
+  std::function<void(Query<SDL_Texture*, Position, NormalAnimation, Falling>)>
+      system =
+          [&graphic](
+              Query<SDL_Texture*, Position, NormalAnimation, Falling> query) {
+            for (auto [texture, position, animation, falling] : query) {
+              auto src = animation.position();
+              position.rect.y += falling.vy();
+              SDL_RenderTextureRotated(graphic.renderer(), texture, &src.rect,
+                                       &position.rect, 0, NULL,
+                                       SDL_RendererFlip::SDL_FLIP_HORIZONTAL);
+            }
+          };
   world.add_system(std::move(system));
 };
 
