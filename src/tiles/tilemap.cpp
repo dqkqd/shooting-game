@@ -1,6 +1,6 @@
 #include "tiles/tilemap.h"
 
-#include "components/texture.h"
+#include "services/texture.h"
 
 TileSet::TileSet(parser::TileSetInMap data) : data_{std::move(data)} {};
 

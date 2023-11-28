@@ -1,19 +1,10 @@
-#ifndef COMPONENTS_H
-#define COMPONENTS_H
+#ifndef SERVICE_TEXTURE_H
+#define SERVICE_TEXTURE_H
 
 #include <optional>
 #include <unordered_map>
 
 #include "SDL_render.h"
-
-namespace texture_file {
-
-constexpr char const* TOP_LEFT_GRASS = "assets/top-left-grass.png";
-constexpr char const* TOP_RIGHT_GRASS = "assets/top-right-grass.png";
-constexpr char const* TOP_MIDDLE_GRASS = "assets/top-middle-grass.png";
-constexpr char const* GROUND = "assets/ground.png";
-
-};  // namespace texture_file
 
 class TextureManager {
  public:

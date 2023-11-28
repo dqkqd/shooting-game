@@ -6,10 +6,10 @@
 #include "SDL_render.h"
 #include "components/physics.h"
 #include "components/primitive.h"
-#include "components/texture.h"
 #include "config.h"
 #include "ecs/world.h"
 #include "graphic.h"
+#include "services/texture.h"
 
 using PlayerPosition = Position;
 

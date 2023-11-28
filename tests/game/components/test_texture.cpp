@@ -4,7 +4,8 @@
 
 #include "../utils.h"
 #include "SDL_render.h"
-#include "components/texture.h"
+#include "config.h"
+#include "services/texture.h"
 
 TEST(TextureManager, Add) {
   auto *renderer = SDLEnvironment::renderer();
@@ -26,8 +27,7 @@ TEST(TextureManager, Add) {
 TEST(TextureManager, AddFromFile) {
   auto *renderer = SDLEnvironment::renderer();
 
-  auto texture =
-      TextureManager::add_from_file(renderer, texture_file::TOP_MIDDLE_GRASS);
+  auto texture = TextureManager::add_from_file(renderer, PLAYER_IMAGE);
   EXPECT_TRUE(texture.has_value());
 
   auto invalid_texture =
@@ -38,18 +38,17 @@ TEST(TextureManager, AddFromFile) {
 TEST(TextureManager, Get) {
   auto *renderer = SDLEnvironment::renderer();
 
-  auto texture =
-      TextureManager::add_from_file(renderer, texture_file::TOP_MIDDLE_GRASS);
+  auto texture = TextureManager::add_from_file(renderer, PLAYER_IMAGE);
   EXPECT_TRUE(texture.has_value());
 
-  EXPECT_TRUE(TextureManager::get(texture_file::TOP_MIDDLE_GRASS).has_value());
+  EXPECT_TRUE(TextureManager::get(PLAYER_IMAGE).has_value());
   EXPECT_FALSE(TextureManager::get("Invalid key").has_value());
 }
 
 TEST(TextureManager, Clear) {
   auto *renderer = SDLEnvironment::renderer();
 
-  TextureManager::add_from_file(renderer, texture_file::TOP_MIDDLE_GRASS);
+  TextureManager::add_from_file(renderer, PLAYER_IMAGE);
   EXPECT_NE(TextureManager::size(), 0);
   TextureManager::clear();
   EXPECT_EQ(TextureManager::size(), 0);

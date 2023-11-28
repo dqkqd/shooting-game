@@ -1,4 +1,4 @@
-#include "components/texture.h"
+#include "services/texture.h"
 
 #include <cassert>
 #include <utility>
