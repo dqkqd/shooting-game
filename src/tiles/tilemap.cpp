@@ -1,5 +1,6 @@
 #include "tiles/tilemap.h"
 
+#include "components/primitive.h"
 #include "services/texture.h"
 
 TileSet::TileSet(parser::TileSetInMap data) : data_{std::move(data)} {};
@@ -13,13 +14,13 @@ void TileSet::init(Graphic& graphic) {
 auto TileSet::texture() -> SDL_Texture* { return texture_; }
 auto TileSet::data() -> parser::TileSetInMap { return data_; }
 
-auto TileSet::position(int index) const -> Position {
+auto TileSet::texture_position(int index) const -> TexturePosition {
   auto w = data_.tile_set.tile_width;
   auto h = data_.tile_set.tile_height;
   auto x = index % data_.tile_set.columns * w;
   auto y = index / data_.tile_set.columns * h;
-  return Position{static_cast<float>(x), static_cast<float>(y),
-                  static_cast<float>(w), static_cast<float>(h)};
+  return TexturePosition{static_cast<float>(x), static_cast<float>(y),
+                         static_cast<float>(w), static_cast<float>(h)};
 };
 
 TileMap::TileMap(const char* file) {
@@ -37,36 +38,36 @@ void TileMap::init(Graphic& graphic, World& world) {
     tileset.init(graphic);
   }
 
-  std::vector<std::tuple<SDL_Texture*, TilePosition>> textures;
-
   for (int y = 0; y < data_.height; ++y) {
     for (int x = 0; x < data_.width; ++x) {
       auto pos = y * data_.width + x;
       auto tile_id = data_.data[pos];
       auto it = std::prev(tilesets_.upper_bound(tile_id));
 
-      auto src_position = it->second.position(tile_id - it->second.data().gid);
-      auto dest_position = position(x, y);
+      auto src_position =
+          it->second.texture_position(tile_id - it->second.data().gid);
+      auto dest_position = render_position(x, y);
 
-      auto texture = std::make_tuple(
-          it->second.texture(),
-          TilePosition{.src = src_position, .dest = dest_position});
-      textures.emplace_back(texture);
+      world.spawn_entity_with(std::move(it->second.texture()),
+                              std::move(src_position),
+                              std::move(dest_position));
     }
   }
 
-  std::function<void()> tile_render_system = [textures, &graphic]() {
-    for (auto [query_texture, position] : textures) {
-      SDL_RenderTexture(graphic.renderer(), query_texture, &position.src.rect,
-                        &position.dest.rect);
-    }
-  };
+  std::function<void(Query<SDL_Texture*, TexturePosition, RenderPosition>)>
+      system = [&graphic](
+                   Query<SDL_Texture*, TexturePosition, RenderPosition> query) {
+        for (auto [texture, src, dest] : query) {
+          SDL_RenderTexture(graphic.renderer(), texture, &src.rect, &dest.rect);
+        }
+      };
 
-  world.add_system(std::move(tile_render_system));
+  world.add_system(std::move(system));
 }
 
-auto TileMap::position(int x, int y) const -> Position {
+auto TileMap::render_position(int x, int y) const -> RenderPosition {
   auto w = static_cast<float>(data_.tile_width);
   auto h = static_cast<float>(data_.tile_height);
-  return Position{static_cast<float>(x) * w, static_cast<float>(y) * h, w, h};
+  return RenderPosition{static_cast<float>(x) * w, static_cast<float>(y) * h, w,
+                        h};
 };

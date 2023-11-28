@@ -6,11 +6,6 @@
 #include "graphic.h"
 #include "tiles/parser.h"
 
-struct TilePosition {
-  Position src;
-  Position dest;
-};
-
 class TileSet {
  public:
   explicit TileSet(parser::TileSetInMap data);
@@ -18,7 +13,7 @@ class TileSet {
   void init(Graphic& graphic);
   auto texture() -> SDL_Texture*;
   auto data() -> parser::TileSetInMap;
-  [[nodiscard]] auto position(int index) const -> Position;
+  [[nodiscard]] auto texture_position(int index) const -> TexturePosition;
 
  private:
   parser::TileSetInMap data_;
@@ -30,7 +25,7 @@ class TileMap {
   explicit TileMap(const char* file);
 
   void init(Graphic& graphic, World& world);
-  [[nodiscard]] auto position(int x, int y) const -> Position;
+  [[nodiscard]] auto render_position(int x, int y) const -> RenderPosition;
 
  private:
   parser::TileMap data_;
