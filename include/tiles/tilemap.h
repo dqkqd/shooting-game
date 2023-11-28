@@ -6,6 +6,8 @@
 #include "graphic.h"
 #include "tiles/parser.h"
 
+struct CollidableTile {};
+
 class TileSet {
  public:
   explicit TileSet(parser::TileSetInMap data);

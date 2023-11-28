@@ -48,9 +48,16 @@ void TileMap::init(Graphic& graphic, World& world) {
           it->second.texture_position(tile_id - it->second.data().gid);
       auto dest_position = render_position(x, y);
 
-      world.spawn_entity_with(std::move(it->second.texture()),
-                              std::move(src_position),
-                              std::move(dest_position));
+      // TODO(khanhdq): remove hard code
+      if (it->second.data().gid != 1) {
+        world.spawn_entity_with(std::move(it->second.texture()),
+                                std::move(src_position),
+                                std::move(dest_position));
+      } else {
+        world.spawn_entity_with(std::move(it->second.texture()),
+                                std::move(src_position),
+                                std::move(dest_position), CollidableTile{});
+      }
     }
   }
 
