@@ -80,6 +80,18 @@ class Queries : public EventListener {
         .template query<Args...>(archetypes);
   }
 
+  template <typename... Args>
+  auto get_or_add(Archetypes& archetypes) -> Query<Args...> {
+    auto components = Components::from_types<Args...>();
+    auto it = queries_.find(components);
+    if (it != queries_.end()) {
+      return it->second.template query<Args...>(archetypes);
+    }
+    auto [added_it, inserted] = queries_.emplace(
+        std::move(components), QueryWrapper(archetypes.find<Args...>()));
+    return added_it->second.template query<Args...>(archetypes);
+  }
+
   void on_notify(Event* event) final {
     switch (event->type()) {
       case EventType::ADD_ARCHETYPE: {

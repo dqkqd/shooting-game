@@ -29,6 +29,7 @@ class World {
       -> std::optional<EntityLocation>;
 
   auto archetypes() -> Archetypes& { return archetypes_; }
+  auto query() -> Queries& { return queries_; }
 
   template <typename... Args>
   auto add_system(void (*system)(Query<Args...>)) -> World&;
