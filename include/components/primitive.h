@@ -7,6 +7,14 @@ struct Position {
   SDL_FRect rect;
 };
 
+struct TexturePosition {
+  SDL_FRect rect;
+};
+
+struct RenderPosition {
+  SDL_FRect rect;
+};
+
 struct Speed {
   float vx;
   float vy;
