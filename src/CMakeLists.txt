@@ -8,6 +8,7 @@ set(SOURCE_FILES
     tiles/tilemap.cpp
     game.cpp
     graphic.cpp
+    player.cpp
 )
 
 include(FetchContent)
