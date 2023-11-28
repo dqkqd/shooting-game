@@ -12,6 +12,7 @@ Checks: "*
   -hicpp-use-nullptr,
   -hicpp-vararg,
   -hicpp-move-const-arg,
+  -misc-non-private-member-variables-in-classes,
   -modernize-use-nullptr,
   -performance-move-const-arg,
   -readability-identifier-length,

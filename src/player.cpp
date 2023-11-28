@@ -1,7 +1,6 @@
 #include "player.h"
 
 #include "SDL_rect.h"
-#include "SDL_stdinc.h"
 #include "components/physics.h"
 #include "components/primitive.h"
 #include "config.h"
@@ -39,24 +38,7 @@ void player::init(Graphic& graphic, World& world) {
       player_position.rect.y += vy;
 
       for (auto [tile_texture, tile_position, _] : tile_query) {
-        auto top_left = SDL_FPoint{.x = player_position.rect.x,
-                                   .y = player_position.rect.y};
-        auto top_right =
-            SDL_FPoint{.x = player_position.rect.x + player_position.rect.w,
-                       .y = player_position.rect.y};
-        auto bot_left =
-            SDL_FPoint{.x = player_position.rect.x,
-                       .y = player_position.rect.y + player_position.rect.h};
-        auto bot_right =
-            SDL_FPoint{.x = player_position.rect.x + player_position.rect.w,
-                       .y = player_position.rect.y + player_position.rect.h};
-
-        auto inside =
-            (SDL_PointInRectFloat(&top_left, &tile_position.rect) != 0U) ||
-            (SDL_PointInRectFloat(&top_right, &tile_position.rect) != 0U) ||
-            (SDL_PointInRectFloat(&bot_left, &tile_position.rect) != 0U) ||
-            (SDL_PointInRectFloat(&bot_right, &tile_position.rect) != 0U);
-        if (static_cast<int>(inside) == SDL_TRUE) {
+        if (player_position.collide(tile_position)) {
           player_position.rect.y -= vy;
           break;
         }
