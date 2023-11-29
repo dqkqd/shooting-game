@@ -41,28 +41,10 @@ void player::init(Graphic& graphic, World& world) {
     for (auto [player_texture_position, player_position, falling] :
          player_query) {
       auto vy = falling.vy();
-
-      // find the best vy using binary search
-      float lv = 0;
-      float rv = vy;
-      while (lv + PIXEL_FLOAT_OFFSET < rv) {
-        float mv = (lv + rv) / 2;
-        auto pos = player_position;
-        pos.rect.y += mv;
-
-        bool collided =
-            std::any_of(tile_query.begin(), tile_query.end(), [&pos](auto it) {
-              return pos.collide(std::get<RenderPosition&>(it));
-            });
-
-        if (collided) {
-          rv = mv;
-        } else {
-          lv = mv;
-        }
+      for (auto [tile_position, _] : tile_query) {
+        vy = player_position.best_y_offset(tile_position, vy);
       }
-
-      player_position.rect.y += lv;
+      player_position.rect.y += vy;
     }
   };
 
