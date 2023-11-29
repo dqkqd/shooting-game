@@ -44,9 +44,8 @@ void player::init(Graphic& graphic, World& world) {
         }
       }
 
-      SDL_RenderTextureRotated(graphic.renderer(), player_texture, &src.rect,
-                               &player_position.rect, 0, NULL,
-                               SDL_RendererFlip::SDL_FLIP_HORIZONTAL);
+      SDL_RenderTexture(graphic.renderer(), player_texture, &src.rect,
+                        &player_position.rect);
     }
   };
 
