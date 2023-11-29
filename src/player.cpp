@@ -25,17 +25,22 @@ void player::init(Graphic& graphic, World& world) {
       std::move(texture_position), std::move(start_position),
       std::move(animation), Falling());
 
+  std::function<void(Query<TexturePosition, NormalAnimation>)>
+      animation_system = [](Query<TexturePosition, NormalAnimation> query) {
+        for (auto [texture, query_animation] : query) {
+          texture = query_animation.position();
+        }
+      };
+
   std::function<void()> falling_system = [&world]() {
     auto player_query =
-        world.query()
-            .get_or_add<TexturePosition, RenderPosition, NormalAnimation,
-                        Falling>(world.archetypes());
+        world.query().get_or_add<TexturePosition, RenderPosition, Falling>(
+            world.archetypes());
     auto tile_query = world.query().get_or_add<RenderPosition, CollidableTile>(
         world.archetypes());
 
-    for (auto [player_texture_position, player_position, player_animation,
-               falling] : player_query) {
-      player_texture_position = player_animation.position();
+    for (auto [player_texture_position, player_position, falling] :
+         player_query) {
       auto vy = falling.vy();
       player_position.rect.y += vy;
 
@@ -48,5 +53,6 @@ void player::init(Graphic& graphic, World& world) {
     }
   };
 
+  world.add_system(std::move(animation_system));
   world.add_system(std::move(falling_system));
 };
