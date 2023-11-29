@@ -31,12 +31,16 @@ class World {
   auto archetypes() -> Archetypes& { return archetypes_; }
   auto query() -> Queries& { return queries_; }
 
+  /* query specific systems */
   template <typename... Args>
   auto add_system(void (*system)(Query<Args...>)) -> World&;
-
   template <typename... Args>
   auto add_system(std::function<void(Query<Args...>)>&& system) -> World&;
 
+  /* world specific system */
+  auto add_system(const std::function<void(World&)>&& system) -> World&;
+
+  /* void system */
   auto add_system(const std::function<void()>& system) -> World&;
 
   void run_systems();
@@ -135,6 +139,12 @@ template <typename... Args>
 auto World::add_system(std::function<void(Query<Args...>)>&& system) -> World& {
   return add_system_internal<std::function<void(Query<Args...>)>&&, Args...>(
       std::move(system));
+}
+
+inline auto World::add_system(const std::function<void(World&)>&& system)
+    -> World& {
+  systems_.emplace_back([system, this]() { system(*this); });
+  return *this;
 }
 
 inline auto World::add_system(const std::function<void()>& system) -> World& {

@@ -32,7 +32,7 @@ void player::init(Graphic& graphic, World& world) {
         }
       };
 
-  std::function<void()> falling_system = [&world]() {
+  std::function<void(World&)> falling_system = [](World& world) {
     auto player_query =
         world.query().get_or_add<TexturePosition, RenderPosition, Falling>(
             world.archetypes());
