@@ -1,5 +1,6 @@
 #include "tiles/tilemap.h"
 
+#include "components/physics.h"
 #include "components/primitive.h"
 #include "config.h"
 #include "services/texture.h"
@@ -56,7 +57,7 @@ void TileMap::init(Graphic& graphic, World& world) {
       if (it->second.collidable()) {
         world.spawn_entity_with(std::move(it->second.texture()),
                                 std::move(src_position),
-                                std::move(dest_position), CollidableTile{});
+                                std::move(dest_position), Collidable{});
       } else {
         world.spawn_entity_with(std::move(it->second.texture()),
                                 std::move(src_position),

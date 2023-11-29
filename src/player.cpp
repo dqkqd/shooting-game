@@ -5,7 +5,6 @@
 #include "components/primitive.h"
 #include "config.h"
 #include "services/texture.h"
-#include "tiles/tilemap.h"
 
 auto player::NormalAnimation::next_sprite() -> int { return current_sprite_++; }
 auto player::NormalAnimation::position() -> TexturePosition {
@@ -36,7 +35,7 @@ void player::init(Graphic& graphic, World& world) {
     auto player_query =
         world.query().get_or_add<TexturePosition, RenderPosition, Falling>(
             world.archetypes());
-    auto tile_query = world.query().get_or_add<RenderPosition, CollidableTile>(
+    auto tile_query = world.query().get_or_add<RenderPosition, Collidable>(
         world.archetypes());
 
     for (auto [player_texture_position, player_position, falling] :

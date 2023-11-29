@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+struct Collidable {};
+
 class Falling {
  public:
   auto vy() -> float {
