@@ -7,6 +7,7 @@
 /* game constants */
 constexpr int GAME_WIDTH = 800;
 constexpr int GAME_HEIGHT = 640;
+constexpr float PIXEL_FLOAT_OFFSET = 0.1;
 
 /* assets constants */
 constexpr char const* ASSETS_CONFIG_FOLDER = "assets/config/";
