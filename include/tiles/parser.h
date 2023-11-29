@@ -13,6 +13,7 @@ namespace parser {
 
 struct TileSet {
   int columns;
+  std::string name;
   std::string image;
   int tile_width;
   int tile_height;
@@ -35,6 +36,7 @@ struct TileMap {
 
 inline void from_json(const json& j, TileSet& tile_set) {
   j.at("columns").get_to(tile_set.columns);
+  j.at("name").get_to(tile_set.name);
   j.at("image").get_to(tile_set.image);
   j.at("tilewidth").get_to(tile_set.tile_width);
   j.at("tileheight").get_to(tile_set.tile_height);

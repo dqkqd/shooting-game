@@ -62,8 +62,8 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"Terrain (16x16).json"
-        }, 
+         "source":"Terrain.json"
+        },
         {
          "firstgid":243,
          "source":"Yellow.json"

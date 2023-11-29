@@ -1,6 +1,7 @@
 #include "tiles/tilemap.h"
 
 #include "components/primitive.h"
+#include "config.h"
 #include "services/texture.h"
 
 TileSet::TileSet(parser::TileSetInMap data) : data_{std::move(data)} {};
@@ -13,6 +14,10 @@ void TileSet::init(Graphic& graphic) {
 
 auto TileSet::texture() -> SDL_Texture* { return texture_; }
 auto TileSet::data() -> parser::TileSetInMap { return data_; }
+
+auto TileSet::collidable() const -> bool {
+  return COLLIDABLE_TILESETS.count(data_.tile_set.name) > 0;
+}
 
 auto TileSet::texture_position(int index) const -> TexturePosition {
   auto w = data_.tile_set.tile_width;
@@ -48,15 +53,14 @@ void TileMap::init(Graphic& graphic, World& world) {
           it->second.texture_position(tile_id - it->second.data().gid);
       auto dest_position = render_position(x, y);
 
-      // TODO(khanhdq): remove hard code
-      if (it->second.data().gid != 1) {
-        world.spawn_entity_with(std::move(it->second.texture()),
-                                std::move(src_position),
-                                std::move(dest_position));
-      } else {
+      if (it->second.collidable()) {
         world.spawn_entity_with(std::move(it->second.texture()),
                                 std::move(src_position),
                                 std::move(dest_position), CollidableTile{});
+      } else {
+        world.spawn_entity_with(std::move(it->second.texture()),
+                                std::move(src_position),
+                                std::move(dest_position));
       }
     }
   }

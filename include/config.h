@@ -1,6 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <set>
+#include <string>
+
 /* game constants */
 constexpr int GAME_WIDTH = 800;
 constexpr int GAME_HEIGHT = 640;
@@ -23,4 +26,5 @@ constexpr float PHYSIC_SCALE = 10000;
 constexpr float DEFAULT_GRAVITY = 9.8;
 constexpr float TICK_OFFSET = 1.0 / 60;
 
+const std::set<std::string> COLLIDABLE_TILESETS{"Terrain"};  // NOLINT
 #endif
