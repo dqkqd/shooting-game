@@ -5,17 +5,27 @@
 
 struct Collidable {};
 
+class Tick {
+ public:
+  auto next_tick() -> float {
+    tick_ += TICK_OFFSET;
+    return tick_;
+  }
+
+ private:
+  float tick_;
+};
+
 class Falling {
  public:
   auto vy() -> float {
-    vy_ = vy_ + gravity_ * ticks_;
-    ticks_ += TICK_OFFSET;
+    vy_ = vy_ + gravity_ * tick_.next_tick();
     return vy_;
   }
 
  private:
   float vy_{};
-  float ticks_{};
+  Tick tick_{};
   float gravity_ = DEFAULT_GRAVITY / PHYSIC_SCALE;
 };
 
