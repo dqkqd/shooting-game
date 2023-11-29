@@ -16,7 +16,7 @@ class Tick {
   float tick_;
 };
 
-class Falling {
+class FreeFallMotion {
  public:
   auto vy() -> float {
     vy_ = vy_ + gravity_ * tick_.next_tick();

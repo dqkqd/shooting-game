@@ -22,7 +22,7 @@ void player::init(Graphic& graphic, World& world) {
   world.spawn_entity_with(
       TextureManager::add_from_file_unchecked(graphic.renderer(), PLAYER_IMAGE),
       std::move(texture_position), std::move(start_position),
-      std::move(animation), Falling());
+      std::move(animation), FreeFallMotion());
 
   std::function<void(Query<TexturePosition, NormalAnimation>)>
       animation_system = [](Query<TexturePosition, NormalAnimation> query) {
@@ -33,8 +33,9 @@ void player::init(Graphic& graphic, World& world) {
 
   std::function<void(World&)> falling_system = [](World& world) {
     auto player_query =
-        world.query().get_or_add<TexturePosition, RenderPosition, Falling>(
-            world.archetypes());
+        world.query()
+            .get_or_add<TexturePosition, RenderPosition, FreeFallMotion>(
+                world.archetypes());
     auto tile_query = world.query().get_or_add<RenderPosition, Collidable>(
         world.archetypes());
 
