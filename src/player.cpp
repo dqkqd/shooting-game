@@ -15,39 +15,38 @@ auto player::NormalAnimation::position() -> TexturePosition {
 }
 
 void player::init(Graphic& graphic, World& world) {
+  auto animation = NormalAnimation();
+  auto texture_position = animation.position();
   auto start_position =
       RenderPosition{(GAME_WIDTH - PLAYER_SPRITE_WIDTH) / 2.0, 0,
                      PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT};
   world.spawn_entity_with(
       TextureManager::add_from_file_unchecked(graphic.renderer(), PLAYER_IMAGE),
-      std::move(start_position), NormalAnimation(), Falling());
+      std::move(texture_position), std::move(start_position),
+      std::move(animation), Falling());
 
-  std::function<void()> system = [&world, &graphic]() {
+  std::function<void()> falling_system = [&world]() {
     auto player_query =
         world.query()
-            .get_or_add<SDL_Texture*, RenderPosition, NormalAnimation, Falling>(
-                world.archetypes());
-    auto tile_query =
-        world.query().get_or_add<SDL_Texture*, RenderPosition, CollidableTile>(
-            world.archetypes());
+            .get_or_add<TexturePosition, RenderPosition, NormalAnimation,
+                        Falling>(world.archetypes());
+    auto tile_query = world.query().get_or_add<RenderPosition, CollidableTile>(
+        world.archetypes());
 
-    for (auto [player_texture, player_position, player_animation, falling] :
-         player_query) {
-      auto src = player_animation.position();
+    for (auto [player_texture_position, player_position, player_animation,
+               falling] : player_query) {
+      player_texture_position = player_animation.position();
       auto vy = falling.vy();
       player_position.rect.y += vy;
 
-      for (auto [tile_texture, tile_position, _] : tile_query) {
+      for (auto [tile_position, _] : tile_query) {
         if (player_position.collide(tile_position)) {
           player_position.rect.y -= vy;
           break;
         }
       }
-
-      SDL_RenderTexture(graphic.renderer(), player_texture, &src.rect,
-                        &player_position.rect);
     }
   };
 
-  world.add_system(std::move(system));
+  world.add_system(std::move(falling_system));
 };
