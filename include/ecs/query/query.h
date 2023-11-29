@@ -64,6 +64,8 @@ class QueryWrapper {
 
 class Queries : public EventListener {
  public:
+  [[nodiscard]] auto size() const -> std::size_t { return queries_.size(); };
+
   template <typename... Args>
   void add(Archetypes& archetypes) {
     auto components = Components::from_types<Args...>();
