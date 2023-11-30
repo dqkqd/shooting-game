@@ -83,9 +83,4 @@ struct RenderPosition {
   };
 };
 
-struct Speed {
-  float vx;
-  float vy;
-};
-
 #endif
