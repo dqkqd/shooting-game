@@ -43,43 +43,44 @@ struct RenderPosition {
   }
 
   [[nodiscard]] auto best_y_offset(const RenderPosition& position,
-                                   const float max_y) const -> float {
+                                   const float target_y) const -> float {
     /* Find the best offset which will not result in collision using binary
      * search */
-    float low_y = 0;
-    float high_y = max_y;
-    while (low_y + PIXEL_FLOAT_OFFSET < high_y) {
-      float y = (low_y + high_y) / 2;
+    float bad_y = 0;
+    float good_y = target_y;
+
+    while (std::abs(good_y - bad_y) > PIXEL_FLOAT_OFFSET) {
+      float y = (bad_y + good_y) / 2;
       auto next_position = *this;
       next_position.rect.y += y;
 
       if (next_position.collide(position)) {
-        high_y = y;
+        good_y = y;
       } else {
-        low_y = y;
+        bad_y = y;
       }
     }
-    return low_y;
+    return bad_y;
   };
 
   [[nodiscard]] auto best_x_offset(const RenderPosition& position,
-                                   const float max_x) const -> float {
+                                   const float target_x) const -> float {
     /* Find the best offset which will not result in collision using binary
      * search */
-    float low_x = 0;
-    float high_x = max_x;
-    while (low_x + PIXEL_FLOAT_OFFSET < high_x) {
-      float x = (low_x + high_x) / 2;
+    float bad_x = 0;
+    float good_x = target_x;
+    while (std::abs(good_x - bad_x) > PIXEL_FLOAT_OFFSET) {
+      float x = (bad_x + good_x) / 2;
       auto next_position = *this;
-      next_position.rect.y += x;
+      next_position.rect.x += x;
 
       if (next_position.collide(position)) {
-        high_x = x;
+        good_x = x;
       } else {
-        low_x = x;
+        bad_x = x;
       }
     }
-    return low_x;
+    return bad_x;
   };
 };
 
