@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 
 #include "SDL_rect.h"
 #include "config.h"
@@ -44,44 +45,43 @@ struct RenderPosition {
 
   [[nodiscard]] auto best_y_offset(const RenderPosition& position,
                                    const float target_y) const -> float {
-    /* Find the best offset which will not result in collision using binary
-     * search */
-    float bad_y = 0;
-    float good_y = target_y;
-
-    while (std::abs(good_y - bad_y) > PIXEL_FLOAT_OFFSET) {
-      float y = (bad_y + good_y) / 2;
-      auto next_position = *this;
-      next_position.rect.y += y;
-
-      if (next_position.collide(position)) {
-        good_y = y;
-      } else {
-        bad_y = y;
-      }
-    }
-    return bad_y;
+    return best_offset(position, target_y,
+                       [](auto current_position, auto value) {
+                         current_position.rect.y += value;
+                         return current_position;
+                       });
   };
 
   [[nodiscard]] auto best_x_offset(const RenderPosition& position,
                                    const float target_x) const -> float {
+    return best_offset(position, target_x,
+                       [](auto current_position, auto value) {
+                         current_position.rect.x += value;
+                         return current_position;
+                       });
+  };
+
+ private:
+  auto best_offset(
+      const RenderPosition& position, const float good,
+      const std::function<RenderPosition(const RenderPosition&, float value)>&
+          next_position_func) const -> float {
     /* Find the best offset which will not result in collision using binary
      * search */
-    float bad_x = 0;
-    float good_x = target_x;
-    while (std::abs(good_x - bad_x) > PIXEL_FLOAT_OFFSET) {
-      float x = (bad_x + good_x) / 2;
-      auto next_position = *this;
-      next_position.rect.x += x;
-
+    float start = 0;
+    float end = good;
+    while (std::abs(start - end) > PIXEL_FLOAT_OFFSET) {
+      float mid = (start + end) / 2;
+      auto next_position = next_position_func(*this, mid);
       if (next_position.collide(position)) {
-        good_x = x;
+        end = mid;
       } else {
-        bad_x = x;
+        start = mid;
       }
     }
-    return bad_x;
-  };
+
+    return start;
+  }
 };
 
 #endif
