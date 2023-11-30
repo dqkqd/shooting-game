@@ -1,7 +1,7 @@
 #include "tiles/tilemap.h"
 
 #include "components/physics.h"
-#include "components/primitive.h"
+#include "components/position.h"
 #include "config.h"
 #include "services/texture.h"
 

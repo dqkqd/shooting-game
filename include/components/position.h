@@ -1,5 +1,5 @@
-#ifndef PRIMITIVE_H
-#define PRIMITIVE_H
+#ifndef POSITION_H
+#define POSITION_H
 
 #include <algorithm>
 #include <array>
@@ -7,10 +7,6 @@
 
 #include "SDL_rect.h"
 #include "config.h"
-
-struct Position {
-  SDL_FRect rect;
-};
 
 struct TexturePosition {
   SDL_FRect rect;

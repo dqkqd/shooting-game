@@ -1,7 +1,7 @@
 #ifndef TILES_TILESET_H
 #define TILES_TILESET_H
 
-#include "components/primitive.h"
+#include "components/position.h"
 #include "ecs/world.h"
 #include "graphic.h"
 #include "tiles/parser.h"

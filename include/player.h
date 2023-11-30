@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "components/primitive.h"
+#include "components/position.h"
 #include "ecs/world.h"
 #include "graphic.h"
 
