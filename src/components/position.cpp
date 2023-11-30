@@ -32,33 +32,24 @@
                      });
 }
 
-[[nodiscard]] auto RenderPosition::best_offset(const RenderPosition& position,
-                                               const Offset& target) -> Offset {
-  return {.dx = best_x_offset(position, target.dx),
-          .dy = best_y_offset(position, target.dy)};
+[[nodiscard]] auto RenderPosition::closest_offset(
+    const RenderPosition& position, const Offset& target) -> Offset {
+  auto closest_dx = find_closest_offset_one_direction(
+      position, target.dx, [](auto current_position, auto value) {
+        current_position.rect.x += value;
+        return current_position;
+      });
+
+  auto closest_dy = find_closest_offset_one_direction(
+      position, target.dy, [](auto current_position, auto value) {
+        current_position.rect.y += value;
+        return current_position;
+      });
+
+  return {.dx = closest_dx, .dy = closest_dy};
 }
 
-[[nodiscard]] auto RenderPosition::best_y_offset(const RenderPosition& position,
-                                                 float target_y) const
-    -> float {
-  return find_best_offset(position, target_y,
-                          [](auto current_position, auto value) {
-                            current_position.rect.y += value;
-                            return current_position;
-                          });
-};
-
-[[nodiscard]] auto RenderPosition::best_x_offset(const RenderPosition& position,
-                                                 float target_x) const
-    -> float {
-  return find_best_offset(position, target_x,
-                          [](auto current_position, auto value) {
-                            current_position.rect.x += value;
-                            return current_position;
-                          });
-};
-
-auto RenderPosition::find_best_offset(
+auto RenderPosition::find_closest_offset_one_direction(
     const RenderPosition& position, float good,
     const std::function<RenderPosition(const RenderPosition&, float value)>&
         next_position_func) const -> float {

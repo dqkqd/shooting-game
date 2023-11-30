@@ -26,17 +26,11 @@ struct RenderPosition {
 
   [[nodiscard]] auto collide(const RenderPosition& position) const -> bool;
 
-  [[nodiscard]] auto best_offset(const RenderPosition& position,
-                                 const Offset& target) -> Offset;
+  [[nodiscard]] auto closest_offset(const RenderPosition& position,
+                                    const Offset& target) -> Offset;
 
  private:
-  [[nodiscard]] auto best_y_offset(const RenderPosition& position,
-                                   float target_y) const -> float;
-
-  [[nodiscard]] auto best_x_offset(const RenderPosition& position,
-                                   float target_x) const -> float;
-
-  [[nodiscard]] auto find_best_offset(
+  [[nodiscard]] auto find_closest_offset_one_direction(
       const RenderPosition& position, float good,
       const std::function<RenderPosition(const RenderPosition&, float value)>&
           next_position_func) const -> float;

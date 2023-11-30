@@ -45,7 +45,7 @@ void player::init(Graphic& graphic, World& world) {
       auto offset = projectile_motion.next_offset();
 
       for (auto [tile_position, _] : tile_query) {
-        offset = player_position.best_offset(tile_position, offset);
+        offset = player_position.closest_offset(tile_position, offset);
       }
 
       player_position.rect.x += offset.dx;
