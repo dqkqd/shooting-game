@@ -1,14 +1,10 @@
 #ifndef COMPONENTS_PHYSICS_H
 #define COMPONENTS_PHYSICS_H
 
+#include "components/position.h"
 #include "config.h"
 
 struct Collidable {};
-
-struct Offset {
-  float dx;
-  float dy;
-};
 
 class Tick {
  public:

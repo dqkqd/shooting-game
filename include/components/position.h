@@ -6,6 +6,11 @@
 
 #include "SDL_rect.h"
 
+struct Offset {
+  float dx;
+  float dy;
+};
+
 struct TexturePosition {
   SDL_FRect rect;
 };
