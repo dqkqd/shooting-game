@@ -39,7 +39,7 @@ TileMap::TileMap(const char* file) {
   }
 }
 
-void TileMap::init(Graphic& graphic, World& world) {
+void TileMap::init(Graphic& graphic, World& world, Camera& camera) {
   for (auto& [_, tileset] : tilesets_) {
     tileset.init(graphic);
   }
@@ -67,10 +67,14 @@ void TileMap::init(Graphic& graphic, World& world) {
   }
 
   std::function<void(Query<SDL_Texture*, TexturePosition, RenderPosition>)>
-      system = [&graphic](
+      system = [&graphic, &camera](
                    Query<SDL_Texture*, TexturePosition, RenderPosition> query) {
         for (auto [texture, src, dest] : query) {
-          SDL_RenderTexture(graphic.renderer(), texture, &src.rect, &dest.rect);
+          SDL_FRect dest_rect{dest.rect.x, dest.rect.y, dest.rect.w,
+                              dest.rect.h};
+          dest_rect.x -= camera.pos.x;
+          dest_rect.y -= camera.pos.y;
+          SDL_RenderTexture(graphic.renderer(), texture, &src.rect, &dest_rect);
         }
       };
 

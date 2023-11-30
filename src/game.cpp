@@ -3,6 +3,7 @@
 #include "SDL3_image/SDL_image.h"
 #include "SDL_init.h"
 #include "SDL_log.h"
+#include "camera.h"
 #include "services/texture.h"
 
 GameBase::GameBase() { assert(init()); }
@@ -32,6 +33,7 @@ Game::Game(std::string&& title, int width, int height)
     : graphic_{std::move(title), width, height} {}
 
 auto Game::graphic() -> Graphic& { return graphic_; }
+auto Game::camera() -> Camera& { return camera_; }
 
 void Game::run(World& world) {
   SDL_Event e;

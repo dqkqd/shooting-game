@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "camera.h"
 #include "ecs/world.h"
 #include "graphic.h"
 
@@ -23,12 +24,14 @@ class Game : public GameBase {
   explicit Game(std::string&& title, int width, int height);  // NOLINT
 
   auto graphic() -> Graphic&;
+  auto camera() -> Camera&;
 
   void run(World& world);
   void run_test_leak(World& world);
 
  private:
   Graphic graphic_;
+  Camera camera_{};
 };
 
 #endif

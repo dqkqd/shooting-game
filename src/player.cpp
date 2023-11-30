@@ -13,7 +13,7 @@ auto player::NormalAnimation::position() -> TexturePosition {
                          PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT};
 }
 
-void player::init(Graphic& graphic, World& world) {
+void player::init(Graphic& graphic, World& world, Camera& camera) {
   auto animation = NormalAnimation();
   auto texture_position = animation.position();
   auto start_position = RenderPosition{
@@ -22,7 +22,7 @@ void player::init(Graphic& graphic, World& world) {
   world.spawn_entity_with(
       TextureManager::add_from_file_unchecked(graphic.renderer(), PLAYER_IMAGE),
       std::move(texture_position), std::move(start_position),
-      std::move(animation), ProjectileMotion(30, 3.14 * 6 / 13));
+      std::move(animation), ProjectileMotion(100, 3.14 * 6 / 13), IsPlayer());
 
   std::function<void(Query<TexturePosition, NormalAnimation>)>
       animation_system = [](Query<TexturePosition, NormalAnimation> query) {
@@ -53,6 +53,17 @@ void player::init(Graphic& graphic, World& world) {
     }
   };
 
+  std::function<void(Query<RenderPosition, IsPlayer>)> set_camera =
+      [&camera](Query<RenderPosition, IsPlayer> query) {
+        for (auto [position, _] : query) {
+          camera.pos.x =
+              position.rect.x + PLAYER_SPRITE_WIDTH / 2.0F - GAME_WIDTH / 2.0F;
+          camera.pos.y =
+              position.rect.y + PLAYER_SPRITE_WIDTH / 2.0F - GAME_HEIGHT / 2.0F;
+        }
+      };
+
   world.add_system(std::move(animation_system));
   world.add_system(std::move(falling_system));
-};
+  world.add_system(std::move(set_camera));
+}
