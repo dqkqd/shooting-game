@@ -32,26 +32,34 @@
                      });
 }
 
+[[nodiscard]] auto RenderPosition::best_offset(const RenderPosition& position,
+                                               const Offset& target) -> Offset {
+  return {.dx = best_x_offset(position, target.dx),
+          .dy = best_y_offset(position, target.dy)};
+}
+
 [[nodiscard]] auto RenderPosition::best_y_offset(const RenderPosition& position,
-                                                 const float target_y) const
+                                                 float target_y) const
     -> float {
-  return best_offset(position, target_y, [](auto current_position, auto value) {
-    current_position.rect.y += value;
-    return current_position;
-  });
+  return find_best_offset(position, target_y,
+                          [](auto current_position, auto value) {
+                            current_position.rect.y += value;
+                            return current_position;
+                          });
 };
 
 [[nodiscard]] auto RenderPosition::best_x_offset(const RenderPosition& position,
-                                                 const float target_x) const
+                                                 float target_x) const
     -> float {
-  return best_offset(position, target_x, [](auto current_position, auto value) {
-    current_position.rect.x += value;
-    return current_position;
-  });
+  return find_best_offset(position, target_x,
+                          [](auto current_position, auto value) {
+                            current_position.rect.x += value;
+                            return current_position;
+                          });
 };
 
-auto RenderPosition::best_offset(
-    const RenderPosition& position, const float good,
+auto RenderPosition::find_best_offset(
+    const RenderPosition& position, float good,
     const std::function<RenderPosition(const RenderPosition&, float value)>&
         next_position_func) const -> float {
   /* Find the best offset which will not result in collision using binary
