@@ -8,6 +8,7 @@ set(SOURCE_FILES
     components/position.cpp
     services/texture.cpp
     tiles/tilemap.cpp
+    camera.cpp
     game.cpp
     graphic.cpp
     player.cpp

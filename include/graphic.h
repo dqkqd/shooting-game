@@ -5,6 +5,7 @@
 
 #include "SDL_render.h"
 #include "SDL_video.h"
+#include "camera.h"
 
 class Graphic {
  public:
@@ -19,6 +20,7 @@ class Graphic {
 
   [[nodiscard]] auto window() const -> SDL_Window*;
   [[nodiscard]] auto renderer() const -> SDL_Renderer*;
+  [[nodiscard]] auto camera() -> Camera&;
   [[nodiscard]] auto width() const -> int;
   [[nodiscard]] auto height() const -> int;
 
@@ -29,5 +31,7 @@ class Graphic {
 
   SDL_Window* window_ = NULL;
   SDL_Renderer* renderer_ = NULL;
+
+  Camera camera_;
 };
 #endif

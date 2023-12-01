@@ -13,7 +13,7 @@ auto player::NormalAnimation::position() -> TexturePosition {
                          PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT};
 }
 
-void player::init(Graphic& graphic, World& world, Camera& camera) {
+void player::init(Graphic& graphic, World& world) {
   auto animation = NormalAnimation();
   auto texture_position = animation.position();
   auto start_position = RenderPosition{
@@ -54,12 +54,9 @@ void player::init(Graphic& graphic, World& world, Camera& camera) {
   };
 
   std::function<void(Query<RenderPosition, IsPlayer>)> set_camera =
-      [&camera](Query<RenderPosition, IsPlayer> query) {
+      [&graphic](Query<RenderPosition, IsPlayer> query) {
         for (auto [position, _] : query) {
-          camera.pos.x =
-              position.rect.x + PLAYER_SPRITE_WIDTH / 2.0F - GAME_WIDTH / 2.0F;
-          camera.pos.y =
-              position.rect.y + PLAYER_SPRITE_WIDTH / 2.0F - GAME_HEIGHT / 2.0F;
+          graphic.camera().center_to(position);
         }
       };
 

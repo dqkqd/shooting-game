@@ -10,9 +10,9 @@ auto main() -> int {
   auto world = World();
 
   TileMap tile_map(BACKGROUND_CONFIG_TILEMAP);
-  tile_map.init(game.graphic(), world, game.camera());
+  tile_map.init(game.graphic(), world);
 
-  player::init(game.graphic(), world, game.camera());
+  player::init(game.graphic(), world);
 
   game.run(world);
 

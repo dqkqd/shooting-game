@@ -1,7 +1,6 @@
 #ifndef TILES_TILESET_H
 #define TILES_TILESET_H
 
-#include "camera.h"
 #include "components/position.h"
 #include "ecs/world.h"
 #include "graphic.h"
@@ -26,7 +25,7 @@ class TileMap {
  public:
   explicit TileMap(const char* file);
 
-  void init(Graphic& graphic, World& world, Camera& camera);
+  void init(Graphic& graphic, World& world);
   [[nodiscard]] auto render_position(int x, int y) const -> RenderPosition;
 
  private:

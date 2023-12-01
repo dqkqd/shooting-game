@@ -31,7 +31,6 @@ class Game : public GameBase {
 
  private:
   Graphic graphic_;
-  Camera camera_{};
 };
 
 #endif

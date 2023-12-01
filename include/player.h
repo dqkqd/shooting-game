@@ -1,7 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "camera.h"
 #include "components/position.h"
 #include "ecs/world.h"
 #include "graphic.h"
@@ -19,7 +18,7 @@ class NormalAnimation {
   int current_sprite_ = 0;
 };
 
-void init(Graphic& graphic, World& world, Camera& camera);
+void init(Graphic& graphic, World& world);
 
 }  // namespace player
 
