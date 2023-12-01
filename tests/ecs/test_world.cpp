@@ -160,3 +160,16 @@ TEST(World, WorldQueryAutoUpdateWhenArchetypeChanged) {
                 .get_entity_data<int>(location.entity_id),
             std::make_tuple(40));
 }
+
+TEST(World, GetQuery) {
+  auto world = World();
+  world.spawn_entity_with<int, float>(1, 1.0);
+  world.spawn_entity_with<int>(2);
+
+  std::vector<int> res;
+  for (auto [v] : world.query<int>()) {
+    res.push_back(v);
+  }
+
+  EXPECT_EQ(res, std::vector({1, 2}));
+}
