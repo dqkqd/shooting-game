@@ -1,8 +1,6 @@
 #include "tiles/tilemap.h"
 
 #include "components/physics.h"
-#include "components/position.h"
-#include "config.h"
 #include "services/texture.h"
 
 TileSet::TileSet(parser::TileSetInMap data) : data_{std::move(data)} {};
@@ -65,17 +63,6 @@ void TileMap::init(Graphic& graphic, World& world) {
       }
     }
   }
-
-  std::function<void(Query<SDL_Texture*, TexturePosition, RenderPosition>)>
-      system = [&graphic](
-                   Query<SDL_Texture*, TexturePosition, RenderPosition> query) {
-        for (auto [texture, src, dest] : query) {
-          auto dest_rect = graphic.camera().get_position_for(dest).rect;
-          SDL_RenderTexture(graphic.renderer(), texture, &src.rect, &dest_rect);
-        }
-      };
-
-  world.add_system(std::move(system));
 }
 
 auto TileMap::render_position(int x, int y) const -> RenderPosition {

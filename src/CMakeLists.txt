@@ -13,6 +13,7 @@ set(SOURCE_FILES
     game.cpp
     graphic.cpp
     player.cpp
+    systems.cpp
 )
 
 include(FetchContent)

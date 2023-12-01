@@ -2,6 +2,7 @@
 #include "config.h"
 #include "game.h"
 #include "player.h"
+#include "systems.h"
 #include "tiles/tilemap.h"
 
 auto main() -> int {
@@ -17,6 +18,7 @@ auto main() -> int {
   world.add_system(player::animation_system);
   world.add_system(player::moving_system);
   world.add_system(player::camera_system, game.graphic().camera());
+  world.add_system(shared_systems::render_system, game.graphic());
 
   game.run(world);
 
