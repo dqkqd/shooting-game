@@ -131,7 +131,6 @@ auto World::remove_component_from_entity(EntityId entity_id)
 template <typename S, typename... Args>
 auto World::add_system_internal(S system) -> World& {
   // setup to avoid re-calculating during game loop
-  queries_.add<Args...>(archetypes_);
   systems_.emplace_back(
       [system, this]() { system(queries_.get<Args...>(archetypes_)); });
   return *this;

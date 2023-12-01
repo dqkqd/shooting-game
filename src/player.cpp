@@ -32,12 +32,11 @@ void player::animation_system(Query<TexturePosition, TextureAnimation> query) {
 
 void player::moving_system(World& world) {
   auto player_query =
-      world.query()
-          .get_or_add<TexturePosition, RenderPosition, ProjectileMotion>(
-              world.archetypes());
+      world.query().get<TexturePosition, RenderPosition, ProjectileMotion>(
+          world.archetypes());
 
   auto tile_query =
-      world.query().get_or_add<RenderPosition, Collidable>(world.archetypes());
+      world.query().get<RenderPosition, Collidable>(world.archetypes());
 
   for (auto [player_texture_position, player_position, projectile_motion] :
        player_query) {
@@ -53,8 +52,7 @@ void player::moving_system(World& world) {
 };
 
 void player::camera_system(World& world, Camera& camera) {
-  auto query =
-      world.query().get_or_add<RenderPosition, IsPlayer>(world.archetypes());
+  auto query = world.query().get<RenderPosition, IsPlayer>(world.archetypes());
   for (auto [position, _] : query) {
     camera.center_to(position);
   }

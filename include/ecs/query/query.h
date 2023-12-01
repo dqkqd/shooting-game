@@ -67,23 +67,7 @@ class Queries : public EventListener {
   [[nodiscard]] auto size() const -> std::size_t { return queries_.size(); };
 
   template <typename... Args>
-  void add(Archetypes& archetypes) {
-    auto components = Components::from_types<Args...>();
-    if (queries_.count(components) > 0) {
-      return;
-    }
-    queries_.emplace(std::move(components),
-                     QueryWrapper(archetypes.find<Args...>()));
-  }
-
-  template <typename... Args>
   auto get(Archetypes& archetypes) -> Query<Args...> {
-    return queries_.at(Components::from_types<Args...>())
-        .template query<Args...>(archetypes);
-  }
-
-  template <typename... Args>
-  auto get_or_add(Archetypes& archetypes) -> Query<Args...> {
     auto components = Components::from_types<Args...>();
     auto it = queries_.find(components);
     if (it != queries_.end()) {

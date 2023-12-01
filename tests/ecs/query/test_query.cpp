@@ -44,23 +44,15 @@ TEST_F(QueryTest, MoveQueryWrapper) {
   EXPECT_EQ(get_values<int>(query3), std::vector({2, 3}));
 }
 
-TEST_F(QueryTest, AddAndGetQueryFromQueries) {
-  world.spawn_entity_with<char>('c');
-  queries.add<char>(world.archetypes());
-
-  auto query = queries.get<char>(world.archetypes());
-  EXPECT_EQ(get_values<char>(query), std::vector({'c'}));
-}
-
 TEST_F(QueryTest, AddOrGetQueryFromQueries) {
   world.spawn_entity_with<char>('c');
-  auto query = queries.get_or_add<char>(world.archetypes());
+  auto query = queries.get<char>(world.archetypes());
   EXPECT_EQ(get_values<char>(query), std::vector({'c'}));
 
   EXPECT_EQ(queries.size(), 1);
-  queries.get_or_add<char>(world.archetypes());
-  queries.get_or_add<char>(world.archetypes());
-  queries.get_or_add<char>(world.archetypes());
+  queries.get<char>(world.archetypes());
+  queries.get<char>(world.archetypes());
+  queries.get<char>(world.archetypes());
 
   EXPECT_EQ(queries.size(), 1);
 }
