@@ -14,6 +14,10 @@ auto main() -> int {
 
   player::init(game.graphic(), world);
 
+  world.add_system(player::animation_system);
+  world.add_system(player::moving_system);
+  world.add_system(player::camera_system, game.graphic().camera());
+
   game.run(world);
 
   return 0;
