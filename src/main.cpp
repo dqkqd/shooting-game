@@ -15,10 +15,10 @@ auto main() -> int {
 
   player::init(game.graphic(), world);
 
-  world.add_system(player::animation_system);
-  world.add_system(player::moving_system);
-  world.add_system(player::camera_system, game.graphic().camera());
-  world.add_system(shared_systems::render_system, game.graphic());
+  world.add_system(player::animation_system)
+      .add_system(player::moving_system)
+      .add_system(player::camera_system, game.graphic().camera())
+      .add_system(shared_systems::render_system, game.graphic());
 
   game.run(world);
 
