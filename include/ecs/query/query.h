@@ -12,6 +12,19 @@ class Query {
  public:
   Query(QueryIterator<Args...>&& begin, QueryIterator<Args...>&& end)
       : begin_{std::move(begin)}, end_{std::move(end)} {}
+
+  Query(const Query&) = delete;
+  auto operator=(const Query&) -> Query& = delete;
+
+  Query(Query&& query) noexcept
+      : begin_{std::move(query.begin_)}, end_{std::move(query.end_)} {};
+  auto operator=(Query&& query) noexcept -> Query& {
+    begin_ = std::move(query.begin_);
+    end_ = std::move(query.end_);
+  };
+
+  ~Query() = default;
+
   auto begin() -> QueryIterator<Args...> { return std::move(begin_); }
   auto end() -> QueryIterator<Args...> { return std::move(end_); }
 
