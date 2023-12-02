@@ -20,11 +20,7 @@ class ColumnIterator {
     ptr_++;
     return *this;
   }
-  auto operator++(int) -> ColumnIterator {
-    ColumnIterator tmp = *this;
-    ++(*this);
-    return tmp;
-  }
+
   friend auto operator==(const ColumnIterator &lhs, const ColumnIterator &rhs)
       -> bool {
     return lhs.ptr_ == rhs.ptr_;
