@@ -31,3 +31,6 @@ void ProjectileMotion::reset() {
   vx_ = 0;
   vy_ = 0;
 }
+
+void ProjectileMotion::change_x_direction() { vx_ = -vx_; }
+void ProjectileMotion::change_y_direction() { vy_ = -vy_; }

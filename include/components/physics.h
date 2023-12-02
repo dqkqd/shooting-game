@@ -23,6 +23,9 @@ class ProjectileMotion {
   [[nodiscard]] auto movable() const -> bool;
   void reset();
 
+  void change_x_direction();
+  void change_y_direction();
+
  private:
   float vx_{};
   float vy_{};
