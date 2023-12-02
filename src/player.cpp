@@ -40,34 +40,51 @@ void player::moving_system(World& world) {
     if (character.status == Status::STOPPED) {
       continue;
     }
+    auto is_collided = [&world](const RenderPosition& player_pos) {
+      for (auto [position, _] :  // NOLINT
+           world.query<RenderPosition, Collidable>()) {
+        if (player_pos.collide(position)) {
+          return true;
+        }
+      }
+      return false;
+    };
 
     auto offset = projectile_motion.next_offset();
-    player_position.rect.x += offset.dx;
-    player_position.rect.y += offset.dy;
 
-    auto collided = false;
-    for (auto [tile_position, _] : world.query<RenderPosition, Collidable>()) {
-      if (player_position.collide(tile_position)) {
-        collided = true;
-        break;
+    // checking y direction collision
+    player_position.rect.y += offset.dy;
+    auto collided_y = is_collided(player_position);
+    player_position.rect.y -= offset.dy;
+
+    // checking x direction collision
+    player_position.rect.x += offset.dx;
+    auto collided_x = is_collided(player_position);
+    player_position.rect.x -= offset.dx;
+
+    if (collided_x || collided_y) {
+      for (auto [tile_position, _] :
+           world.query<RenderPosition, Collidable>()) {
+        offset = player_position.closest_offset(tile_position, offset);
       }
     }
 
-    if (!collided) {
-      continue;
-    }
-
-    // collided, need to revert changes, find the best offset and stop moving
-    character.status = Status::STOPPED;
-    projectile_motion.reset();
-
-    player_position.rect.x -= offset.dx;
-    player_position.rect.y -= offset.dy;
-    for (auto [tile_position, _] : world.query<RenderPosition, Collidable>()) {
-      offset = player_position.closest_offset(tile_position, offset);
-    }
     player_position.rect.x += offset.dx;
     player_position.rect.y += offset.dy;
+
+    if (collided_x) {
+      projectile_motion.change_x_direction();
+    }
+
+    if (collided_y) {
+      projectile_motion.change_y_direction();
+
+      // We should stop if we are falling down and collided
+      if (offset.dy > 0) {
+        character.status = Status::STOPPED;
+        projectile_motion.reset();
+      }
+    }
   }
 };
 
