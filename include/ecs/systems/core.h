@@ -23,8 +23,7 @@ class SystemManager {
  public:
   template <typename... FuncArgs>
   void add(SystemType type,
-           const std::function<void(World&, std::decay_t<Args>...,
-                                    std::decay_t<FuncArgs>...)>& system,
+           void (*system)(World&, std::decay_t<Args>..., FuncArgs&...),
            FuncArgs&... func_args) {
     auto system_without_func_args =
         [&func_args..., system](World& world, std::decay_t<Args>... args) {

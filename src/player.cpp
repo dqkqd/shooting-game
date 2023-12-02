@@ -24,7 +24,8 @@ void player::init(Graphic& graphic, World& world) {
                           ProjectileMotion(100, 3.14 * 6 / 13), IsPlayer());
 }
 
-void player::animation_system(Query<TexturePosition, TextureAnimation> query) {
+void player::animation_system(World& world) {
+  auto query = world.query<TexturePosition, TextureAnimation>();
   for (auto [query_texture, query_animation] : query) {
     query_texture = query_animation.next_position();
   }

@@ -28,7 +28,8 @@ class Game : public GameBase {
   auto camera() -> Camera&;
 
   template <typename Event>
-  void run(World& world, sys::SystemManager<Event> event_systems);
+  void run(World& world, sys::SystemManager<Event> event_systems,
+           sys::SystemManager<> normal_systems);
 
   void run_test_leak(World& world);
 
@@ -37,7 +38,8 @@ class Game : public GameBase {
 };
 
 template <typename Event>
-void Game::run(World& world, sys::SystemManager<Event> event_systems) {
+void Game::run(World& world, sys::SystemManager<Event> event_systems,
+               sys::SystemManager<> normal_systems) {
   SDL_Event e;
   bool quit = false;
   while (!quit) {
@@ -51,7 +53,7 @@ void Game::run(World& world, sys::SystemManager<Event> event_systems) {
     SDL_SetRenderDrawColor(graphic_.renderer(), 0, 0, 0, 255);
     SDL_RenderClear(graphic_.renderer());
 
-    world.run_systems();
+    normal_systems.run(world);
 
     SDL_RenderPresent(graphic_.renderer());
   }

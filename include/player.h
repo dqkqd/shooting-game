@@ -13,7 +13,7 @@ struct IsPlayer {};
 
 void init(Graphic& graphic, World& world);
 
-void animation_system(Query<TexturePosition, TextureAnimation> query);
+void animation_system(World& world);
 void moving_system(World& world);
 void camera_system(World& world, Camera& camera);
 
