@@ -1,5 +1,6 @@
 
 #include "config.h"
+#include "ecs/systems/core.h"
 #include "game.h"
 #include "player.h"
 #include "systems.h"
@@ -9,6 +10,9 @@ auto main() -> int {
   auto game = Game("Hello", GAME_WIDTH, GAME_HEIGHT);
 
   auto world = World();
+
+  sys::SystemManager<SDL_Event> event_systems;
+  event_systems.add(sys::SystemType::PARALLEL, player::test_player_event);
 
   TileMap tile_map(BACKGROUND_CONFIG_TILEMAP);
   tile_map.init(game.graphic(), world);
@@ -20,7 +24,7 @@ auto main() -> int {
       .add_system(player::camera_system, game.graphic().camera())
       .add_system(shared_systems::render_system, game.graphic());
 
-  game.run(world);
+  game.run(world, event_systems);
 
   return 0;
 }
