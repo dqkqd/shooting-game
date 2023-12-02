@@ -37,21 +37,13 @@ class World {
   /* query specific systems */
   template <typename... Args>
   auto add_system(void (*system)(Query<Args...>)) -> World&;
-  template <typename... Args>
-  auto add_system(std::function<void(Query<Args...>)>&& system) -> World&;
 
   /* world specific system */
-  auto add_system(void (*system)(World&)) -> World&;
-  auto add_system(const std::function<void(World&)>&& system) -> World&;
-
   template <typename... Args>
   auto add_system(void (*system)(World&, Args&...), Args&... args) -> World&;
-  template <typename... Args>
-  auto add_system(const std::function<void(World&, Args&...)>&& system,
-                  Args&... args) -> World&;
 
   /* void system */
-  auto add_system(const std::function<void()>& system) -> World&;
+  auto add_system(void (*system)()) -> World&;
 
   void run_systems();
 
@@ -65,9 +57,6 @@ class World {
   std::vector<System> systems_;
 
   void init();
-
-  template <typename S, typename... Args>
-  auto add_system_internal(S system) -> World&;
 };
 
 /* put the definition here since these are template methods */
@@ -131,31 +120,9 @@ auto World::remove_component_from_entity(EntityId entity_id)
   return new_location;
 }
 
-template <typename S, typename... Args>
-auto World::add_system_internal(S system) -> World& {
-  // setup to avoid re-calculating during game loop
-  systems_.emplace_back([system, this]() { system(query<Args...>()); });
-  return *this;
-}
-
 template <typename... Args>
 auto World::add_system(void (*system)(Query<Args...>)) -> World& {
-  return add_system_internal<void (*)(Query<Args...>), Args...>(system);
-}
-
-template <typename... Args>
-auto World::add_system(std::function<void(Query<Args...>)>&& system) -> World& {
-  return add_system_internal<std::function<void(Query<Args...>)>&&, Args...>(
-      std::move(system));
-}
-
-inline auto World::add_system(void (*system)(World&)) -> World& {
-  systems_.emplace_back([system, this]() { system(*this); });
-  return *this;
-}
-inline auto World::add_system(const std::function<void(World&)>&& system)
-    -> World& {
-  systems_.emplace_back([system, this]() { system(*this); });
+  systems_.emplace_back([system, this]() { system(query<Args...>()); });
   return *this;
 }
 
@@ -166,14 +133,7 @@ auto World::add_system(void (*system)(World&, Args&...), Args&... args)
   return *this;
 }
 
-template <typename... Args>
-auto World::add_system(const std::function<void(World&, Args&...)>&& system,
-                       Args&... args) -> World& {
-  systems_.emplace_back([system, this, &args...]() { system(*this, args...); });
-  return *this;
-}
-
-inline auto World::add_system(const std::function<void()>& system) -> World& {
+inline auto World::add_system(void (*system)()) -> World& {
   systems_.emplace_back([system]() { system(); });
   return *this;
 }
