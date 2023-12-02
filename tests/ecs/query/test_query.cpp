@@ -17,9 +17,9 @@ class QueryTest : public testing::Test {
   }
 
   template <typename T>
-  auto get_values(Query<T> query) -> std::vector<T> {
+  auto get_values(Query<T>&& query) -> std::vector<T> {
     std::vector<T> values;
-    for (auto [v] : query) {
+    for (auto [v] : std::move(query)) {
       values.push_back(v);
     }
     return values;
@@ -47,7 +47,7 @@ TEST_F(QueryTest, MoveQueryWrapper) {
 TEST_F(QueryTest, AddOrGetQueryFromQueries) {
   world.spawn_entity_with<char>('c');
   auto query = queries.get<char>(world.archetypes());
-  EXPECT_EQ(get_values<char>(query), std::vector({'c'}));
+  EXPECT_EQ(get_values<char>(std::move(query)), std::vector({'c'}));
 
   EXPECT_EQ(queries.size(), 1);
   queries.get<char>(world.archetypes());

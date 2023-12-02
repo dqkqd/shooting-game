@@ -21,6 +21,24 @@ class QueryIterator {
     fetch();
   }
 
+  QueryIterator(const QueryIterator&) = delete;
+  auto operator=(const QueryIterator&) -> QueryIterator& = delete;
+
+  QueryIterator(QueryIterator&& query_iter) noexcept
+      : archetypes_{query_iter.archetypes_},
+        matched_archetypes_{query_iter.matched_archetypes_},
+        table_iter_{std::move(query_iter.table_iter_)},
+        archetype_index_{query_iter.archetype_index_} {}
+  auto operator=(QueryIterator&& query_iter) noexcept -> QueryIterator& {
+    archetypes_ = query_iter.archetypes_;
+    matched_archetypes_ = query_iter.matched_archetypes_;
+    table_iter_ = std::move(query_iter.table_iter_);
+    archetype_index_ = query_iter.archetype_index_;
+    return *this;
+  }
+
+  ~QueryIterator() = default;
+
   auto operator*() -> reference { return *table_iter_; }
 
   auto operator++() -> QueryIterator& {

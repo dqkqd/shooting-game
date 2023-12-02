@@ -10,10 +10,10 @@ class Query {
   static_assert(all_types_are_different<Args...>());
 
  public:
-  Query(QueryIterator<Args...> begin, QueryIterator<Args...> end)
-      : begin_{begin}, end_{end} {}
-  auto begin() -> QueryIterator<Args...> { return begin_; }
-  auto end() -> QueryIterator<Args...> { return end_; }
+  Query(QueryIterator<Args...>&& begin, QueryIterator<Args...>&& end)
+      : begin_{std::move(begin)}, end_{std::move(end)} {}
+  auto begin() -> QueryIterator<Args...> { return std::move(begin_); }
+  auto end() -> QueryIterator<Args...> { return std::move(end_); }
 
  private:
   QueryIterator<Args...> begin_;
