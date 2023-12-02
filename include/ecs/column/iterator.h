@@ -50,6 +50,22 @@ class ColumnIteratorWrapper {
  public:
   ColumnIteratorWrapper(ColumnIterator<T> &&begin, ColumnIterator<T> &&end)
       : begin_{std::move(begin)}, end_{std::move(end)} {}
+
+  ColumnIteratorWrapper(const ColumnIteratorWrapper &) = delete;
+  ColumnIteratorWrapper &operator=(const ColumnIteratorWrapper &) = delete;
+
+  ColumnIteratorWrapper(ColumnIteratorWrapper &&column_iter_wrapper) noexcept
+      : begin_{std::move(column_iter_wrapper.begin_)},
+        end_{std::move(column_iter_wrapper.end_)} {};
+  auto operator=(ColumnIteratorWrapper &&column_iter_wrapper) noexcept
+      -> ColumnIteratorWrapper & {
+    begin_ = std::move(column_iter_wrapper.begin_);
+    end_ = std::move(column_iter_wrapper.end_);
+    return *this;
+  };
+
+  ~ColumnIteratorWrapper() = default;
+
   auto begin() -> ColumnIterator<T> { return std::move(begin_); }
   auto end() -> ColumnIterator<T> { return std::move(end_); }
 
