@@ -6,19 +6,18 @@
 
 #include "ecs/world.h"
 
-enum class SystemType {
-  SEQUENTIAL,
-  PARALLEL,
-};
-
-template <typename... Args>
-struct System {
-  SystemType type;
-  std::function<void(World&, std::decay_t<Args>...)> system;
-};
-
 template <typename... Args>
 class SystemManager {
+  enum class SystemType {
+    SEQUENTIAL,
+    PARALLEL,
+  };
+
+  struct System {
+    SystemType type;
+    std::function<void(World&, std::decay_t<Args>...)> system;
+  };
+
  public:
   template <typename... FuncArgs>
   void add_sequential(void (*system)(World&, std::decay_t<Args>...,
@@ -59,7 +58,7 @@ class SystemManager {
   }
 
  private:
-  std::vector<System<Args...>> systems_{};
+  std::vector<System> systems_{};
 
   template <typename... FuncArgs>
   void add(SystemType type,
@@ -69,8 +68,7 @@ class SystemManager {
         [&func_args..., system](World& world, std::decay_t<Args>... args) {
           system(world, args..., func_args...);
         };
-    systems_.emplace_back(
-        System<Args...>{type, std::move(system_without_func_args)});
+    systems_.emplace_back(System{type, std::move(system_without_func_args)});
   }
 };
 
