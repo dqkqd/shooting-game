@@ -51,8 +51,8 @@ TEST_F(TableIteratorTest, Modify) {
 
 TEST_F(TableIteratorTest, Done) {
   auto iter = table.begin<int, float>();
-  iter++;
-  iter++;
+  ++iter;
+  ++iter;
   EXPECT_TRUE(iter.done());
 }
 

@@ -29,11 +29,7 @@ class TableIterator {
     advance();
     return *this;
   }
-  auto operator++(int) -> TableIterator {
-    TableIterator tmp = *this;
-    advance();
-    return tmp;
-  }
+
   friend auto operator==(const TableIterator &lhs, const TableIterator &rhs)
       -> bool {
     return lhs.equal(rhs);
