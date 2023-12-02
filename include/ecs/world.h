@@ -6,7 +6,6 @@
 #include "ecs/archetype/archetypes.h"
 #include "ecs/entity.h"
 #include "ecs/query/query.h"
-#include "ecs/system.h"
 
 class World {
  public:
@@ -35,32 +34,12 @@ class World {
     return queries_.get<Args...>(archetypes_);
   }
 
-  /* query specific systems */
-  template <typename... Args>
-  auto add_system(void (*system)(Query<Args...>)) -> World&;
-  template <typename... Args>
-  auto add_parallel_system(void (*system)(Query<Args...>)) -> World&;
-
-  /* world specific system */
-  template <typename... Args>
-  auto add_system(void (*system)(World&, Args&...), Args&... args) -> World&;
-  template <typename... Args>
-  auto add_parallel_system(void (*system)(World&, Args&...), Args&... args)
-      -> World&;
-
-  /* void system */
-  auto add_system(void (*system)()) -> World&;
-  auto add_parallel_system(void (*system)()) -> World&;
-
-  void run_systems();
-
  private:
   Archetypes archetypes_;
   Queries queries_;
 
   std::unordered_map<EntityId, EntityLocation> entities_;
 
-  SystemManager system_manager_;
   void init();
 };
 
@@ -124,47 +103,6 @@ auto World::remove_component_from_entity(EntityId entity_id)
               entity_id, archetypes_.get_by_id_unchecked(prev_archetype_id));
   return new_location;
 }
-
-template <typename... Args>
-auto World::add_system(void (*system)(Query<Args...>)) -> World& {
-  system_manager_.add(SystemType::SEQUENTIAL,
-                      [system, this]() { system(query<Args...>()); });
-  return *this;
-}
-template <typename... Args>
-auto World::add_parallel_system(void (*system)(Query<Args...>)) -> World& {
-  system_manager_.add(SystemType::PARALLEL,
-                      [system, this]() { system(query<Args...>()); });
-  return *this;
-}
-
-template <typename... Args>
-auto World::add_system(void (*system)(World&, Args&...), Args&... args)
-    -> World& {
-  system_manager_.add(SystemType::SEQUENTIAL,
-                      [system, this, &args...]() { system(*this, args...); });
-  return *this;
-}
-
-template <typename... Args>
-auto World::add_parallel_system(void (*system)(World&, Args&...), Args&... args)
-    -> World& {
-  system_manager_.add(SystemType::PARALLEL,
-                      [system, this, &args...]() { system(*this, args...); });
-  return *this;
-}
-
-inline auto World::add_system(void (*system)()) -> World& {
-  system_manager_.add(SystemType::SEQUENTIAL, [system]() { system(); });
-  return *this;
-}
-
-inline auto World::add_parallel_system(void (*system)()) -> World& {
-  system_manager_.add(SystemType::PARALLEL, [system]() { system(); });
-  return *this;
-}
-
-inline void World::run_systems() { system_manager_.run(); }
 
 inline void World::init() {
   archetypes_.event_manager().add_listener(queries_);

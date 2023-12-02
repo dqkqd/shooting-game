@@ -59,8 +59,6 @@ void Game::run_test_leak(World& world) {
     SDL_SetRenderDrawColor(graphic().renderer(), 0, 0, 0, 255);
     SDL_RenderClear(graphic().renderer());
 
-    world.run_systems();
-
     SDL_RenderPresent(graphic().renderer());
   }
 }

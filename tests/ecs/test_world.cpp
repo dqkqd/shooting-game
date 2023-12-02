@@ -1,4 +1,4 @@
-#include "ecs/query/query.h"
+#include "ecs/systems/core.h"
 #include "ecs/world.h"
 #include "gtest/gtest.h"
 
@@ -85,8 +85,9 @@ TEST(World, RemoveComponentInvalid) {
       world.remove_component_from_entity<char>(location.entity_id));
 }
 
-void test_system(Query<int, float> q) {
-  for (auto [i, c] : q) {
+void test_system(World &world) {
+  auto query = world.query<int, float>();
+  for (auto [i, c] : query) {
     i *= 2;
     c *= 3;
   }
@@ -95,15 +96,17 @@ void test_system(Query<int, float> q) {
 TEST(World, SystemOverSingleArchetype) {
   auto world = World();
   auto location = world.spawn_entity_with<int, float>(1, 1.0);
-  world.add_system(test_system);
 
-  world.run_systems();
+  sys::SystemManager<> systems;
+  systems.add(sys::SystemType::SEQUENTIAL, test_system);
+
+  systems.run(world);
   EXPECT_EQ(world.archetypes()
                 .get_by_id_unchecked(location.archetype_id)
                 .get_entity_data<int>(location.entity_id),
             std::make_tuple(2));
 
-  world.run_systems();
+  systems.run(world);
   EXPECT_EQ(world.archetypes()
                 .get_by_id_unchecked(location.archetype_id)
                 .get_entity_data<int>(location.entity_id),
@@ -115,21 +118,23 @@ TEST(World, SystemAcrossMultipleArchetypes) {
   auto location = world.spawn_entity_with<int, float, char>(2, 2.0, 'a');
   world.spawn_entity_with<int, float>(1, 1.0);
 
-  auto system = [](Query<int, float> query) {
+  auto system = [](World &w) {
+    auto query = w.query<int, float>();
     for (auto [i, _] : query) {
       i += 2;
     }
   };
 
-  world.add_system(*system);
+  sys::SystemManager<> systems;
+  systems.add(sys::SystemType::SEQUENTIAL, *system);
 
-  world.run_systems();
+  systems.run(world);
   EXPECT_EQ(world.archetypes()
                 .get_by_id_unchecked(location.archetype_id)
                 .get_entity_data<int>(location.entity_id),
             std::make_tuple(4));
 
-  world.run_systems();
+  systems.run(world);
   EXPECT_EQ(world.archetypes()
                 .get_by_id_unchecked(location.archetype_id)
                 .get_entity_data<int>(location.entity_id),
@@ -140,22 +145,26 @@ TEST(World, WorldQueryAutoUpdateWhenArchetypeChanged) {
   auto world = World();
   world.spawn_entity_with<int, float>(1, 1.0);
 
-  auto system = [](Query<int> query) {
+  auto system = [](World &w) {
+    auto query = w.query<int>();
     for (auto [i] : query) {
       i *= 2;
     }
   };
 
-  world.add_system(*system);
+  sys::SystemManager<> systems;
+  systems.add(sys::SystemType::SEQUENTIAL, *system);
+
+  systems.run(world);
   auto location = world.spawn_entity_with<int>(10);
 
-  world.run_systems();
+  systems.run(world);
   EXPECT_EQ(world.archetypes()
                 .get_by_id_unchecked(location.archetype_id)
                 .get_entity_data<int>(location.entity_id),
             std::make_tuple(20));
 
-  world.run_systems();
+  systems.run(world);
   EXPECT_EQ(world.archetypes()
                 .get_by_id_unchecked(location.archetype_id)
                 .get_entity_data<int>(location.entity_id),
@@ -180,28 +189,34 @@ TEST(World, WorldSystemsShouldRunInOrder) {
   world.spawn_entity_with<int>(1);
   world.spawn_entity_with<int>(2);
 
-  auto sequential_system = [](Query<int> query) {
+  auto sequential_system = [](World &w) {
+    auto query = w.query<int>();
     for (auto [i] : query) {
       i *= 2;
     }
   };
-  auto parallel_system = [](Query<int> query) {
+  auto parallel_system = [](World &w) {
+    auto query = w.query<int>();
     for (auto [i] : query) {
       i += 1;
     }
   };
 
-  world
-      .add_system(*sequential_system)         // final result: i = i * 2
-      .add_system(*sequential_system)         // final result: i = i * 4
-      .add_parallel_system(*parallel_system)  //
-      .add_parallel_system(*parallel_system)  //
-      .add_parallel_system(*parallel_system)  //
-      .add_parallel_system(*parallel_system)  // final result: i = 4 * i + 4
-      .add_system(*sequential_system)         // final result: i = 8 * i + 8
-      ;
+  sys::SystemManager<> systems;
 
-  world.run_systems();
+  systems.add(sys::SystemType::SEQUENTIAL,
+              *sequential_system);  // final result: i = i * 2
+  systems.add(sys::SystemType::SEQUENTIAL,
+              *sequential_system);  // final result: i = i * 4
+  systems.add(sys::SystemType::PARALLEL, *parallel_system);  //
+  systems.add(sys::SystemType::PARALLEL, *parallel_system);  //
+  systems.add(sys::SystemType::PARALLEL, *parallel_system);  //
+  systems.add(sys::SystemType::PARALLEL,
+              *parallel_system);  // final result: i = 4 * i + 4
+  systems.add(sys::SystemType::SEQUENTIAL,
+              *sequential_system);  // final result: i = 8 * i + 8
+
+  systems.run(world);
 
   std::vector<int> res;
   for (auto [v] : world.query<int>()) {
