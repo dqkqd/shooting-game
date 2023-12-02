@@ -100,6 +100,22 @@ class TableIteratorWrapper {
   TableIteratorWrapper(TableIterator<Args...> &&begin,
                        TableIterator<Args...> &&end)
       : begin_{std::move(begin)}, end_{std::move(end)} {}
+
+  TableIteratorWrapper(const TableIteratorWrapper &) = delete;
+  auto operator=(const TableIteratorWrapper &)
+      -> TableIteratorWrapper & = delete;
+
+  TableIteratorWrapper(TableIteratorWrapper &&table_iterator_wrapper) noexcept
+      : begin_{std::move(table_iterator_wrapper.begin_)},
+        end_{std::move(table_iterator_wrapper.end_)} {};
+  auto operator=(TableIteratorWrapper &&table_iterator_wrapper) noexcept
+      -> TableIteratorWrapper & {
+    begin_ = std::move(table_iterator_wrapper.begin_);
+    end_ = std::move(table_iterator_wrapper.end_);
+    return *this;
+  };
+
+  ~TableIteratorWrapper() = default;
   auto begin() -> TableIterator<Args...> { return std::move(begin_); }
   auto end() -> TableIterator<Args...> { return std::move(end_); }
 
