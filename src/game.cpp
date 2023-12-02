@@ -33,8 +33,8 @@ Game::Game(std::string&& title, int width, int height)
 
 auto Game::graphic() -> Graphic& { return graphic_; }
 
-void Game::run(World& world, sys::SystemManager<SDL_Event> event_systems,
-               sys::SystemManager<> normal_systems) {
+void Game::run(World& world, SystemManager<SDL_Event> event_systems,
+               SystemManager<> normal_systems) {
   SDL_Event e;
   bool quit = false;
   while (!quit) {

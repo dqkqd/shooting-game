@@ -2,36 +2,50 @@
 #define ECS_SYSTEM_H
 
 #include <functional>
-#include <thread>
+#include <type_traits>
+
+#include "ecs/world.h"
 
 enum class SystemType {
   SEQUENTIAL,
   PARALLEL,
 };
 
+template <typename... Args>
 struct System {
   SystemType type;
-  std::function<void()> system;
+  std::function<void(World&, std::decay_t<Args>...)> system;
 };
 
+template <typename... Args>
 class SystemManager {
  public:
-  void add(SystemType type, std::function<void()>&& system) {
-    systems_.emplace_back(System{type, std::move(system)});
+  template <typename... FuncArgs>
+  void add(SystemType type,
+           void (*system)(World&, std::decay_t<Args>..., FuncArgs&...),
+           FuncArgs&... func_args) {
+    auto system_without_func_args =
+        [&func_args..., system](World& world, std::decay_t<Args>... args) {
+          system(world, args..., func_args...);
+        };
+    systems_.emplace_back(
+        System<Args...>{type, std::move(system_without_func_args)});
   }
 
-  void run() {
+  void run(World& world, Args&... args) {
     std::size_t index = 0;
     while (index < systems_.size()) {
       if (systems_[index].type == SystemType::SEQUENTIAL) {
-        systems_[index].system();
+        systems_[index].system(world, args...);
         ++index;
       } else {
         // collect all parallel systems
         std::vector<std::thread> threads;
         while (index < systems_.size() &&
                systems_[index].type == SystemType::PARALLEL) {
-          threads.emplace_back([this, index]() { systems_[index].system(); });
+          threads.emplace_back([this, &world, index, &args...]() {
+            systems_[index].system(world, args...);
+          });
           ++index;
         }
 
@@ -44,7 +58,7 @@ class SystemManager {
   }
 
  private:
-  std::vector<System> systems_{};
+  std::vector<System<Args...>> systems_{};
 };
 
 #endif

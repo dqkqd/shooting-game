@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include "camera.h"
-#include "ecs/systems/core.h"
+#include "ecs/system.h"
 #include "ecs/world.h"
 #include "graphic.h"
 
@@ -27,8 +27,8 @@ class Game : public GameBase {
   auto graphic() -> Graphic&;
   auto camera() -> Camera&;
 
-  void run(World& world, sys::SystemManager<SDL_Event> event_systems,
-           sys::SystemManager<> normal_systems);
+  void run(World& world, SystemManager<SDL_Event> event_systems,
+           SystemManager<> normal_systems);
 
   void run_test_leak(World& world);
 

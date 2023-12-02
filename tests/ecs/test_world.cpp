@@ -1,4 +1,4 @@
-#include "ecs/systems/core.h"
+#include "ecs/system.h"
 #include "ecs/world.h"
 #include "gtest/gtest.h"
 
@@ -97,8 +97,8 @@ TEST(World, SystemOverSingleArchetype) {
   auto world = World();
   auto location = world.spawn_entity_with<int, float>(1, 1.0);
 
-  sys::SystemManager<> systems;
-  systems.add(sys::SystemType::SEQUENTIAL, test_system);
+  SystemManager<> systems;
+  systems.add(SystemType::SEQUENTIAL, test_system);
 
   systems.run(world);
   EXPECT_EQ(world.archetypes()
@@ -125,8 +125,8 @@ TEST(World, SystemAcrossMultipleArchetypes) {
     }
   };
 
-  sys::SystemManager<> systems;
-  systems.add(sys::SystemType::SEQUENTIAL, *system);
+  SystemManager<> systems;
+  systems.add(SystemType::SEQUENTIAL, *system);
 
   systems.run(world);
   EXPECT_EQ(world.archetypes()
@@ -152,8 +152,8 @@ TEST(World, WorldQueryAutoUpdateWhenArchetypeChanged) {
     }
   };
 
-  sys::SystemManager<> systems;
-  systems.add(sys::SystemType::SEQUENTIAL, *system);
+  SystemManager<> systems;
+  systems.add(SystemType::SEQUENTIAL, *system);
 
   systems.run(world);
   auto location = world.spawn_entity_with<int>(10);
@@ -202,18 +202,18 @@ TEST(World, WorldSystemsShouldRunInOrder) {
     }
   };
 
-  sys::SystemManager<> systems;
+  SystemManager<> systems;
 
-  systems.add(sys::SystemType::SEQUENTIAL,
+  systems.add(SystemType::SEQUENTIAL,
               *sequential_system);  // final result: i = i * 2
-  systems.add(sys::SystemType::SEQUENTIAL,
+  systems.add(SystemType::SEQUENTIAL,
               *sequential_system);  // final result: i = i * 4
-  systems.add(sys::SystemType::PARALLEL, *parallel_system);  //
-  systems.add(sys::SystemType::PARALLEL, *parallel_system);  //
-  systems.add(sys::SystemType::PARALLEL, *parallel_system);  //
-  systems.add(sys::SystemType::PARALLEL,
+  systems.add(SystemType::PARALLEL, *parallel_system);  //
+  systems.add(SystemType::PARALLEL, *parallel_system);  //
+  systems.add(SystemType::PARALLEL, *parallel_system);  //
+  systems.add(SystemType::PARALLEL,
               *parallel_system);  // final result: i = 4 * i + 4
-  systems.add(sys::SystemType::SEQUENTIAL,
+  systems.add(SystemType::SEQUENTIAL,
               *sequential_system);  // final result: i = 8 * i + 8
 
   systems.run(world);
