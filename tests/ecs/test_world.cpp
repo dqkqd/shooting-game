@@ -98,7 +98,7 @@ TEST(World, SystemOverSingleArchetype) {
   auto location = world.spawn_entity_with<int, float>(1, 1.0);
 
   SystemManager<> systems;
-  systems.add(SystemType::SEQUENTIAL, test_system);
+  systems.add_sequential(test_system);
 
   systems.run(world);
   EXPECT_EQ(world.archetypes()
@@ -126,7 +126,7 @@ TEST(World, SystemAcrossMultipleArchetypes) {
   };
 
   SystemManager<> systems;
-  systems.add(SystemType::SEQUENTIAL, *system);
+  systems.add_sequential(*system);
 
   systems.run(world);
   EXPECT_EQ(world.archetypes()
@@ -153,7 +153,7 @@ TEST(World, WorldQueryAutoUpdateWhenArchetypeChanged) {
   };
 
   SystemManager<> systems;
-  systems.add(SystemType::SEQUENTIAL, *system);
+  systems.add_sequential(*system);
 
   systems.run(world);
   auto location = world.spawn_entity_with<int>(10);
@@ -204,17 +204,13 @@ TEST(World, WorldSystemsShouldRunInOrder) {
 
   SystemManager<> systems;
 
-  systems.add(SystemType::SEQUENTIAL,
-              *sequential_system);  // final result: i = i * 2
-  systems.add(SystemType::SEQUENTIAL,
-              *sequential_system);  // final result: i = i * 4
-  systems.add(SystemType::PARALLEL, *parallel_system);  //
-  systems.add(SystemType::PARALLEL, *parallel_system);  //
-  systems.add(SystemType::PARALLEL, *parallel_system);  //
-  systems.add(SystemType::PARALLEL,
-              *parallel_system);  // final result: i = 4 * i + 4
-  systems.add(SystemType::SEQUENTIAL,
-              *sequential_system);  // final result: i = 8 * i + 8
+  systems.add_sequential(*sequential_system);  // final result: i = i * 2
+  systems.add_sequential(*sequential_system);  // final result: i = i * 4
+  systems.add_parallel(*parallel_system);      //
+  systems.add_parallel(*parallel_system);      //
+  systems.add_parallel(*parallel_system);      //
+  systems.add_parallel(*parallel_system);      // final result: i = 4 * i + 4
+  systems.add_sequential(*sequential_system);  // final result: i = 8 * i + 8
 
   systems.run(world);
 
