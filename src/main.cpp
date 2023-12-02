@@ -12,7 +12,8 @@ auto main() -> int {
   auto world = World();
 
   SystemManager<SDL_Event> event_systems;
-  event_systems.add_parallel(player::test_player_event);
+  event_systems.add_parallel(player::shoot_system, game.graphic().camera())
+      .add_parallel(player::assign_shoot_position);
 
   SystemManager normal_systems;
   normal_systems.add_parallel(player::animation_system)

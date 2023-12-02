@@ -13,7 +13,7 @@ auto Tick::dt() -> float { return TICK_OFFSET; }
 ProjectileMotion::ProjectileMotion(float initial_velocity,
                                    float alpha)  // NOLINT
     : vx_(initial_velocity * std::cos(alpha)),
-      vy_(-initial_velocity * std::sin(alpha)) {}
+      vy_(initial_velocity * std::sin(alpha)) {}
 
 auto ProjectileMotion::next_offset() -> Offset {
   auto dt = Tick::dt();
