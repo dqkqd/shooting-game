@@ -16,10 +16,9 @@ void shared_systems::render_system(World& world, Graphic& graphic) {
     if (shoot_position.show) {
       auto player_dest_position =
           graphic.camera().get_position_for(player_position);
-      auto px = player_dest_position.rect.x + player_dest_position.rect.w / 2;
-      auto py = player_dest_position.rect.y + player_dest_position.rect.h / 2;
-      SDL_RenderLine(graphic.renderer(), px, py, shoot_position.x,
-                     shoot_position.y);
+      auto top_right = player_dest_position.top_right();
+      SDL_RenderLine(graphic.renderer(), top_right.x, top_right.y,
+                     shoot_position.x, shoot_position.y);
     }
   }
 };
