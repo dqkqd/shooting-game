@@ -15,10 +15,20 @@ class QueryIterator {
   using pointer = std::tuple<Args*...>;
   using reference = std::tuple<Args&...>;
 
-  QueryIterator(Archetypes& archetypes,
-                std::vector<ArchetypeId>& matched_archetypes)
-      : archetypes_{archetypes}, matched_archetypes_{matched_archetypes} {
-    fetch();
+  static auto create_begin(Archetypes& archetypes,
+                           std::vector<ArchetypeId>& matched_archetypes)
+      -> QueryIterator {
+    auto query_iter = QueryIterator(archetypes, matched_archetypes);
+    query_iter.fetch();
+    return query_iter;
+  }
+
+  static auto create_end(Archetypes& archetypes,
+                         std::vector<ArchetypeId>& matched_archetypes)
+      -> QueryIterator {
+    auto query_iter = QueryIterator(archetypes, matched_archetypes);
+    query_iter.close();
+    return query_iter;
   }
 
   QueryIterator(const QueryIterator&) = delete;
@@ -77,6 +87,10 @@ class QueryIterator {
   std::vector<ArchetypeId>& matched_archetypes_;
   TableIterator<Args...> table_iter_;
   std::size_t archetype_index_{};
+
+  QueryIterator(Archetypes& archetypes,
+                std::vector<ArchetypeId>& matched_archetypes)
+      : archetypes_{archetypes}, matched_archetypes_{matched_archetypes} {}
 
   void fetch() {
     if (archetype_index_ < matched_archetypes_.size()) {

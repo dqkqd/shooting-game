@@ -3,6 +3,8 @@
 
 #include <spdlog/fmt/fmt.h>
 
+#include <mutex>
+
 #include "ecs/column/iterator.h"
 #include "ecs/counter.h"
 #include "ecs/primitive.h"
@@ -62,6 +64,8 @@ class Column {
   int layout_;
   ComponentId component_id_;
 
+  std::mutex data_mtx_;
+
   void *data_{};
   size_t size_{};
   size_t capacity_{};
@@ -117,7 +121,8 @@ auto Column::get_data(size_t row) -> std::decay_t<T> & {
 
 template <class T>
 auto Column::begin() -> ColumnIterator<T> {
-  return ColumnIterator<T>(static_cast<T *>(data_));
+  std::unique_lock<std::mutex> lock(data_mtx_);
+  return ColumnIterator<T>(std::move(lock), static_cast<T *>(data_));
 }
 
 template <class T>

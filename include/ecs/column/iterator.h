@@ -2,6 +2,7 @@
 #define ECS_COLUMN_ITERATOR_H
 
 #include <iterator>
+#include <mutex>
 #include <utility>
 
 template <class T>
@@ -14,12 +15,17 @@ class ColumnIterator {
   using reference = T &;
 
   explicit ColumnIterator(pointer ptr = nullptr) : ptr_{ptr} {}
+  explicit ColumnIterator(std::unique_lock<std::mutex> &&lock,
+                          pointer ptr = nullptr)
+      : lock_{std::move(lock)}, ptr_{ptr} {}
 
   ColumnIterator(const ColumnIterator &) = delete;
   auto operator=(const ColumnIterator &) -> ColumnIterator & = delete;
   ColumnIterator(ColumnIterator &&column_iter) noexcept
-      : ptr_{std::exchange(column_iter.ptr_, nullptr)} {};
+      : lock_{std::move(column_iter.lock_)},
+        ptr_{std::exchange(column_iter.ptr_, nullptr)} {};
   auto operator=(ColumnIterator &&column_iter) noexcept -> ColumnIterator & {
+    lock_ = std::move(column_iter.lock_);
     ptr_ = std::exchange(column_iter.ptr_, nullptr);
     return *this;
   };
@@ -42,6 +48,7 @@ class ColumnIterator {
   };
 
  private:
+  std::unique_lock<std::mutex> lock_;
   pointer ptr_;
 };
 

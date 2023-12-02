@@ -90,28 +90,36 @@ TEST_F(QueryIteratorTest, AdvanceWithMultipleArchetypes) {
 TEST_F(QueryIteratorTest, Modify) {
   QueryWrapper query =
       QueryWrapper(world.archetypes().find<int, char, TestStruct>());
-  auto iter1 = query.begin<int, char, TestStruct>(world.archetypes());
-  auto [i1, c1, t1] = *iter1;
-  i1 = 10;
-  c1 = 'x';
-  t1 = TestStruct{10};
+  {
+    auto iter1 = query.begin<int, char, TestStruct>(world.archetypes());
+    auto [i1, c1, t1] = *iter1;
+    i1 = 10;
+    c1 = 'x';
+    t1 = TestStruct{10};
+  }
 
-  auto iter2 = query.begin<int, char, TestStruct>(world.archetypes());
-  auto [i2, c2, t2] = *iter2;
-  EXPECT_EQ(i2, 10);
-  EXPECT_EQ(c2, 'x');
-  EXPECT_EQ(t2.triple(), 30);
+  {
+    auto iter2 = query.begin<int, char, TestStruct>(world.archetypes());
+    auto [i2, c2, t2] = *iter2;
+    EXPECT_EQ(i2, 10);
+    EXPECT_EQ(c2, 'x');
+    EXPECT_EQ(t2.triple(), 30);
+  }
 }
 
 TEST_F(QueryIteratorTest, ModifyWithMultipleArchetypes) {
   QueryWrapper query = QueryWrapper(world.archetypes().find<TestStruct>());
-  auto iter1 = query.begin<TestStruct>(world.archetypes());
-  auto [t1] = *iter1;
-  t1 = TestStruct{10};
+  {
+    auto iter1 = query.begin<TestStruct>(world.archetypes());
+    auto [t1] = *iter1;
+    t1 = TestStruct{10};
+  }
 
-  auto iter2 = query.begin<TestStruct>(world.archetypes());
-  auto [t2] = *iter2;
-  EXPECT_EQ(t2.triple(), 30);
+  {
+    auto iter2 = query.begin<TestStruct>(world.archetypes());
+    auto [t2] = *iter2;
+    EXPECT_EQ(t2.triple(), 30);
+  }
 }
 
 TEST_F(QueryIteratorTest, Done) {

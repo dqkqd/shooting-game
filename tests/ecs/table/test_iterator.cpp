@@ -37,16 +37,19 @@ TEST_F(TableIteratorTest, Advance) {
 }
 
 TEST_F(TableIteratorTest, Modify) {
-  auto iter = table.begin<int, float>();
+  {
+    auto iter = table.begin<int, float>();
+    auto [i, f] = *iter;
+    i = 10;
+    f = 20;
+  }
 
-  auto [i, f] = *iter;
-  i = 10;
-  f = 20;
-
-  auto iter2 = table.begin<int, float>();
-  auto [i2, f2] = *iter2;
-  EXPECT_EQ(i2, 10);
-  EXPECT_EQ(f2, 20);
+  {
+    auto iter2 = table.begin<int, float>();
+    auto [i2, f2] = *iter2;
+    EXPECT_EQ(i2, 10);
+    EXPECT_EQ(f2, 20);
+  }
 }
 
 TEST_F(TableIteratorTest, Done) {

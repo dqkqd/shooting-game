@@ -13,7 +13,6 @@ class ColumnIteratorTest : public testing::Test {
   };
 
   Column column = Column::create_column<TestStruct>();
-  ColumnIterator<TestStruct> iterator;
 
   void SetUp() override {
     column.push<TestStruct>(TestStruct{1.0});
@@ -21,39 +20,32 @@ class ColumnIteratorTest : public testing::Test {
     column.push<TestStruct>(TestStruct{3.0});
     column.push<TestStruct>(TestStruct{4.0});
     column.push<TestStruct>(TestStruct{5.0});
+  }
 
-    iterator = column.begin<TestStruct>();
+  auto begin() -> ColumnIterator<TestStruct> {
+    return column.begin<TestStruct>();
   }
 };
 
 TEST_F(ColumnIteratorTest, Dereference) {
+  auto iterator = column.begin<TestStruct>();
   EXPECT_EQ(iterator->triple(), 3.0);
   EXPECT_EQ((*iterator).triple(), 3.0);
 }
 
 TEST_F(ColumnIteratorTest, Advance) {
+  auto iterator = column.begin<TestStruct>();
   ++iterator;
   EXPECT_EQ(iterator->triple(), 6.0);
 }
 
 TEST_F(ColumnIteratorTest, Modify) {
+  auto iterator = column.begin<TestStruct>();
   EXPECT_EQ(iterator->triple(), 3.0);
   (iterator->item) += 10;
   EXPECT_EQ(iterator->triple(), 33.0);
   (*iterator).item += 10;
   EXPECT_EQ(iterator->triple(), 63.0);
-}
-
-TEST_F(ColumnIteratorTest, Comparison) {
-  // iter from the same column
-  auto new_iterator = column.begin<TestStruct>();
-  EXPECT_EQ(iterator, new_iterator);
-  EXPECT_NE(++iterator, new_iterator);
-
-  // iter from different column
-  auto other = Column::create_column<TestStruct>();
-  other.push<TestStruct>(TestStruct{1.0});
-  EXPECT_NE(other.begin<TestStruct>(), new_iterator);
 }
 
 TEST_F(ColumnIteratorTest, Loop) {

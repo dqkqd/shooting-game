@@ -57,14 +57,13 @@ class QueryWrapper {
 
   template <typename... Args>
   auto begin(Archetypes& archetypes) -> QueryIterator<Args...> {
-    return QueryIterator<Args...>(archetypes, matched_archetypes_);
+    return QueryIterator<Args...>::create_begin(archetypes,
+                                                matched_archetypes_);
   }
 
   template <typename... Args>
   auto end(Archetypes& archetypes) -> QueryIterator<Args...> {
-    auto query = QueryIterator<Args...>(archetypes, matched_archetypes_);
-    query.close();
-    return query;
+    return QueryIterator<Args...>::create_end(archetypes, matched_archetypes_);
   }
 
   void add_archetype(ArchetypeId archetype_id) {
