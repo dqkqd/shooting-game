@@ -24,7 +24,7 @@ void player::init(Graphic& graphic, World& world) {
 
   world.spawn_entity_with(std::move(texture), std::move(texture_position),
                           std::move(start_position), std::move(animation),
-                          ProjectileMotion(0, 0), ShootPosition(), IsPlayer());
+                          ProjectileMotion(0, 0), ShootPosition(), Player());
 }
 
 void player::animation_system(World& world) {
@@ -35,23 +35,44 @@ void player::animation_system(World& world) {
 }
 
 void player::moving_system(World& world) {
-  auto player_query = world.query<RenderPosition, ProjectileMotion>();
-  auto tile_query = world.query<RenderPosition, Collidable>();
-
-  for (auto [player_position, projectile_motion] : player_query) {
-    auto offset = projectile_motion.next_offset();
-
-    for (auto [tile_position, _] : tile_query) {
-      offset = player_position.closest_offset(tile_position, offset);
+  for (auto [character, player_position, projectile_motion] :
+       world.query<Player, RenderPosition, ProjectileMotion>()) {
+    if (character.status == Status::STOPPED) {
+      continue;
     }
 
+    auto offset = projectile_motion.next_offset();
+    player_position.rect.x += offset.dx;
+    player_position.rect.y += offset.dy;
+
+    auto collided = false;
+    for (auto [tile_position, _] : world.query<RenderPosition, Collidable>()) {
+      if (player_position.collide(tile_position)) {
+        collided = true;
+        break;
+      }
+    }
+
+    if (!collided) {
+      continue;
+    }
+
+    // collided, need to revert changes, find the best offset and stop moving
+    character.status = Status::STOPPED;
+    projectile_motion.reset();
+
+    player_position.rect.x -= offset.dx;
+    player_position.rect.y -= offset.dy;
+    for (auto [tile_position, _] : world.query<RenderPosition, Collidable>()) {
+      offset = player_position.closest_offset(tile_position, offset);
+    }
     player_position.rect.x += offset.dx;
     player_position.rect.y += offset.dy;
   }
 };
 
 void player::camera_system(World& world, Camera& camera) {
-  auto query = world.query<RenderPosition, IsPlayer>();
+  auto query = world.query<RenderPosition, Player>();
   for (auto [position, _] : query) {
     camera.center_to(position);
   }
@@ -59,8 +80,14 @@ void player::camera_system(World& world, Camera& camera) {
 
 void player::shoot_system(World& world, SDL_Event event, Camera& camera) {
   if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-    for (auto [player_position, projectile_motion, _] :
-         world.query<RenderPosition, ProjectileMotion, IsPlayer>()) {
+    for (auto [character, player_position, projectile_motion] :
+         world.query<Player, RenderPosition, ProjectileMotion>()) {
+      if (character.status == Status::SELF_SHOOTING) {
+        continue;
+      }
+
+      character.status = Status::SELF_SHOOTING;
+
       auto player_dest_position = camera.get_position_for(player_position);
       auto px =
           player_dest_position.rect.x + player_dest_position.rect.w / 2.0F;
@@ -75,8 +102,9 @@ void player::shoot_system(World& world, SDL_Event event, Camera& camera) {
 }
 
 void player::assign_shoot_position(World& world, SDL_Event event) {
-  for (auto [position, _] : world.query<ShootPosition, IsPlayer>()) {
-    position =
-        ShootPosition{.x = event.button.x, .y = event.button.y, .show = true};
+  for (auto [player, position] : world.query<Player, ShootPosition>()) {
+    if (player.status == Status::STOPPED) {
+      position = ShootPosition{.x = event.button.x, .y = event.button.y};
+    }
   }
 }

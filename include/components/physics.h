@@ -20,6 +20,8 @@ class ProjectileMotion {
   ProjectileMotion(float initial_velocity, float alpha);  // NOLINT
 
   auto next_offset() -> Offset;
+  [[nodiscard]] auto movable() const -> bool;
+  void reset();
 
  private:
   float vx_{};

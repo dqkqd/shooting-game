@@ -25,3 +25,9 @@ auto ProjectileMotion::next_offset() -> Offset {
 
   return {.dx = dx, .dy = dy};
 };
+
+auto ProjectileMotion::movable() const -> bool { return vx_ == 0 && vy_ == 0; }
+void ProjectileMotion::reset() {
+  vx_ = 0;
+  vy_ = 0;
+}

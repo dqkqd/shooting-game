@@ -7,12 +7,19 @@
 
 namespace player {
 
-struct IsPlayer {};
+enum class Status {
+  IDLE,
+  STOPPED,
+  SELF_SHOOTING,
+};
+
+struct Player {
+  Status status = Status::IDLE;
+};
 
 struct ShootPosition {
   float x{};
   float y{};
-  bool show = false;
 };
 
 void init(Graphic& graphic, World& world);

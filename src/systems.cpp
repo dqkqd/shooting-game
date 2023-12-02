@@ -11,9 +11,9 @@ void shared_systems::render_system(World& world, Graphic& graphic) {
   }
 
   // render player shooting position
-  for (auto [player_position, shoot_position] :
-       world.query<RenderPosition, player::ShootPosition>()) {
-    if (shoot_position.show) {
+  for (auto [character, player_position, shoot_position] :
+       world.query<player::Player, RenderPosition, player::ShootPosition>()) {
+    if (character.status == player::Status::STOPPED) {
       auto player_dest_position =
           graphic.camera().get_position_for(player_position);
       auto top_right = player_dest_position.top_right();
