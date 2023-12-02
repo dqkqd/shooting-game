@@ -59,7 +59,7 @@ TEST_F(QueryIteratorTest, Advance) {
   EXPECT_EQ(c1, 'b');
   EXPECT_EQ(t1.triple(), 6);
 
-  iter++;
+  ++iter;
   auto [i2, c2, t2] = *iter;
   EXPECT_EQ(i2, 3);
   EXPECT_EQ(c2, 'c');
@@ -74,7 +74,7 @@ TEST_F(QueryIteratorTest, AdvanceWithMultipleArchetypes) {
   auto [t1] = *iter;
   EXPECT_EQ(t1.triple(), 6);
 
-  iter++;
+  ++iter;
   auto [t2] = *iter;
   EXPECT_EQ(t2.triple(), 9);
 
@@ -82,7 +82,7 @@ TEST_F(QueryIteratorTest, AdvanceWithMultipleArchetypes) {
   auto [t3] = *iter;
   EXPECT_EQ(t3.triple(), 12);
 
-  iter++;
+  ++iter;
   auto [t4] = *iter;
   EXPECT_EQ(t4.triple(), 15);
 }

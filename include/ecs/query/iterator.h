@@ -28,12 +28,6 @@ class QueryIterator {
     return *this;
   }
 
-  auto operator++(int) -> QueryIterator {
-    QueryIterator tmp = *this;
-    advance();
-    return tmp;
-  }
-
   [[nodiscard]] auto done() const -> bool {
     if (archetype_index_ >= matched_archetypes_.size()) {
       return true;
