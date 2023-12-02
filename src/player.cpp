@@ -31,12 +31,10 @@ void player::animation_system(Query<TexturePosition, TextureAnimation> query) {
 }
 
 void player::moving_system(World& world) {
-  auto player_query =
-      world.query<TexturePosition, RenderPosition, ProjectileMotion>();
+  auto player_query = world.query<RenderPosition, ProjectileMotion>();
   auto tile_query = world.query<RenderPosition, Collidable>();
 
-  for (auto [player_texture_position, player_position, projectile_motion] :
-       player_query) {
+  for (auto [player_position, projectile_motion] : player_query) {
     auto offset = projectile_motion.next_offset();
 
     for (auto [tile_position, _] : tile_query) {
