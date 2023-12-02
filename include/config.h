@@ -12,8 +12,8 @@ constexpr float PIXEL_FLOAT_OFFSET = 1e-5;
 constexpr int CAMERA_WIDTH = GAME_WIDTH;
 constexpr int CAMERA_HEIGHT = GAME_HEIGHT;
 
-constexpr int LEVEL_WIDTH = 1200;
-constexpr int LEVEL_HEIGHT = 1200;
+constexpr int LEVEL_WIDTH = 64 * 16;
+constexpr int LEVEL_HEIGHT = 40 * 16;
 
 /* assets constants */
 constexpr char const* ASSETS_CONFIG_FOLDER = "assets/config/";
