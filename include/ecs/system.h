@@ -20,16 +20,16 @@ class SystemManager {
 
  public:
   template <typename... FuncArgs>
-  void add_sequential(void (*system)(World&, std::decay_t<Args>...,
+  auto add_sequential(void (*system)(World&, std::decay_t<Args>...,
                                      FuncArgs&...),
-                      FuncArgs&... func_args) {
-    add(SystemType::SEQUENTIAL, system, func_args...);
+                      FuncArgs&... func_args) -> SystemManager& {
+    return add(SystemType::SEQUENTIAL, system, func_args...);
   }
 
   template <typename... FuncArgs>
-  void add_parallel(void (*system)(World&, std::decay_t<Args>..., FuncArgs&...),
-                    FuncArgs&... func_args) {
-    add(SystemType::PARALLEL, system, func_args...);
+  auto add_parallel(void (*system)(World&, std::decay_t<Args>..., FuncArgs&...),
+                    FuncArgs&... func_args) -> SystemManager& {
+    return add(SystemType::PARALLEL, system, func_args...);
   }
 
   void run(World& world, Args&... args) {
@@ -61,14 +61,15 @@ class SystemManager {
   std::vector<System> systems_{};
 
   template <typename... FuncArgs>
-  void add(SystemType type,
+  auto add(SystemType type,
            void (*system)(World&, std::decay_t<Args>..., FuncArgs&...),
-           FuncArgs&... func_args) {
+           FuncArgs&... func_args) -> SystemManager& {
     auto system_without_func_args =
         [&func_args..., system](World& world, std::decay_t<Args>... args) {
           system(world, args..., func_args...);
         };
     systems_.emplace_back(System{type, std::move(system_without_func_args)});
+    return *this;
   }
 };
 
