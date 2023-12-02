@@ -187,3 +187,57 @@ TEST_F(QueryIteratorTest, NoResultFound) {
   }
   EXPECT_TRUE(ds.empty());
 }
+
+TEST_F(QueryIteratorTest, MultipleThreadingTest) {
+  QueryWrapper query_int = QueryWrapper(world.archetypes().find<int>());
+  QueryWrapper query_test_struct =
+      QueryWrapper(world.archetypes().find<TestStruct>());
+  QueryWrapper query_int_and_test_struct =
+      QueryWrapper(world.archetypes().find<int, TestStruct>());
+
+  std::vector<std::thread> threads;
+  threads.reserve(30);
+
+  // modify int
+  for (int i = 0; i < 10; ++i) {
+    threads.emplace_back([&query_int, this]() {
+      for (auto [u] : query_int.query<int>(world.archetypes())) {
+        u += 1;
+      }
+    });
+  }
+
+  // modify test struct
+  for (int i = 0; i < 10; ++i) {
+    threads.emplace_back([&query_test_struct, this]() {
+      for (auto [u] : query_test_struct.query<TestStruct>(world.archetypes())) {
+        u.item += 1;
+      }
+    });
+  }
+
+  // modify both
+  for (int i = 0; i < 10; ++i) {
+    threads.emplace_back([&query_int_and_test_struct, this]() {
+      for (auto [u, v] : query_int_and_test_struct.query<int, TestStruct>(
+               world.archetypes())) {
+        u += 1;
+        v.item += 1;
+      }
+    });
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  std::vector<int> is;
+  std::vector<float> fs;
+  for (auto [u, v] :
+       query_int_and_test_struct.query<int, TestStruct>(world.archetypes())) {
+    is.push_back(u);
+    fs.push_back(v.item);
+  }
+  EXPECT_EQ(is, std::vector({21, 22, 23, 24}));
+  EXPECT_EQ(fs, std::vector({21.0F, 22.0F, 23.0F, 24.0F}));
+}

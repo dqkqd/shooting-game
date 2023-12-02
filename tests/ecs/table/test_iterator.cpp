@@ -69,3 +69,49 @@ TEST_F(TableIteratorTest, Loop) {
   EXPECT_EQ(is, std::vector({1, 3}));
   EXPECT_EQ(fs, std::vector({2.0F, 4.0F}));
 }
+
+TEST_F(TableIteratorTest, MultipleThreadTest) {
+  std::vector<std::thread> threads;
+  threads.reserve(30);
+
+  // modify int
+  for (int i = 0; i < 10; ++i) {
+    threads.emplace_back([this]() {
+      for (auto [u] : table.iter<int>()) {
+        u += 1;
+      }
+    });
+  }
+
+  // modify float
+  for (int i = 0; i < 10; ++i) {
+    threads.emplace_back([this]() {
+      for (auto [u] : table.iter<float>()) {
+        u += 1;
+      }
+    });
+  }
+
+  // modify both
+  for (int i = 0; i < 10; ++i) {
+    threads.emplace_back([this]() {
+      for (auto [u, v] : table.iter<int, float>()) {
+        u += 1;
+        v += 1;
+      }
+    });
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  std::vector<int> is;
+  std::vector<float> fs;
+  for (auto [u, v] : table.iter<int, float>()) {
+    is.push_back(u);
+    fs.push_back(v);
+  }
+  EXPECT_EQ(is, std::vector({21, 23}));
+  EXPECT_EQ(fs, std::vector({22.0F, 24.0F}));
+}

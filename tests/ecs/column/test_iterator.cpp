@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <thread>
+
 #include "ecs/column/column.h"
 #include "ecs/column/iterator.h"
 
@@ -54,4 +56,27 @@ TEST_F(ColumnIteratorTest, Loop) {
     sum += it.triple();
   }
   EXPECT_EQ(sum, 45.0);
+}
+
+TEST_F(ColumnIteratorTest, MultipleThreadTest) {
+  std::vector<std::thread> threads;
+  threads.reserve(10);
+
+  for (int i = 0; i < 10; ++i) {
+    threads.emplace_back([this]() {
+      for (auto& it : column.iter<TestStruct>()) {
+        it.item += 1;
+      }
+    });
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  std::vector<float> items;
+  for (auto& it : column.iter<TestStruct>()) {
+    items.push_back(it.item);
+  }
+  EXPECT_EQ(items, std::vector({11.0F, 12.0F, 13.0F, 14.0F, 15.0F}));
 }
