@@ -26,8 +26,12 @@ struct RenderPosition {
 
   [[nodiscard]] auto collide(const RenderPosition& position) const -> bool;
 
+  [[nodiscard]] auto closest_x_offset(const RenderPosition& position,
+                                      float target) const -> float;
+  [[nodiscard]] auto closest_y_offset(const RenderPosition& position,
+                                      float target) const -> float;
   [[nodiscard]] auto closest_offset(const RenderPosition& position,
-                                    const Offset& target) -> Offset;
+                                    const Offset& target) const -> Offset;
 
  private:
   [[nodiscard]] auto find_closest_offset_one_direction(

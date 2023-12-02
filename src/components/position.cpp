@@ -32,21 +32,28 @@
                      });
 }
 
-[[nodiscard]] auto RenderPosition::closest_offset(
-    const RenderPosition& position, const Offset& target) -> Offset {
-  auto closest_dx = find_closest_offset_one_direction(
-      position, target.dx, [](auto current_position, auto value) {
+[[nodiscard]] auto RenderPosition::closest_x_offset(
+    const RenderPosition& position, float target) const -> float {
+  return find_closest_offset_one_direction(
+      position, target, [](auto current_position, auto value) {
         current_position.rect.x += value;
         return current_position;
       });
+}
 
-  auto closest_dy = find_closest_offset_one_direction(
-      position, target.dy, [](auto current_position, auto value) {
+[[nodiscard]] auto RenderPosition::closest_y_offset(
+    const RenderPosition& position, float target) const -> float {
+  return find_closest_offset_one_direction(
+      position, target, [](auto current_position, auto value) {
         current_position.rect.y += value;
         return current_position;
       });
+}
 
-  return {.dx = closest_dx, .dy = closest_dy};
+[[nodiscard]] auto RenderPosition::closest_offset(
+    const RenderPosition& position, const Offset& target) const -> Offset {
+  return {.dx = closest_x_offset(position, target.dx),
+          .dy = closest_y_offset(position, target.dy)};
 }
 
 auto RenderPosition::find_closest_offset_one_direction(
