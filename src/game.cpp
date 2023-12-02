@@ -33,6 +33,27 @@ Game::Game(std::string&& title, int width, int height)
 
 auto Game::graphic() -> Graphic& { return graphic_; }
 
+void Game::run(World& world, sys::SystemManager<SDL_Event> event_systems,
+               sys::SystemManager<> normal_systems) {
+  SDL_Event e;
+  bool quit = false;
+  while (!quit) {
+    while (SDL_PollEvent(&e) != 0U) {
+      if (e.type == SDL_EVENT_QUIT) {
+        quit = true;
+      }
+      event_systems.run(world, e);
+    }
+
+    SDL_SetRenderDrawColor(graphic_.renderer(), 0, 0, 0, 255);
+    SDL_RenderClear(graphic_.renderer());
+
+    normal_systems.run(world);
+
+    SDL_RenderPresent(graphic_.renderer());
+  }
+}
+
 void Game::run_test_leak(World& world) {
   for (int i = 0; i < 10000; ++i) {
     SDL_SetRenderDrawColor(graphic().renderer(), 0, 0, 0, 255);
