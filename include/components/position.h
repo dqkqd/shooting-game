@@ -24,6 +24,9 @@ struct RenderPosition {
   [[nodiscard]] auto bot_right() const -> SDL_FPoint;
   [[nodiscard]] auto points() const -> std::array<SDL_FPoint, 4>;
 
+  [[nodiscard]] auto with_x(float x) const -> RenderPosition;
+  [[nodiscard]] auto with_y(float y) const -> RenderPosition;
+
   [[nodiscard]] auto collide(const RenderPosition& position) const -> bool;
 
   [[nodiscard]] auto closest_x_offset(const RenderPosition& position,

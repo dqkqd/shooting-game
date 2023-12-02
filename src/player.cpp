@@ -52,15 +52,11 @@ void player::moving_system(World& world) {
 
     auto offset = projectile_motion.next_offset();
 
-    // checking y direction collision
-    player_position.rect.y += offset.dy;
-    auto collided_y = is_collided(player_position);
-    player_position.rect.y -= offset.dy;
-
-    // checking x direction collision
-    player_position.rect.x += offset.dx;
-    auto collided_x = is_collided(player_position);
-    player_position.rect.x -= offset.dx;
+    // checking collisions
+    auto collided_x =
+        is_collided(player_position.with_x(player_position.rect.x + offset.dx));
+    auto collided_y =
+        is_collided(player_position.with_y(player_position.rect.y + offset.dy));
 
     if (collided_x || collided_y) {
       for (auto [tile_position, _] :

@@ -23,6 +23,13 @@
   return {top_left(), top_right(), bot_left(), bot_right()};
 }
 
+[[nodiscard]] auto RenderPosition::with_x(float x) const -> RenderPosition {
+  return {x, rect.y, rect.w, rect.h};
+}
+[[nodiscard]] auto RenderPosition::with_y(float y) const -> RenderPosition {
+  return {rect.x, y, rect.w, rect.h};
+}
+
 [[nodiscard]] auto RenderPosition::collide(const RenderPosition& position) const
     -> bool {
   auto edge_points = points();
@@ -36,8 +43,7 @@
     const RenderPosition& position, float target) const -> float {
   return find_closest_offset_one_direction(
       position, target, [](auto current_position, auto value) {
-        current_position.rect.x += value;
-        return current_position;
+        return current_position.with_x(current_position.rect.x + value);
       });
 }
 
@@ -45,8 +51,7 @@
     const RenderPosition& position, float target) const -> float {
   return find_closest_offset_one_direction(
       position, target, [](auto current_position, auto value) {
-        current_position.rect.y += value;
-        return current_position;
+        return current_position.with_y(current_position.rect.y + value);
       });
 }
 
