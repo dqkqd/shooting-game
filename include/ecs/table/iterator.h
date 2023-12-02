@@ -22,6 +22,22 @@ class TableIterator {
         max_rows_{max_rows},
         iters_(std::make_tuple(column_iters...)) {}
 
+  TableIterator(const TableIterator &) = delete;
+  auto operator=(const TableIterator &) -> TableIterator & = delete;
+
+  TableIterator(TableIterator &&table_iter) noexcept
+      : current_row_{table_iter.current_row_},
+        max_rows_{table_iter.max_rows_},
+        iters_{std::move(table_iter.iters_)} {};
+  auto operator=(TableIterator &&table_iter) noexcept -> TableIterator & {
+    current_row_ = table_iter.current_row_;
+    max_rows_ = table_iter.max_rows_;
+    iters_ = std::move(table_iter.iters_);
+    return *this;
+  };
+
+  ~TableIterator() = default;
+
   [[nodiscard]] auto done() const -> bool { return current_row_ == max_rows_; }
 
   auto operator*() -> reference { return dereference(); }
@@ -81,10 +97,11 @@ class TableIterator {
 template <class... Args>
 class TableIteratorWrapper {
  public:
-  TableIteratorWrapper(TableIterator<Args...> begin, TableIterator<Args...> end)
-      : begin_{begin}, end_{end} {}
-  auto begin() -> TableIterator<Args...> { return begin_; }
-  auto end() -> TableIterator<Args...> { return end_; }
+  TableIteratorWrapper(TableIterator<Args...> &&begin,
+                       TableIterator<Args...> &&end)
+      : begin_{std::move(begin)}, end_{std::move(end)} {}
+  auto begin() -> TableIterator<Args...> { return std::move(begin_); }
+  auto end() -> TableIterator<Args...> { return std::move(end_); }
 
  private:
   TableIterator<Args...> begin_;
