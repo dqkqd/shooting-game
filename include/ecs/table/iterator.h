@@ -17,10 +17,10 @@ class TableIterator {
   TableIterator() = default;
   explicit TableIterator(std::size_t current_row,  // NOLINT
                          std::size_t max_rows,
-                         ColumnIterator<Args>... column_iters)
+                         ColumnIterator<Args> &&...column_iters)
       : current_row_{current_row},
         max_rows_{max_rows},
-        iters_(std::make_tuple(column_iters...)) {}
+        iters_(std::make_tuple(std::move(column_iters)...)) {}
 
   TableIterator(const TableIterator &) = delete;
   auto operator=(const TableIterator &) -> TableIterator & = delete;

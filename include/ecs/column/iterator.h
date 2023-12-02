@@ -2,6 +2,7 @@
 #define ECS_COLUMN_ITERATOR_H
 
 #include <iterator>
+#include <utility>
 
 template <class T>
 class ColumnIterator {
@@ -13,6 +14,16 @@ class ColumnIterator {
   using reference = T &;
 
   explicit ColumnIterator(pointer ptr = nullptr) : ptr_{ptr} {}
+
+  ColumnIterator(const ColumnIterator &) = delete;
+  auto operator=(const ColumnIterator &) -> ColumnIterator & = delete;
+  ColumnIterator(ColumnIterator &&column_iter) noexcept
+      : ptr_{std::exchange(column_iter.ptr_, nullptr)} {};
+  auto operator=(ColumnIterator &&column_iter) noexcept -> ColumnIterator & {
+    ptr_ = std::exchange(column_iter.ptr_, nullptr);
+    return *this;
+  };
+  ~ColumnIterator() = default;
 
   auto operator*() const -> reference { return *ptr_; }
   auto operator->() -> pointer { return ptr_; }
@@ -37,10 +48,10 @@ class ColumnIterator {
 template <class T>
 class ColumnIteratorWrapper {
  public:
-  ColumnIteratorWrapper(ColumnIterator<T> begin, ColumnIterator<T> end)
-      : begin_{begin}, end_{end} {}
-  auto begin() -> ColumnIterator<T> { return begin_; }
-  auto end() -> ColumnIterator<T> { return end_; }
+  ColumnIteratorWrapper(ColumnIterator<T> &&begin, ColumnIterator<T> &&end)
+      : begin_{std::move(begin)}, end_{std::move(end)} {}
+  auto begin() -> ColumnIterator<T> { return std::move(begin_); }
+  auto end() -> ColumnIterator<T> { return std::move(end_); }
 
  private:
   ColumnIterator<T> begin_;
