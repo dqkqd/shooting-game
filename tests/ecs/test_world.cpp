@@ -1,3 +1,4 @@
+#include "ecs/query/query.h"
 #include "ecs/world.h"
 #include "gtest/gtest.h"
 
@@ -172,4 +173,40 @@ TEST(World, GetQuery) {
   }
 
   EXPECT_EQ(res, std::vector({1, 2}));
+}
+
+TEST(World, WorldSystemsShouldRunInOrder) {
+  auto world = World();
+  world.spawn_entity_with<int>(1);
+  world.spawn_entity_with<int>(2);
+
+  auto sequential_system = [](Query<int> query) {
+    for (auto [i] : query) {
+      i *= 2;
+    }
+  };
+  auto parallel_system = [](Query<int> query) {
+    for (auto [i] : query) {
+      i += 1;
+    }
+  };
+
+  world
+      .add_system(*sequential_system)         // final result: i = i * 2
+      .add_system(*sequential_system)         // final result: i = i * 4
+      .add_parallel_system(*parallel_system)  //
+      .add_parallel_system(*parallel_system)  //
+      .add_parallel_system(*parallel_system)  //
+      .add_parallel_system(*parallel_system)  // final result: i = 4 * i + 4
+      .add_system(*sequential_system)         // final result: i = 8 * i + 8
+      ;
+
+  world.run_systems();
+
+  std::vector<int> res;
+  for (auto [v] : world.query<int>()) {
+    res.push_back(v);
+  }
+
+  EXPECT_EQ(res, std::vector({16, 24}));
 }
