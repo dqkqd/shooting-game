@@ -1,0 +1,39 @@
+{
+  "graphic": {
+    "width": 800,
+    "height": 640,
+    "pixelOffset": 1e-5
+  },
+  "level": {
+    "width": 1024,
+    "height": 640
+  },
+  "camera": {
+    "width": 800,
+    "height": 640
+  },
+  "physics": {
+    "gravity": 30,
+    "dt": 0.01666666666
+  },
+  "assets": {
+    "folder": "assets",
+    "config": {
+      "folder": "config"
+    },
+    "images": {
+      "folder": "pixel_adventure_assets"
+    }
+  },
+  "tileMap": {
+    "background": "background.json",
+    "collidable": ["Terrain"]
+  },
+  "player": {
+    "image": "Enemies/Turtle/Idle 2 (44x26).png",
+    "totalSprites": 14,
+    "framesDelay": 3,
+    "width": 44,
+    "height": 26
+  }
+}

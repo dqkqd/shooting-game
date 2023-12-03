@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow -Wstrict-overflow
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY config.json DESTINATION ${CMAKE_BINARY_DIR})
 
 add_subdirectory(src)
 
