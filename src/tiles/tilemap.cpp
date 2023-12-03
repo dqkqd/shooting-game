@@ -1,12 +1,13 @@
 #include "tiles/tilemap.h"
 
 #include "components/physics.h"
+#include "config.h"
 #include "services/texture.h"
 
 TileSet::TileSet(parser::TileSetInMap data) : data_{std::move(data)} {};
 
 void TileSet::init(Graphic& graphic) {
-  auto source = ASSETS_CONFIG_FOLDER + data_.tile_set.image;
+  auto source = GameConfig::data().assets.config_folder / data_.tile_set.image;
   texture_ = TextureManager::add_from_file_unchecked(graphic.renderer(),
                                                      source.c_str());
 }
@@ -15,7 +16,7 @@ auto TileSet::texture() -> SDL_Texture* { return texture_; }
 auto TileSet::data() -> parser::TileSetInMap { return data_; }
 
 auto TileSet::collidable() const -> bool {
-  return COLLIDABLE_TILESETS.count(data_.tile_set.name) > 0;
+  return GameConfig::data().tile_map.collidable.count(data_.tile_set.name) > 0;
 }
 
 auto TileSet::texture_position(int index) const -> TexturePosition {

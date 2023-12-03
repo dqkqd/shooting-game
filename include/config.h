@@ -1,37 +1,117 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <fstream>
+#include <nlohmann/json.hpp>
 #include <set>
 #include <string>
 
-/* game constants */
-constexpr int GAME_WIDTH = 800;
-constexpr int GAME_HEIGHT = 640;
-constexpr float PIXEL_FLOAT_OFFSET = 1e-5;
+using json = nlohmann::json;
 
-constexpr int CAMERA_WIDTH = GAME_WIDTH;
-constexpr int CAMERA_HEIGHT = GAME_HEIGHT;
+namespace config {
 
-constexpr int LEVEL_WIDTH = 64 * 16;
-constexpr int LEVEL_HEIGHT = 40 * 16;
+struct Graphic {
+  int width;
+  int height;
+  float pixel_offset;
+};
 
-/* assets constants */
-constexpr char const* ASSETS_CONFIG_FOLDER = "assets/config/";
-constexpr char const* BACKGROUND_CONFIG_TILEMAP =
-    "assets/config/background.json";
+struct Level {
+  int width;
+  int height;
+};
 
-/* player constants */
-constexpr char const* PLAYER_IMAGE =
-    "assets/pixel_adventure_assets/Enemies/Slime/Idle-Run (44x30).png";
-constexpr int PLAYER_TOTAL_SPRITES = 10;
-constexpr int PLAYER_FRAMES_DELAY = 3;
-constexpr int PLAYER_SPRITE_WIDTH = 44;
-constexpr int PLAYER_SPRITE_HEIGHT = 30;
+struct Camera {
+  int width;
+  int height;
+};
 
-/* physics constants */
-constexpr float PHYSIC_SCALE = 10000;
-constexpr float DEFAULT_GRAVITY = 9.8;
-constexpr float TICK_OFFSET = 1.0 / 60;
+struct Physics {
+  float gravity;
+  float dt;
+};
 
-const std::set<std::string> COLLIDABLE_TILESETS{"Terrain"};  // NOLINT
+struct Assets {
+  std::filesystem::path folder;
+  std::filesystem::path config_folder;
+  std::filesystem::path images_folder;
+};
+
+struct TileMap {
+  std::filesystem::path background;
+  std::set<std::string> collidable;
+};
+
+struct Player {
+  std::filesystem::path image;
+  int total_sprites;
+  int frames_delay;
+  int width;
+  int height;
+};
+
+struct Game {
+  Graphic graphic{};
+  Level level{};
+  Camera camera{};
+  Physics physics{};
+  Assets assets;
+  TileMap tile_map;
+  Player player;
+
+  static auto from_config(const char* file) -> Game;
+};
+
+inline void from_json(const json& j, Game& game) {
+  j["graphic"]["width"].get_to(game.graphic.width);
+  j["graphic"]["height"].get_to(game.graphic.height);
+  j["graphic"]["pixelOffset"].get_to(game.graphic.pixel_offset);
+
+  j["level"]["width"].get_to(game.level.width);
+  j["level"]["height"].get_to(game.level.height);
+
+  j["camera"]["width"].get_to(game.camera.width);
+  j["camera"]["height"].get_to(game.camera.height);
+
+  j["physics"]["gravity"].get_to(game.physics.gravity);
+  j["physics"]["dt"].get_to(game.physics.dt);
+
+  j["assets"]["folder"].get_to(game.assets.folder);
+  game.assets.config_folder =
+      game.assets.folder / j["assets"]["config"]["folder"];
+  game.assets.images_folder =
+      game.assets.folder / j["assets"]["images"]["folder"];
+
+  game.tile_map.background =
+      game.assets.config_folder / j["tileMap"]["background"];
+  j["tileMap"]["collidable"].get_to(game.tile_map.collidable);
+
+  game.player.image = game.assets.images_folder / j["player"]["image"];
+  j["player"]["totalSprites"].get_to(game.player.total_sprites);
+  j["player"]["framesDelay"].get_to(game.player.frames_delay);
+  j["player"]["width"].get_to(game.player.width);
+  j["player"]["height"].get_to(game.player.height);
+}
+
+};  // namespace config
+
+class GameConfig {
+ public:
+  GameConfig(const GameConfig&) = delete;
+  GameConfig(GameConfig&&) = delete;
+  auto operator=(const GameConfig&) -> GameConfig& = delete;
+  auto operator=(GameConfig&&) -> GameConfig& = delete;
+  ~GameConfig() = delete;
+
+  static auto data() -> config::Game& {
+    std::ifstream f(CONFIG_FILE);
+    auto parsed = json::parse(f);
+    static config::Game instance = parsed.template get<config::Game>();
+
+    return instance;
+  }
+
+ private:
+  static constexpr const char* const CONFIG_FILE = "config.json";
+};
 #endif

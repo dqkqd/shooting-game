@@ -8,7 +8,7 @@ auto Tick::next_tick() -> float {
   tick_ += dt();
   return tick_;
 }
-auto Tick::dt() -> float { return TICK_OFFSET; }
+auto Tick::dt() -> float { return GameConfig::data().physics.dt; }
 
 ProjectileMotion::ProjectileMotion(float initial_velocity,
                                    float alpha)  // NOLINT

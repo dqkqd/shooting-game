@@ -10,8 +10,12 @@ void Camera::center_to(const RenderPosition& position) {
   pos_.x = position.rect.x + position.rect.w / 2.0F - pos_.w / 2.0F;
   pos_.y = position.rect.y + position.rect.h / 2.0F - pos_.h / 2.0F;
 
-  pos_.x = std::clamp(pos_.x, 0.0F, static_cast<float>(LEVEL_WIDTH - pos_.w));
-  pos_.y = std::clamp(pos_.y, 0.0F, static_cast<float>(LEVEL_HEIGHT - pos_.h));
+  pos_.x =
+      std::clamp(pos_.x, 0.0F,
+                 static_cast<float>(GameConfig::data().level.width) - pos_.w);
+  pos_.y =
+      std::clamp(pos_.y, 0.0F,
+                 static_cast<float>(GameConfig::data().level.height) - pos_.h);
 }
 
 auto Camera::get_position_for(const RenderPosition& position) const

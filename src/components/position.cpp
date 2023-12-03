@@ -69,7 +69,7 @@ auto RenderPosition::find_closest_offset_one_direction(
    * search */
   float start = 0;
   float end = good;
-  while (std::abs(start - end) > PIXEL_FLOAT_OFFSET) {
+  while (std::abs(start - end) > GameConfig::data().graphic.pixel_offset) {
     float mid = (start + end) / 2;
     auto next_position = next_position_func(*this, mid);
     if (next_position.collide(position)) {

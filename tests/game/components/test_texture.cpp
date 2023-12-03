@@ -27,7 +27,8 @@ TEST(TextureManager, Add) {
 TEST(TextureManager, AddFromFile) {
   auto *renderer = SDLEnvironment::renderer();
 
-  auto texture = TextureManager::add_from_file(renderer, PLAYER_IMAGE);
+  auto texture = TextureManager::add_from_file(
+      renderer, GameConfig::data().player.image.c_str());
   EXPECT_TRUE(texture.has_value());
 
   auto invalid_texture =
@@ -38,17 +39,20 @@ TEST(TextureManager, AddFromFile) {
 TEST(TextureManager, Get) {
   auto *renderer = SDLEnvironment::renderer();
 
-  auto texture = TextureManager::add_from_file(renderer, PLAYER_IMAGE);
+  auto texture = TextureManager::add_from_file(
+      renderer, GameConfig::data().player.image.c_str());
   EXPECT_TRUE(texture.has_value());
 
-  EXPECT_TRUE(TextureManager::get(PLAYER_IMAGE).has_value());
+  EXPECT_TRUE(
+      TextureManager::get(GameConfig::data().player.image.c_str()).has_value());
   EXPECT_FALSE(TextureManager::get("Invalid key").has_value());
 }
 
 TEST(TextureManager, Clear) {
   auto *renderer = SDLEnvironment::renderer();
 
-  TextureManager::add_from_file(renderer, PLAYER_IMAGE);
+  TextureManager::add_from_file(renderer,
+                                GameConfig::data().player.image.c_str());
   EXPECT_NE(TextureManager::size(), 0);
   TextureManager::clear();
   EXPECT_EQ(TextureManager::size(), 0);

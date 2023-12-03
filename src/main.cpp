@@ -7,7 +7,8 @@
 #include "tiles/tilemap.h"
 
 auto main() -> int {
-  auto game = Game("Hello", GAME_WIDTH, GAME_HEIGHT);
+  auto game = Game("Hello", GameConfig::data().graphic.width,
+                   GameConfig::data().graphic.height);
 
   auto world = World();
 
@@ -21,7 +22,7 @@ auto main() -> int {
       .add_sequential(player::camera_system, game.graphic().camera())
       .add_sequential(shared_systems::render_system, game.graphic());
 
-  TileMap tile_map(BACKGROUND_CONFIG_TILEMAP);
+  TileMap tile_map(GameConfig::data().tile_map.background.c_str());
   tile_map.init(game.graphic(), world);
 
   player::init(game.graphic(), world);

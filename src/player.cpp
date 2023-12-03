@@ -4,23 +4,29 @@
 #include "components/animation.h"
 #include "components/physics.h"
 #include "components/position.h"
+#include "config.h"
 #include "services/texture.h"
 
 void player::init(Graphic& graphic, World& world) {
-  auto* texture =
-      TextureManager::add_from_file_unchecked(graphic.renderer(), PLAYER_IMAGE);
+  auto* texture = TextureManager::add_from_file_unchecked(
+      graphic.renderer(), GameConfig::data().player.image.c_str());
   auto texture_size = get_texture_size(texture);
 
-  auto player_width = texture_size.w / PLAYER_TOTAL_SPRITES;
+  auto player_width =
+      texture_size.w /
+      static_cast<float>(GameConfig::data().player.total_sprites);
   auto player_height = texture_size.h;
 
-  auto animation = TextureAnimation(PLAYER_FRAMES_DELAY, player_width,
-                                    player_height, PLAYER_TOTAL_SPRITES);
+  auto animation =
+      TextureAnimation(GameConfig::data().player.frames_delay, player_width,
+                       player_height, GameConfig::data().player.total_sprites);
   auto texture_position = animation.next_position();
 
-  auto start_position =
-      RenderPosition{(GAME_WIDTH - player_width) / 5.0F,
-                     GAME_HEIGHT * 2.0F / 3.0F, player_width, player_height};
+  auto start_position = RenderPosition{
+      (static_cast<float>(GameConfig::data().graphic.width) - player_width) /
+          5.0F,
+      static_cast<float>(GameConfig::data().graphic.height) * 2.0F / 3.0F,
+      player_width, player_height};
 
   world.spawn_entity_with(std::move(texture), std::move(texture_position),
                           std::move(start_position), std::move(animation),

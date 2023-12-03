@@ -31,6 +31,6 @@ class ProjectileMotion {
   float vy_{};
   Tick tick_{};
 
-  float g_ = DEFAULT_GRAVITY;
+  float g_ = GameConfig::data().physics.gravity;
 };
 #endif
