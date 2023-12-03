@@ -1,6 +1,7 @@
 
 #include "config.h"
 #include "ecs/system.h"
+#include "enemy/rhino.h"
 #include "game.h"
 #include "player/player.h"
 #include "player/shooter.h"
@@ -27,6 +28,7 @@ auto main() -> int {
   tile_map.init(world, game.graphic());
 
   Player::init(world, game.graphic());
+  Rhino::init(world, game.graphic());
 
   game.run(world, event_systems, normal_systems);
 

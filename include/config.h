@@ -42,12 +42,26 @@ struct TileMap {
   std::set<std::string> collidable;
 };
 
-struct Player {
+struct Character {
   std::filesystem::path image;
   int total_sprites;
   int frames_delay;
   int width;
   int height;
+};
+
+using Player = Character;
+
+struct Position {
+  int x;
+  int y;
+};
+struct EnemyCharacter : public Character {
+  std::vector<Position> positions;
+};
+
+struct Enemy {
+  EnemyCharacter rhino;
 };
 
 struct Game {
@@ -58,6 +72,8 @@ struct Game {
   Assets assets;
   TileMap tile_map;
   Player player;
+
+  Enemy enemy;
 
   static auto from_config(const char* file) -> Game;
 };
@@ -91,6 +107,16 @@ inline void from_json(const json& j, Game& game) {
   j["player"]["framesDelay"].get_to(game.player.frames_delay);
   j["player"]["width"].get_to(game.player.width);
   j["player"]["height"].get_to(game.player.height);
+
+  game.enemy.rhino.image =
+      game.assets.images_folder / j["enemy"]["rhino"]["image"];
+  j["enemy"]["rhino"]["totalSprites"].get_to(game.enemy.rhino.total_sprites);
+  j["enemy"]["rhino"]["framesDelay"].get_to(game.enemy.rhino.frames_delay);
+  j["enemy"]["rhino"]["width"].get_to(game.enemy.rhino.width);
+  j["enemy"]["rhino"]["height"].get_to(game.enemy.rhino.height);
+  for (const auto& elem : j["enemy"]["rhino"]["positions"]) {
+    game.enemy.rhino.positions.emplace_back(Position{elem["x"], elem["y"]});
+  }
 }
 
 };  // namespace config

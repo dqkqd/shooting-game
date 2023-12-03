@@ -35,5 +35,18 @@
     "framesDelay": 3,
     "width": 44,
     "height": 26
+  },
+  "enemy": {
+    "rhino": {
+      "image": "Enemies/Rino/Run (52x34).png",
+      "totalSprites": 6,
+      "framesDelay": 3,
+      "width": 52,
+      "height": 34,
+      "positions": [
+        { "x": 832, "y": 463 },
+        { "x": 1264, "y": 271 }
+      ]
+    }
   }
 }
