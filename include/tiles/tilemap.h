@@ -25,7 +25,7 @@ class TileMap {
  public:
   explicit TileMap(const char* file);
 
-  void init(Graphic& graphic, World& world);
+  void init(World& world, Graphic& graphic);
   [[nodiscard]] auto render_position(int x, int y) const -> RenderPosition;
 
  private:

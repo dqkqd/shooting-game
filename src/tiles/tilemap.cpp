@@ -38,7 +38,7 @@ TileMap::TileMap(const char* file) {
   }
 }
 
-void TileMap::init(Graphic& graphic, World& world) {
+void TileMap::init(World& world, Graphic& graphic) {
   for (auto& [_, tileset] : tilesets_) {
     tileset.init(graphic);
   }

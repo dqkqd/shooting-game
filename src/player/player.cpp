@@ -6,7 +6,7 @@
 #include "player/shooter.h"
 #include "services/texture.h"
 
-void Player::init(Graphic& graphic, World& world) {
+void Player::init(World& world, Graphic& graphic) {
   auto* texture = TextureManager::add_from_file_unchecked(
       graphic.renderer(), GameConfig::data().player.image.c_str());
   auto texture_size = get_texture_size(texture);

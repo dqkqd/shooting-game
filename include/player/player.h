@@ -22,7 +22,7 @@ struct Collision {
 
 class Player {
  public:
-  static void init(Graphic& graphic, World& world);
+  static void init(World& world, Graphic& graphic);
 
   static void animation_system(World& world);
   static void moving_system(World& world);

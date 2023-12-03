@@ -24,9 +24,9 @@ auto main() -> int {
       .add_sequential(shared_systems::render_system, game.graphic());
 
   TileMap tile_map(GameConfig::data().tile_map.background.c_str());
-  tile_map.init(game.graphic(), world);
+  tile_map.init(world, game.graphic());
 
-  Player::init(game.graphic(), world);
+  Player::init(world, game.graphic());
 
   game.run(world, event_systems, normal_systems);
 
