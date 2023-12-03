@@ -1,13 +1,12 @@
-#include "player.h"
+#include "player/player.h"
 
-#include "SDL_events.h"
 #include "components/animation.h"
 #include "components/physics.h"
-#include "components/position.h"
 #include "config.h"
+#include "player/shooter.h"
 #include "services/texture.h"
 
-void player::init(Graphic& graphic, World& world) {
+void Player::init(Graphic& graphic, World& world) {
   auto* texture = TextureManager::add_from_file_unchecked(
       graphic.renderer(), GameConfig::data().player.image.c_str());
   auto texture_size = get_texture_size(texture);
@@ -30,18 +29,19 @@ void player::init(Graphic& graphic, World& world) {
 
   world.spawn_entity_with(std::move(texture), std::move(texture_position),
                           std::move(start_position), std::move(animation),
-                          ProjectileMotion(0, 0), ShootPosition(), Player());
+                          ProjectileMotion(0, 0), ShootPosition(),
+                          PlayerInfo());
 }
 
-void player::animation_system(World& world) {
+void Player::animation_system(World& world) {
   auto query = world.query<TexturePosition, TextureAnimation>();
   for (auto [query_texture, query_animation] : query) {
     query_texture = query_animation.next_position();
   }
 }
 
-auto player::advance_by_offset(World& world, RenderPosition& player_position,
-                               Offset offset) -> Collision {
+auto advance_by_offset(World& world, RenderPosition& player_position,
+                       Offset offset) -> Collision {
   auto collision = Collision{.x = false, .y = false};
 
   auto player_position_by_dx =
@@ -74,67 +74,36 @@ auto player::advance_by_offset(World& world, RenderPosition& player_position,
   return collision;
 }
 
-void player::moving_system(World& world) {
-  for (auto [character, player_position, projectile_motion] :
-       world.query<Player, RenderPosition, ProjectileMotion>()) {
-    if (character.status == Status::STOPPED) {
+void Player::moving_system(World& world) {
+  for (auto [info, position, motion] :
+       world.query<PlayerInfo, RenderPosition, ProjectileMotion>()) {
+    if (info.status == PlayerStatus::STOPPED) {
       continue;
     }
 
-    auto offset = projectile_motion.next_offset();
+    auto offset = motion.next_offset();
 
-    auto collision = advance_by_offset(world, player_position, offset);
+    auto collision = advance_by_offset(world, position, offset);
 
     if (collision.x) {
-      projectile_motion.change_x_direction();
+      motion.change_x_direction();
     }
 
     if (collision.y) {
-      projectile_motion.change_y_direction();
+      motion.change_y_direction();
 
       // We should stop if we are falling down and collided
       if (offset.dy > 0) {
-        character.status = Status::STOPPED;
-        projectile_motion.reset();
+        info.status = PlayerStatus::STOPPED;
+        motion.reset();
       }
     }
   }
 };
 
-void player::camera_system(World& world, Camera& camera) {
-  auto query = world.query<RenderPosition, Player>();
+void Player::camera_system(World& world, Camera& camera) {
+  auto query = world.query<RenderPosition, PlayerInfo>();
   for (auto [position, _] : query) {
     camera.center_to(position);
-  }
-}
-
-void player::shoot_system(World& world, SDL_Event event, Camera& camera) {
-  if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-    for (auto [character, player_position, projectile_motion] :
-         world.query<Player, RenderPosition, ProjectileMotion>()) {
-      if (character.status == Status::SELF_SHOOTING) {
-        continue;
-      }
-
-      character.status = Status::SELF_SHOOTING;
-
-      auto player_dest_position = camera.get_position_for(player_position);
-      auto px =
-          player_dest_position.rect.x + player_dest_position.rect.w / 2.0F;
-      auto py =
-          player_dest_position.rect.y + player_dest_position.rect.h / 2.0F;
-
-      auto alpha = std::atan2(event.button.y - py, event.button.x - px);
-      auto velocity = 100.0F;
-      projectile_motion = ProjectileMotion(velocity, alpha);
-    }
-  }
-}
-
-void player::assign_shoot_position(World& world, SDL_Event event) {
-  for (auto [player, position] : world.query<Player, ShootPosition>()) {
-    if (player.status == Status::STOPPED) {
-      position = ShootPosition{.x = event.button.x, .y = event.button.y};
-    }
   }
 }

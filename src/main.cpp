@@ -2,7 +2,8 @@
 #include "config.h"
 #include "ecs/system.h"
 #include "game.h"
-#include "player.h"
+#include "player/player.h"
+#include "player/shooter.h"
 #include "systems.h"
 #include "tiles/tilemap.h"
 
@@ -13,19 +14,19 @@ auto main() -> int {
   auto world = World();
 
   SystemManager<SDL_Event> event_systems;
-  event_systems.add_parallel(player::shoot_system, game.graphic().camera())
-      .add_parallel(player::assign_shoot_position);
+  event_systems.add_parallel(Shooter::shoot_system, game.graphic().camera())
+      .add_parallel(Shooter::assign_position_system);
 
   SystemManager normal_systems;
-  normal_systems.add_parallel(player::animation_system)
-      .add_parallel(player::moving_system)
-      .add_sequential(player::camera_system, game.graphic().camera())
+  normal_systems.add_parallel(Player::animation_system)
+      .add_parallel(Player::moving_system)
+      .add_sequential(Player::camera_system, game.graphic().camera())
       .add_sequential(shared_systems::render_system, game.graphic());
 
   TileMap tile_map(GameConfig::data().tile_map.background.c_str());
   tile_map.init(game.graphic(), world);
 
-  player::init(game.graphic(), world);
+  Player::init(game.graphic(), world);
 
   game.run(world, event_systems, normal_systems);
 

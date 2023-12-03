@@ -7,12 +7,13 @@ set(SOURCE_FILES
     components/animation.cpp
     components/physics.cpp
     components/position.cpp
+    player/player.cpp
+    player/shooter.cpp
     services/texture.cpp
     tiles/tilemap.cpp
     camera.cpp
     game.cpp
     graphic.cpp
-    player.cpp
     systems.cpp
 )
 

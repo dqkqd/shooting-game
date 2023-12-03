@@ -1,7 +1,8 @@
 #include "systems.h"
 
 #include "components/position.h"
-#include "player.h"
+#include "player/player.h"
+#include "player/shooter.h"
 
 void shared_systems::render_system(World& world, Graphic& graphic) {
   auto query = world.query<SDL_Texture*, TexturePosition, RenderPosition>();
@@ -11,9 +12,9 @@ void shared_systems::render_system(World& world, Graphic& graphic) {
   }
 
   // render player shooting position
-  for (auto [character, player_position, shoot_position] :
-       world.query<player::Player, RenderPosition, player::ShootPosition>()) {
-    if (character.status == player::Status::STOPPED) {
+  for (auto [info, player_position, shoot_position] :
+       world.query<PlayerInfo, RenderPosition, ShootPosition>()) {
+    if (info.status == PlayerStatus::STOPPED) {
       auto player_dest_position =
           graphic.camera().get_position_for(player_position);
       auto top_right = player_dest_position.top_right();
