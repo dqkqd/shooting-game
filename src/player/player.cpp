@@ -19,7 +19,7 @@ void Player::init(World& world, Graphic& graphic) {
   auto animation =
       TextureAnimation(GameConfig::data().player.frames_delay, player_width,
                        player_height, GameConfig::data().player.total_sprites);
-  auto texture_position = animation.next_position();
+  auto texture_position = animation.next_position({});
 
   auto start_position = RenderPosition{
       (static_cast<float>(GameConfig::data().graphic.width) - player_width) /
@@ -36,7 +36,7 @@ void Player::init(World& world, Graphic& graphic) {
 void Player::animation_system(World& world) {
   auto query = world.query<TexturePosition, TextureAnimation>();
   for (auto [query_texture, query_animation] : query) {
-    query_texture = query_animation.next_position();
+    query_texture = query_animation.next_position(std::move(query_texture));
   }
 }
 

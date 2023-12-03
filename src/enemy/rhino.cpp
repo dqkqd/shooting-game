@@ -2,6 +2,7 @@
 
 #include <asm-generic/errno.h>
 
+#include "SDL_render.h"
 #include "components/animation.h"
 #include "components/position.h"
 #include "config.h"
@@ -19,7 +20,7 @@ void Rhino::init(World& world, Graphic& graphic) {
 
   auto animation =
       TextureAnimation(rhino.frames_delay, width, height, rhino.total_sprites);
-  auto texture_position = animation.next_position();
+  auto texture_position = animation.next_position(TexturePosition{});
 
   for (std::size_t i = 0; i < rhino.positions.size(); ++i) {
     auto position = rhino.positions[i];
@@ -39,15 +40,27 @@ void Rhino::init(World& world, Graphic& graphic) {
 }
 
 void Rhino::moving_system(World& world) {
-  for (auto [info, position] : world.query<RhinoInfo, RenderPosition>()) {
+  for (auto [info, texture_pos, position] :
+       world.query<RhinoInfo, TexturePosition, RenderPosition>()) {
     position.rect.x += info.speed;
+
+    auto change_direction = false;
 
     if (position.rect.x > info.to.x) {
       position.rect.x = info.to.x;
-      info.speed = -info.speed;
+      change_direction = true;
     } else if (position.rect.x < info.from.x) {
       position.rect.x = info.from.x;
+      change_direction = true;
+    }
+
+    if (change_direction) {
       info.speed = -info.speed;
+      if (info.speed < 0) {
+        texture_pos.flip = SDL_FLIP_NONE;
+      } else {
+        texture_pos.flip = SDL_FLIP_HORIZONTAL;
+      }
     }
   }
 }

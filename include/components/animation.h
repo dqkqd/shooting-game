@@ -8,7 +8,7 @@ class TextureAnimation {
   TextureAnimation(int frame_delay, float sprite_width, float sprite_height,
                    int total_sprites);
 
-  auto next_position() -> TexturePosition;
+  auto next_position(const TexturePosition& position) -> TexturePosition;
 
  private:
   int frame_delays_;

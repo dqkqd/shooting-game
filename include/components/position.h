@@ -4,6 +4,7 @@
 #include <array>
 
 #include "SDL_rect.h"
+#include "SDL_render.h"
 
 struct Point {
   float x;
@@ -16,7 +17,8 @@ struct Offset {
 };
 
 struct TexturePosition {
-  SDL_FRect rect;
+  SDL_FRect rect{};
+  SDL_RendererFlip flip = SDL_FLIP_NONE;
 };
 
 struct RenderPosition {
