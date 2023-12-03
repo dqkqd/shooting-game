@@ -25,7 +25,16 @@ struct ShootPosition {
 void init(Graphic& graphic, World& world);
 
 void animation_system(World& world);
+
+struct Collision {
+  bool x;
+  bool y;
+};
+
+auto advance_by_offset(World& world, RenderPosition& player_position,
+                       Offset offset) -> Collision;
 void moving_system(World& world);
+
 void camera_system(World& world, Camera& camera);
 
 void shoot_system(World& world, SDL_Event event, Camera& camera);

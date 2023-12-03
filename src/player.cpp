@@ -40,45 +40,56 @@ void player::animation_system(World& world) {
   }
 }
 
+auto player::advance_by_offset(World& world, RenderPosition& player_position,
+                               Offset offset) -> Collision {
+  auto collision = Collision{.x = false, .y = false};
+
+  auto player_position_by_dx =
+      player_position.with_x(player_position.rect.x + offset.dx);
+  auto player_position_by_dy =
+      player_position.with_y(player_position.rect.y + offset.dy);
+
+  // checking collisions
+  for (auto [position, _] : world.query<RenderPosition, Collidable>()) {
+    if (!collision.x && player_position_by_dx.collide(position)) {
+      collision.x = true;
+    }
+    if (!collision.y && player_position_by_dy.collide(position)) {
+      collision.y = true;
+    }
+
+    if (collision.x && collision.y) {
+      break;
+    }
+  }
+
+  if (!collision.x) {
+    player_position.rect.x += offset.dx;
+  }
+
+  if (!collision.y) {
+    player_position.rect.y += offset.dy;
+  }
+
+  return collision;
+}
+
 void player::moving_system(World& world) {
   for (auto [character, player_position, projectile_motion] :
        world.query<Player, RenderPosition, ProjectileMotion>()) {
     if (character.status == Status::STOPPED) {
       continue;
     }
-    auto is_collided = [&world](const RenderPosition& player_pos) {
-      for (auto [position, _] :  // NOLINT
-           world.query<RenderPosition, Collidable>()) {
-        if (player_pos.collide(position)) {
-          return true;
-        }
-      }
-      return false;
-    };
 
     auto offset = projectile_motion.next_offset();
 
-    // checking collisions
-    auto collided_x =
-        is_collided(player_position.with_x(player_position.rect.x + offset.dx));
-    auto collided_y =
-        is_collided(player_position.with_y(player_position.rect.y + offset.dy));
+    auto collision = advance_by_offset(world, player_position, offset);
 
-    if (collided_x || collided_y) {
-      for (auto [tile_position, _] :
-           world.query<RenderPosition, Collidable>()) {
-        offset = player_position.closest_offset(tile_position, offset);
-      }
-    }
-
-    player_position.rect.x += offset.dx;
-    player_position.rect.y += offset.dy;
-
-    if (collided_x) {
+    if (collision.x) {
       projectile_motion.change_x_direction();
     }
 
-    if (collided_y) {
+    if (collision.y) {
       projectile_motion.change_y_direction();
 
       // We should stop if we are falling down and collided
