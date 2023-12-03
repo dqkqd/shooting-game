@@ -5,6 +5,11 @@
 
 #include "SDL_rect.h"
 
+struct Point {
+  float x;
+  float y;
+};
+
 struct Offset {
   float dx;
   float dy;

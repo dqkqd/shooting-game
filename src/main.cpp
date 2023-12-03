@@ -21,6 +21,7 @@ auto main() -> int {
   SystemManager normal_systems;
   normal_systems.add_parallel(Player::animation_system)
       .add_parallel(Player::moving_system)
+      .add_parallel(Rhino::moving_system)
       .add_sequential(Player::camera_system, game.graphic().camera())
       .add_sequential(shared_systems::render_system, game.graphic());
 

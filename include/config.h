@@ -42,26 +42,29 @@ struct TileMap {
   std::set<std::string> collidable;
 };
 
+struct Position {
+  int x;
+  int y;
+};
 struct Character {
   std::filesystem::path image;
   int total_sprites;
   int frames_delay;
   int width;
   int height;
+  std::vector<Position> positions;
 };
 
 using Player = Character;
 
-struct Position {
-  int x;
-  int y;
-};
-struct EnemyCharacter : public Character {
-  std::vector<Position> positions;
+struct Rhino : public Character {
+  float speed;
+  std::vector<Position> from;
+  std::vector<Position> to;
 };
 
 struct Enemy {
-  EnemyCharacter rhino;
+  Rhino rhino;
 };
 
 struct Game {
@@ -114,8 +117,15 @@ inline void from_json(const json& j, Game& game) {
   j["enemy"]["rhino"]["framesDelay"].get_to(game.enemy.rhino.frames_delay);
   j["enemy"]["rhino"]["width"].get_to(game.enemy.rhino.width);
   j["enemy"]["rhino"]["height"].get_to(game.enemy.rhino.height);
+  j["enemy"]["rhino"]["speed"].get_to(game.enemy.rhino.speed);
   for (const auto& elem : j["enemy"]["rhino"]["positions"]) {
     game.enemy.rhino.positions.emplace_back(Position{elem["x"], elem["y"]});
+  }
+  for (const auto& elem : j["enemy"]["rhino"]["from"]) {
+    game.enemy.rhino.from.emplace_back(Position{elem["x"], elem["y"]});
+  }
+  for (const auto& elem : j["enemy"]["rhino"]["to"]) {
+    game.enemy.rhino.to.emplace_back(Position{elem["x"], elem["y"]});
   }
 }
 
