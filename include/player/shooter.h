@@ -5,9 +5,8 @@
 #include "camera.h"
 #include "ecs/world.h"
 
-struct ShootPosition {
-  float x;
-  float y;
+struct ShooterInfo {
+  Point point;
 };
 
 class Shooter {

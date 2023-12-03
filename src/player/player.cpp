@@ -29,8 +29,7 @@ void Player::init(World& world, Graphic& graphic) {
 
   world.spawn_entity_with(std::move(texture), std::move(texture_position),
                           std::move(start_position), std::move(animation),
-                          ProjectileMotion(0, 0), ShootPosition(),
-                          PlayerInfo());
+                          ProjectileMotion(0, 0), ShooterInfo(), PlayerInfo());
 }
 
 void Player::animation_system(World& world) {

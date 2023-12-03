@@ -13,14 +13,14 @@ void shared_systems::render_system(World& world, Graphic& graphic) {
   }
 
   // render player shooting position
-  for (auto [info, player_position, shoot_position] :
-       world.query<PlayerInfo, RenderPosition, ShootPosition>()) {
+  for (auto [info, player_position, shooter_info] :
+       world.query<PlayerInfo, RenderPosition, ShooterInfo>()) {
     if (info.status == PlayerStatus::STOPPED) {
       auto player_dest_position =
           graphic.camera().get_position_for(player_position);
       auto top_right = player_dest_position.top_right();
       SDL_RenderLine(graphic.renderer(), top_right.x, top_right.y,
-                     shoot_position.x, shoot_position.y);
+                     shooter_info.point.x, shooter_info.point.y);
     }
   }
 };

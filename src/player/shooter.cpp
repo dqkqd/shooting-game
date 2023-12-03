@@ -27,9 +27,9 @@ void Shooter::shoot_system(World& world, SDL_Event event, Camera& camera) {
 }
 
 void Shooter::assign_position_system(World& world, SDL_Event event) {
-  for (auto [info, position] : world.query<PlayerInfo, ShootPosition>()) {
+  for (auto [info, shooter_info] : world.query<PlayerInfo, ShooterInfo>()) {
     if (info.status == PlayerStatus::STOPPED) {
-      position = ShootPosition{.x = event.button.x, .y = event.button.y};
+      shooter_info = ShooterInfo{.point = {event.button.x, event.button.y}};
     }
   }
 }
