@@ -3,7 +3,6 @@
 #include "components/animation.h"
 #include "components/physics.h"
 #include "config.h"
-#include "player/shooter.h"
 #include "services/texture.h"
 
 void Player::init(World& world, Graphic& graphic) {
@@ -29,7 +28,7 @@ void Player::init(World& world, Graphic& graphic) {
 
   world.spawn_entity_with(std::move(texture), std::move(texture_position),
                           std::move(start_position), std::move(animation),
-                          ProjectileMotion(0, 0), ShooterInfo(), PlayerInfo());
+                          ProjectileMotion(0, 0), PlayerInfo());
 }
 
 void Player::animation_system(World& world) {

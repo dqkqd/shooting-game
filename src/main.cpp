@@ -29,6 +29,8 @@ auto main() -> int {
   tile_map.init(world, game.graphic());
 
   Player::init(world, game.graphic());
+  Shooter::init(world, game.graphic());
+
   Rhino::init(world, game.graphic());
 
   game.run(world, event_systems, normal_systems);

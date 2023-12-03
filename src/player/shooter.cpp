@@ -3,6 +3,10 @@
 #include "components/physics.h"
 #include "player/player.h"
 
+void Shooter::init(World& world, Graphic& graphic) {
+  world.spawn_entity_with(ShooterInfo());
+}
+
 void Shooter::shoot_system(World& world, SDL_Event event, Camera& camera) {
   if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
     for (auto [info, position, motion] :
@@ -27,8 +31,12 @@ void Shooter::shoot_system(World& world, SDL_Event event, Camera& camera) {
 }
 
 void Shooter::assign_position_system(World& world, SDL_Event event) {
-  for (auto [info, shooter_info] : world.query<PlayerInfo, ShooterInfo>()) {
-    if (info.status == PlayerStatus::STOPPED) {
+  for (auto [player_info] : world.query<PlayerInfo>()) {
+    for (auto [shooter_info] : world.query<ShooterInfo>()) {
+      if (player_info.status != PlayerStatus::STOPPED) {
+        shooter_info.hidden = true;
+        continue;
+      }
       shooter_info = ShooterInfo{.point = {event.button.x, event.button.y}};
     }
   }
