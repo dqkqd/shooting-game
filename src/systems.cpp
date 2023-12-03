@@ -7,6 +7,10 @@
 void shared_systems::render_system(World& world, Graphic& graphic) {
   auto query = world.query<SDL_Texture*, TexturePosition, RenderPosition>();
   for (auto [texture, src, dest] : query) {
+    if (src.hidden) {
+      continue;
+    }
+
     auto dest_rect = graphic.camera().get_position_for(dest).rect;
     SDL_RenderTextureRotated(graphic.renderer(), texture, &src.rect, &dest_rect,
                              0, NULL, src.flip);

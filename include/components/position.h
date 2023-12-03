@@ -19,6 +19,7 @@ struct Offset {
 struct TexturePosition {
   SDL_FRect rect{};
   SDL_RendererFlip flip = SDL_FLIP_NONE;
+  bool hidden = false;
 };
 
 struct RenderPosition {
