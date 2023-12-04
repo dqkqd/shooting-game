@@ -1,10 +1,24 @@
 #include "player/shooter.h"
 
+#include <cmath>
+
 #include "camera.h"
 #include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
 #include "player/player.h"
+
+auto calculate_initial_velocity(SDL_FPoint start, SDL_FPoint end) -> float {
+  auto dx = end.x - start.x;
+  auto dy = end.y - start.y;
+
+  auto dx2 = dx * dx;
+  auto dy2 = dy * dy;
+
+  auto distance = std::sqrt(dx2 + dy2);
+
+  return std::clamp(distance / 2.5F, 0.0F, 120.0F);
+}
 
 void Shooter::init(World& world, Graphic& graphic) {
   world.spawn_entity_with(ShooterInfo());
@@ -27,7 +41,8 @@ void Shooter::shoot_system(World& world, SDL_Event event, Camera& camera) {
           player_dest_position.rect.y + player_dest_position.rect.h / 2.0F;
 
       auto alpha = std::atan2(event.button.y - py, event.button.x - px);
-      auto velocity = 100.0F;
+      auto velocity = calculate_initial_velocity(
+          {event.button.x, event.button.y}, {px, py});
       motion = ProjectileMotion(velocity, alpha);
     }
   }
@@ -53,8 +68,8 @@ void Shooter::assign_position_system(World& world, SDL_Event event,
 
       auto alpha = std::atan2(event.button.y - py, event.button.x - px);
 
-      // TODO(khanhdq): scale velocity
-      auto velocity = 100.0F;
+      auto velocity = calculate_initial_velocity(
+          {event.button.x, event.button.y}, {px, py});
       auto motion = ProjectileMotion(velocity, alpha,
                                      GameConfig::data().player.shooter.dt);
 
