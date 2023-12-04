@@ -10,8 +10,8 @@ auto should_show_shooter_indicator(const ShooterInfo& shooter,
 }
 
 void shared_systems::render_system(World& world, Graphic& graphic) {
-  auto query = world.query<SDL_Texture*, TexturePosition, RenderPosition>();
-  for (auto [texture, src, dest] : query) {
+  for (auto [texture, src, dest] :
+       world.query<SDL_Texture*, TexturePosition, RenderPosition>()) {
     if (src.hidden) {
       continue;
     }

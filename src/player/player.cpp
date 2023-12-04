@@ -32,8 +32,8 @@ void Player::init(World& world, Graphic& graphic) {
 }
 
 void Player::animation_system(World& world) {
-  auto query = world.query<TexturePosition, TextureAnimation>();
-  for (auto [query_texture, query_animation] : query) {
+  for (auto [query_texture, query_animation] :
+       world.query<TexturePosition, TextureAnimation>()) {
     query_texture = query_animation.next_position(std::move(query_texture));
   }
 }
@@ -100,8 +100,7 @@ void Player::moving_system(World& world) {
 };
 
 void Player::camera_system(World& world, Camera& camera) {
-  auto query = world.query<RenderPosition, PlayerInfo>();
-  for (auto [position, _] : query) {
+  for (auto [position, _] : world.query<RenderPosition, PlayerInfo>()) {
     camera.center_to(position);
   }
 }
