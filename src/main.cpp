@@ -3,6 +3,7 @@
 #include "ecs/system.h"
 #include "enemy/rhino.h"
 #include "game.h"
+#include "game_state.h"
 #include "player/player.h"
 #include "player/shooter.h"
 #include "systems.h"
@@ -22,6 +23,7 @@ auto main() -> int {
   normal_systems.add_parallel(Player::animation_system)
       .add_parallel(Player::moving_system)
       .add_parallel(Rhino::moving_system)
+      .add_sequential(GameState::game_over_system)
       .add_sequential(Player::camera_system, game.graphic().camera())
       .add_sequential(shared_systems::render_system, game.graphic());
 
@@ -32,6 +34,8 @@ auto main() -> int {
   Shooter::init(world, game.graphic());
 
   Rhino::init(world, game.graphic());
+
+  GameState::init(world);
 
   game.run(world, event_systems, normal_systems);
 

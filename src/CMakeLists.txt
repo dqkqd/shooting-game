@@ -14,6 +14,7 @@ set(SOURCE_FILES
     tiles/tilemap.cpp
     camera.cpp
     game.cpp
+    game_state.cpp
     graphic.cpp
     systems.cpp
 )

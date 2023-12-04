@@ -1,6 +1,8 @@
 #include "systems.h"
 
+#include "SDL_log.h"
 #include "components/position.h"
+#include "game_state.h"
 #include "player/player.h"
 #include "player/shooter.h"
 
@@ -34,6 +36,13 @@ void shared_systems::render_system(World& world, Graphic& graphic) {
                             &shooter_info.src_position.rect, &dest.rect);
         }
       }
+    }
+  }
+
+  // render game over
+  for (auto [info] : world.query<GameInfo>()) {
+    if (info.status == GameStatus::GAME_OVER) {
+      SDL_Log("GAME OVER");
     }
   }
 };
