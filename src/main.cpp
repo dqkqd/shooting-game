@@ -16,7 +16,7 @@ auto main() -> int {
 
   SystemManager<SDL_Event> event_systems;
   event_systems.add_parallel(Shooter::shoot_system, game.graphic().camera())
-      .add_parallel(Shooter::assign_position_system);
+      .add_parallel(Shooter::assign_position_system, game.graphic().camera());
 
   SystemManager normal_systems;
   normal_systems.add_parallel(Player::animation_system)

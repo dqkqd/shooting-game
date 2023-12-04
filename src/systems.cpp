@@ -4,6 +4,11 @@
 #include "player/player.h"
 #include "player/shooter.h"
 
+auto should_show_shooter_indicator(const ShooterInfo& shooter,
+                                   const PlayerInfo& player) -> bool {
+  return player.status == PlayerStatus::STOPPED && !shooter.hidden;
+}
+
 void shared_systems::render_system(World& world, Graphic& graphic) {
   auto query = world.query<SDL_Texture*, TexturePosition, RenderPosition>();
   for (auto [texture, src, dest] : query) {
@@ -20,12 +25,9 @@ void shared_systems::render_system(World& world, Graphic& graphic) {
   for (auto [info, player_position] :
        world.query<PlayerInfo, RenderPosition>()) {
     for (auto [shooter_info] : world.query<ShooterInfo>()) {
-      if (info.status == PlayerStatus::STOPPED) {
-        auto player_dest_position =
-            graphic.camera().get_position_for(player_position);
-        auto top_right = player_dest_position.top_right();
-        SDL_RenderLine(graphic.renderer(), top_right.x, top_right.y,
-                       shooter_info.point.x, shooter_info.point.y);
+      if (should_show_shooter_indicator(shooter_info, info)) {
+        SDL_RenderPoints(graphic.renderer(), shooter_info.points.data(),
+                         static_cast<int>(shooter_info.points.size()));
       }
     }
   }
