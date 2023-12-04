@@ -5,6 +5,10 @@
 
 #include "SDL_rect.h"
 
+auto RenderPosition::center() const -> SDL_FPoint {
+  return {.x = rect.x + rect.w / 2, .y = rect.y + rect.h / 2};
+}
+
 auto RenderPosition::top_left() const -> SDL_FPoint {
   return {.x = rect.x, .y = rect.y};
 }

@@ -20,6 +20,7 @@ struct TexturePosition {
 struct RenderPosition {
   SDL_FRect rect;
 
+  [[nodiscard]] auto center() const -> SDL_FPoint;
   [[nodiscard]] auto top_left() const -> SDL_FPoint;
   [[nodiscard]] auto top_right() const -> SDL_FPoint;
   [[nodiscard]] auto bot_left() const -> SDL_FPoint;
