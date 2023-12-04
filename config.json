@@ -39,7 +39,7 @@
       "indicatorImage": "Traps/Saw/Chain.png",
       "velocityScale": 2.5,
       "maxVelocity": 120,
-      "dt": 0.05
+      "dt": 0.1
     }
   },
   "enemy": {
