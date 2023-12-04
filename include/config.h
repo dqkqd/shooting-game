@@ -57,6 +57,7 @@ struct Character {
 
 struct Player : public Character {
   struct Shooter {
+    std::filesystem::path indicator_image;
     float velocity_scale;
     float max_velocity;
     float dt;
@@ -116,6 +117,9 @@ inline void from_json(const json& j, Game& game) {
   j["player"]["framesDelay"].get_to(game.player.frames_delay);
   j["player"]["width"].get_to(game.player.width);
   j["player"]["height"].get_to(game.player.height);
+
+  game.player.shooter.indicator_image =
+      game.assets.images_folder / j["player"]["shooter"]["indicatorImage"];
   j["player"]["shooter"]["velocityScale"].get_to(
       game.player.shooter.velocity_scale);
   j["player"]["shooter"]["maxVelocity"].get_to(

@@ -26,8 +26,13 @@ void shared_systems::render_system(World& world, Graphic& graphic) {
        world.query<PlayerInfo, RenderPosition>()) {
     for (auto [shooter_info] : world.query<ShooterInfo>()) {
       if (should_show_shooter_indicator(shooter_info, info)) {
-        SDL_RenderPoints(graphic.renderer(), shooter_info.points.data(),
-                         static_cast<int>(shooter_info.points.size()));
+        for (auto point : shooter_info.points) {
+          RenderPosition dest{point.x, point.y,
+                              shooter_info.src_position.rect.w,
+                              shooter_info.src_position.rect.h};
+          SDL_RenderTexture(graphic.renderer(), shooter_info.indicator_texture,
+                            &shooter_info.src_position.rect, &dest.rect);
+        }
       }
     }
   }

@@ -5,6 +5,7 @@
 #include "components/position.h"
 #include "config.h"
 #include "player/player.h"
+#include "services/texture.h"
 
 auto get_projectile_motion(const RenderPosition& position,
                            SDL_FPoint mouse_position, float dt)
@@ -18,7 +19,14 @@ auto get_projectile_motion(const RenderPosition& position,
 }
 
 void Shooter::init(World& world, Graphic& graphic) {
-  world.spawn_entity_with(ShooterInfo());
+  auto* texture = TextureManager::add_from_file_unchecked(
+      graphic.renderer(),
+      GameConfig::data().player.shooter.indicator_image.c_str());
+  auto texture_size = get_texture_size(texture);
+  auto texture_position =
+      TexturePosition{{0, 0, texture_size.w, texture_size.h}};
+  world.spawn_entity_with(ShooterInfo{.indicator_texture = texture,
+                                      .src_position = texture_position});
 }
 
 void Shooter::shoot_system(World& world, SDL_Event event, Camera& camera) {
