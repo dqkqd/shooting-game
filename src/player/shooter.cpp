@@ -1,25 +1,20 @@
 #include "player/shooter.h"
 
-#include <cmath>
-
 #include "camera.h"
 #include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
 #include "player/player.h"
 
-auto calculate_initial_velocity(SDL_FPoint start, SDL_FPoint end) -> float {
+auto get_projectile_motion(const RenderPosition& position,
+                           SDL_FPoint mouse_position, float dt)
+    -> ProjectileMotion {
   auto info = GameConfig::data().player.shooter;
-
-  auto dx = end.x - start.x;
-  auto dy = end.y - start.y;
-
-  auto dx2 = dx * dx;
-  auto dy2 = dy * dy;
-
-  auto distance = std::sqrt(dx2 + dy2);
-
-  return std::clamp(distance / info.velocity_scale, 0.0F, info.max_velocity);
+  auto motion_init_value =
+      MotionInitializer::calculate(position.center(), mouse_position,
+                                   info.velocity_scale, info.max_velocity);
+  return ProjectileMotion{motion_init_value.velocity, motion_init_value.alpha,
+                          dt};
 }
 
 void Shooter::init(World& world, Graphic& graphic) {
@@ -36,16 +31,9 @@ void Shooter::shoot_system(World& world, SDL_Event event, Camera& camera) {
 
       info.status = PlayerStatus::SELF_SHOOTING;
 
-      auto player_dest_position = camera.get_position_for(position);
-      auto px =
-          player_dest_position.rect.x + player_dest_position.rect.w / 2.0F;
-      auto py =
-          player_dest_position.rect.y + player_dest_position.rect.h / 2.0F;
-
-      auto alpha = std::atan2(event.button.y - py, event.button.x - px);
-      auto velocity = calculate_initial_velocity(
-          {event.button.x, event.button.y}, {px, py});
-      motion = ProjectileMotion(velocity, alpha);
+      motion = get_projectile_motion(camera.get_position_for(position),
+                                     {event.button.x, event.button.y},
+                                     GameConfig::data().physics.dt);
     }
   }
 }
@@ -62,21 +50,12 @@ void Shooter::assign_position_system(World& world, SDL_Event event,
 
       shooter_info.hidden = false;
 
-      auto player_dest_position = camera.get_position_for(position);
-      auto px =
-          player_dest_position.rect.x + player_dest_position.rect.w / 2.0F;
-      auto py =
-          player_dest_position.rect.y + player_dest_position.rect.h / 2.0F;
+      auto player_position = camera.get_position_for(position);
+      auto motion = get_projectile_motion(player_position,
+                                          {event.button.x, event.button.y},
+                                          GameConfig::data().player.shooter.dt);
 
-      auto alpha = std::atan2(event.button.y - py, event.button.x - px);
-
-      auto velocity = calculate_initial_velocity(
-          {event.button.x, event.button.y}, {px, py});
-      auto motion = ProjectileMotion(velocity, alpha,
-                                     GameConfig::data().player.shooter.dt);
-
-      shooter_info.points[0] = {px, py};
-
+      shooter_info.points[0] = player_position.center();
       for (std::size_t i = 1; i < shooter_info.points.size(); ++i) {
         auto offset = motion.next_offset();
         shooter_info.points[i] = {shooter_info.points[i - 1].x + offset.dx,

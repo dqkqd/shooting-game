@@ -1,6 +1,7 @@
 #ifndef COMPONENTS_PHYSICS_H
 #define COMPONENTS_PHYSICS_H
 
+#include "SDL_rect.h"
 #include "components/position.h"
 #include "config.h"
 
@@ -16,6 +17,17 @@ class Tick {
  private:
   float dt_;
   float tick_{};
+};
+
+class MotionInitializer {
+ public:
+  struct VelocityAndAlpha {
+    float velocity;
+    float alpha;
+  };
+
+  static auto calculate(SDL_FPoint start, SDL_FPoint end, float velocity_scale,
+                        float max_velocity) -> VelocityAndAlpha;
 };
 
 class ProjectileMotion {

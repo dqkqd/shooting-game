@@ -11,6 +11,23 @@ auto Tick::next_tick() -> float {
 
 auto Tick::dt() const -> float { return dt_; }
 
+auto MotionInitializer::calculate(SDL_FPoint start, SDL_FPoint end,
+                                  float velocity_scale, float max_velocity)
+    -> VelocityAndAlpha {
+  auto dx = end.x - start.x;
+  auto dy = end.y - start.y;
+
+  auto dx2 = dx * dx;
+  auto dy2 = dy * dy;
+
+  auto distance = std::sqrt(dx2 + dy2);
+
+  auto velocity = std::clamp(distance / velocity_scale, 0.0F, max_velocity);
+  auto alpha = std::atan2(dy, dx);
+
+  return {.velocity = velocity, .alpha = alpha};
+}
+
 ProjectileMotion::ProjectileMotion(float initial_velocity, float alpha,
                                    float dt)
     : vx_(initial_velocity * std::cos(alpha)),
