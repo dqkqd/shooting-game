@@ -34,7 +34,10 @@
     "totalSprites": 14,
     "framesDelay": 3,
     "width": 44,
-    "height": 26
+    "height": 26,
+    "shooter": {
+      "dt": 0.05
+    }
   },
   "enemy": {
     "rhino": {

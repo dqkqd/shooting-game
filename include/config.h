@@ -55,7 +55,11 @@ struct Character {
   std::vector<Position> positions;
 };
 
-using Player = Character;
+struct Player : public Character {
+  struct Shooter {
+    float dt;
+  } shooter;
+};
 
 struct Rhino : public Character {
   float speed;
@@ -110,6 +114,7 @@ inline void from_json(const json& j, Game& game) {
   j["player"]["framesDelay"].get_to(game.player.frames_delay);
   j["player"]["width"].get_to(game.player.width);
   j["player"]["height"].get_to(game.player.height);
+  j["player"]["shooter"]["dt"].get_to(game.player.shooter.dt);
 
   game.enemy.rhino.image =
       game.assets.images_folder / j["enemy"]["rhino"]["image"];
