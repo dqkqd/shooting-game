@@ -6,8 +6,8 @@
 
 struct RhinoInfo {
   float speed;
-  Point from;
-  Point to;
+  SDL_FPoint from;
+  SDL_FPoint to;
 };
 
 class Rhino {

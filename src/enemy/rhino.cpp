@@ -24,10 +24,10 @@ void Rhino::init(World& world, Graphic& graphic) {
 
   for (std::size_t i = 0; i < rhino.positions.size(); ++i) {
     auto position = rhino.positions[i];
-    auto from = Point{static_cast<float>(rhino.from[i].x),
-                      static_cast<float>(rhino.from[i].y)};
-    auto to = Point{static_cast<float>(rhino.to[i].x),
-                    static_cast<float>(rhino.to[i].y)};
+    auto from = SDL_FPoint{static_cast<float>(rhino.from[i].x),
+                           static_cast<float>(rhino.from[i].y)};
+    auto to = SDL_FPoint{static_cast<float>(rhino.to[i].x),
+                         static_cast<float>(rhino.to[i].y)};
 
     auto start_position =
         RenderPosition{static_cast<float>(position.x),

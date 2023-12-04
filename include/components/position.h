@@ -6,11 +6,6 @@
 #include "SDL_rect.h"
 #include "SDL_render.h"
 
-struct Point {
-  float x;
-  float y;
-};
-
 struct Offset {
   float dx;
   float dy;

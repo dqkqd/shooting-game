@@ -7,7 +7,7 @@
 #include "graphic.h"
 
 struct ShooterInfo {
-  Point point{};
+  SDL_FPoint point{};
   bool hidden = false;
 };
 
