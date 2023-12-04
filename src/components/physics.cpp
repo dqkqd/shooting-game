@@ -2,21 +2,23 @@
 
 #include <cmath>
 
-#include "config.h"
+Tick::Tick(float dt) : dt_{dt} {}
 
 auto Tick::next_tick() -> float {
   tick_ += dt();
   return tick_;
 }
-auto Tick::dt() -> float { return GameConfig::data().physics.dt; }
 
-ProjectileMotion::ProjectileMotion(float initial_velocity,
-                                   float alpha)  // NOLINT
+auto Tick::dt() const -> float { return dt_; }
+
+ProjectileMotion::ProjectileMotion(float initial_velocity, float alpha,
+                                   float dt)
     : vx_(initial_velocity * std::cos(alpha)),
-      vy_(initial_velocity * std::sin(alpha)) {}
+      vy_(initial_velocity * std::sin(alpha)),
+      tick_{Tick{dt}} {}
 
 auto ProjectileMotion::next_offset() -> Offset {
-  auto dt = Tick::dt();
+  auto dt = tick_.dt();
 
   auto dx = vx_ * dt;
 

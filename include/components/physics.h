@@ -8,16 +8,20 @@ struct Collidable {};
 
 class Tick {
  public:
+  explicit Tick(float dt);
+
   auto next_tick() -> float;
-  [[nodiscard]] static auto dt() -> float;
+  [[nodiscard]] auto dt() const -> float;
 
  private:
+  float dt_;
   float tick_{};
 };
 
 class ProjectileMotion {
  public:
-  ProjectileMotion(float initial_velocity, float alpha);  // NOLINT
+  ProjectileMotion(float initial_velocity, float alpha,
+                   float dt = GameConfig::data().physics.dt);
 
   auto next_offset() -> Offset;
   [[nodiscard]] auto movable() const -> bool;
@@ -29,7 +33,7 @@ class ProjectileMotion {
  private:
   float vx_{};
   float vy_{};
-  Tick tick_{};
+  Tick tick_;
 
   float g_ = GameConfig::data().physics.gravity;
 };
