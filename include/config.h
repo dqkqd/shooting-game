@@ -57,6 +57,8 @@ struct Character {
 
 struct Player : public Character {
   struct Shooter {
+    float velocity_scale;
+    float max_velocity;
     float dt;
   } shooter;
 };
@@ -114,6 +116,10 @@ inline void from_json(const json& j, Game& game) {
   j["player"]["framesDelay"].get_to(game.player.frames_delay);
   j["player"]["width"].get_to(game.player.width);
   j["player"]["height"].get_to(game.player.height);
+  j["player"]["shooter"]["velocityScale"].get_to(
+      game.player.shooter.velocity_scale);
+  j["player"]["shooter"]["maxVelocity"].get_to(
+      game.player.shooter.max_velocity);
   j["player"]["shooter"]["dt"].get_to(game.player.shooter.dt);
 
   game.enemy.rhino.image =

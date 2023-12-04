@@ -9,6 +9,8 @@
 #include "player/player.h"
 
 auto calculate_initial_velocity(SDL_FPoint start, SDL_FPoint end) -> float {
+  auto info = GameConfig::data().player.shooter;
+
   auto dx = end.x - start.x;
   auto dy = end.y - start.y;
 
@@ -17,7 +19,7 @@ auto calculate_initial_velocity(SDL_FPoint start, SDL_FPoint end) -> float {
 
   auto distance = std::sqrt(dx2 + dy2);
 
-  return std::clamp(distance / 2.5F, 0.0F, 120.0F);
+  return std::clamp(distance / info.velocity_scale, 0.0F, info.max_velocity);
 }
 
 void Shooter::init(World& world, Graphic& graphic) {
