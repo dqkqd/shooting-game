@@ -1,5 +1,7 @@
 #include "tiles/tilemap.h"
 
+#include <algorithm>
+
 #include "components/physics.h"
 #include "config.h"
 #include "services/texture.h"
@@ -15,8 +17,13 @@ void TileSet::init(Graphic& graphic) {
 auto TileSet::texture() -> SDL_Texture* { return texture_; }
 auto TileSet::data() -> parser::TileSetInMap { return data_; }
 
-auto TileSet::collidable() const -> bool {
-  return GameConfig::data().tile_map.collidable.count(data_.tile_set.name) > 0;
+auto TileSet::collidable(int tile_id) const -> bool {
+  auto& collidables = GameConfig::data().tile_map.collidables;
+  return std::any_of(collidables.cbegin(), collidables.cend(),
+                     [this, &tile_id](auto collidable) {
+                       return data_.gid == collidable.gid &&
+                              collidable.ids.count(tile_id - data_.gid) > 0;
+                     });
 }
 
 auto TileSet::texture_position(int index) const -> TexturePosition {
@@ -24,8 +31,8 @@ auto TileSet::texture_position(int index) const -> TexturePosition {
   auto h = data_.tile_set.tile_height;
   auto x = index % data_.tile_set.columns * w;
   auto y = index / data_.tile_set.columns * h;
-  return TexturePosition{static_cast<float>(x), static_cast<float>(y),
-                         static_cast<float>(w), static_cast<float>(h)};
+  return TexturePosition{{static_cast<float>(x), static_cast<float>(y),
+                          static_cast<float>(w), static_cast<float>(h)}};
 };
 
 TileMap::TileMap(const char* file) {
@@ -53,7 +60,7 @@ void TileMap::init(World& world, Graphic& graphic) {
           it->second.texture_position(tile_id - it->second.data().gid);
       auto dest_position = render_position(x, y);
 
-      if (it->second.collidable()) {
+      if (it->second.collidable(tile_id)) {
         world.spawn_entity_with(std::move(it->second.texture()),
                                 std::move(src_position),
                                 std::move(dest_position), Collidable{});

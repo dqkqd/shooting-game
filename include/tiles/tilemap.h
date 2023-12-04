@@ -13,7 +13,7 @@ class TileSet {
   void init(Graphic& graphic);
   auto texture() -> SDL_Texture*;
   auto data() -> parser::TileSetInMap;
-  [[nodiscard]] auto collidable() const -> bool;
+  [[nodiscard]] auto collidable(int tile_id) const -> bool;
   [[nodiscard]] auto texture_position(int index) const -> TexturePosition;
 
  private:

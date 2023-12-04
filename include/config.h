@@ -4,7 +4,6 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <set>
-#include <string>
 
 using json = nlohmann::json;
 
@@ -37,9 +36,13 @@ struct Assets {
   std::filesystem::path images_folder;
 };
 
+struct CollidableTiles {
+  int gid;
+  std::set<int> ids;
+};
 struct TileMap {
   std::filesystem::path background;
-  std::set<std::string> collidable;
+  std::vector<CollidableTiles> collidables;
 };
 
 struct Position {
@@ -110,7 +113,10 @@ inline void from_json(const json& j, Game& game) {
 
   game.tile_map.background =
       game.assets.config_folder / j["tileMap"]["background"];
-  j["tileMap"]["collidable"].get_to(game.tile_map.collidable);
+  for (const auto& elem : j["tileMap"]["collidables"]) {
+    game.tile_map.collidables.emplace_back(
+        CollidableTiles{.gid = elem["gid"], .ids = elem["ids"]});
+  }
 
   game.player.image = game.assets.images_folder / j["player"]["image"];
   j["player"]["totalSprites"].get_to(game.player.total_sprites);

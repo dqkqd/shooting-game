@@ -27,7 +27,12 @@
   },
   "tileMap": {
     "background": "background.json",
-    "collidable": ["Terrain"]
+    "collidables": [
+      {
+        "gid": 1,
+        "ids": [6, 7, 8, 28, 30, 50, 51, 52]
+      }
+    ]
   },
   "player": {
     "image": "Enemies/Turtle/Idle 2 (44x26).png",
