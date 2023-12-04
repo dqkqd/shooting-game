@@ -4,6 +4,7 @@
 #include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
+#include "graphic.h"
 #include "player/player.h"
 #include "services/texture.h"
 
@@ -68,6 +69,28 @@ void Shooter::assign_position_system(World& world, SDL_Event event,
         auto offset = motion.next_offset();
         shooter_info.points[i] = {shooter_info.points[i - 1].x + offset.dx,
                                   shooter_info.points[i - 1].y + offset.dy};
+      }
+    }
+  }
+}
+
+auto should_show_shooter_indicator(const ShooterInfo& shooter,
+                                   const PlayerInfo& player) -> bool {
+  return player.status == PlayerStatus::STOPPED && !shooter.hidden;
+}
+
+void Shooter::indicator_render_system(World& world, Graphic& graphic) {
+  for (auto [info, player_position] :
+       world.query<PlayerInfo, RenderPosition>()) {
+    for (auto [shooter_info] : world.query<ShooterInfo>()) {
+      if (should_show_shooter_indicator(shooter_info, info)) {
+        for (auto point : shooter_info.points) {
+          RenderPosition dest{point.x, point.y,
+                              shooter_info.src_position.rect.w,
+                              shooter_info.src_position.rect.h};
+          SDL_RenderTexture(graphic.renderer(), shooter_info.indicator_texture,
+                            &shooter_info.src_position.rect, &dest.rect);
+        }
       }
     }
   }

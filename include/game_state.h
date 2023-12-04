@@ -17,6 +17,7 @@ class GameState {
   static void init(World& world);
 
   static void game_over_system(World& world);
+  static void game_over_render_system(World& world);
 };
 
 #endif

@@ -20,6 +20,7 @@ class Shooter {
   static void shoot_system(World& world, SDL_Event event, Camera& camera);
   static void assign_position_system(World& world, SDL_Event event,
                                      Camera& camera);
+  static void indicator_render_system(World& world, Graphic& graphic);
 };
 
 #endif

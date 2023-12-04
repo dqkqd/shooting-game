@@ -25,7 +25,9 @@ auto main() -> int {
       .add_parallel(Rhino::moving_system)
       .add_sequential(GameState::game_over_system)
       .add_sequential(Player::camera_system, game.graphic().camera())
-      .add_sequential(shared_systems::render_system, game.graphic());
+      .add_sequential(shared_systems::render_system, game.graphic())
+      .add_sequential(Shooter::indicator_render_system, game.graphic())
+      .add_sequential(GameState::game_over_render_system);
 
   TileMap tile_map(GameConfig::data().tile_map.background.c_str());
   tile_map.init(world, game.graphic());
