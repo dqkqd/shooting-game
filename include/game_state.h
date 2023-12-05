@@ -21,9 +21,9 @@ class GameState {
  public:
   static void init(World& world, Graphic& graphic);
 
-  static void game_over_system(World& world);
-  static void game_over_render_system(World& world, Graphic& graphic);
-  static void game_restart_system(World& world, SDL_Event event);
+  static void check_game_over_system(World& world);
+  static void render_game_over_state_system(World& world, Graphic& graphic);
+  static void restart_game_system(World& world, SDL_Event event);
 };
 
 #endif

@@ -18,17 +18,17 @@ auto main() -> int {
   SystemManager<SDL_Event> event_systems;
   event_systems.add_parallel(Shooter::shoot_system, game.graphic().camera())
       .add_parallel(Shooter::assign_position_system, game.graphic().camera())
-      .add_sequential(GameState::game_restart_system);
+      .add_sequential(GameState::restart_game_system);
 
   SystemManager normal_systems;
   normal_systems.add_parallel(Player::animation_system)
       .add_parallel(Player::moving_system)
       .add_parallel(Rhino::moving_system)
-      .add_sequential(GameState::game_over_system)
+      .add_sequential(GameState::check_game_over_system)
       .add_sequential(Player::camera_system, game.graphic().camera())
       .add_sequential(shared_systems::render_system, game.graphic())
       .add_sequential(Shooter::indicator_render_system, game.graphic())
-      .add_sequential(GameState::game_over_render_system, game.graphic());
+      .add_sequential(GameState::render_game_over_state_system, game.graphic());
 
   TileMap tile_map(GameConfig::data().tile_map.background.c_str());
   tile_map.init(world, game.graphic());

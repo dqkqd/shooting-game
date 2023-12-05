@@ -30,7 +30,7 @@ void GameState::init(World& world, Graphic& graphic) {
   });
 }
 
-void GameState::game_over_system(World& world) {
+void GameState::check_game_over_system(World& world) {
   for (auto [game_info] : world.query<GameInfo>()) {
     if (game_info.status == GameStatus::GAME_OVER) {
       continue;
@@ -46,7 +46,7 @@ void GameState::game_over_system(World& world) {
   }
 }
 
-void GameState::game_over_render_system(World& world, Graphic& graphic) {
+void GameState::render_game_over_state_system(World& world, Graphic& graphic) {
   for (auto [info] : world.query<GameInfo>()) {
     if (info.status == GameStatus::GAME_OVER) {
       SDL_RenderTexture(graphic.renderer(), info.texture, &info.src.rect,
@@ -55,7 +55,7 @@ void GameState::game_over_render_system(World& world, Graphic& graphic) {
   }
 }
 
-void GameState::game_restart_system(World& world, SDL_Event event) {
+void GameState::restart_game_system(World& world, SDL_Event event) {
   if (event.type == SDL_EVENT_KEY_DOWN) {
     for (auto [info] : world.query<GameInfo>()) {
       if (info.status == GameStatus::GAME_OVER) {
