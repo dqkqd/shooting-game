@@ -57,6 +57,10 @@ struct Character {
   int height;
 };
 
+struct PlayerDeadState : public Character {
+  std::int64_t last{};
+};
+
 struct Player : public Character {
   struct Shooter {
     std::filesystem::path indicator_image;
@@ -65,7 +69,7 @@ struct Player : public Character {
     float dt;
   } shooter;
   Position position;
-  Character dead_state;
+  PlayerDeadState dead_state;
 };
 
 struct Rhino : public Character {
@@ -140,6 +144,7 @@ inline void from_json(const json& j, Game& game) {
       game.player.dead_state.frames_delay);
   j["player"]["deadState"]["width"].get_to(game.player.dead_state.width);
   j["player"]["deadState"]["height"].get_to(game.player.dead_state.height);
+  j["player"]["deadState"]["last"].get_to(game.player.dead_state.last);
 
   game.player.shooter.indicator_image =
       game.assets.images_folder / j["player"]["shooter"]["indicatorImage"];

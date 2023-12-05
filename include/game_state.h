@@ -15,6 +15,7 @@ struct GameInfo {
   TexturePosition src;
   RenderPosition dest{};
   GameStatus status = GameStatus::PLAYING;
+  std::chrono::time_point<std::chrono::system_clock> game_over_timestamp;
 };
 
 class GameState {

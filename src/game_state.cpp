@@ -1,5 +1,7 @@
 #include "game_state.h"
 
+#include <chrono>
+
 #include "SDL_events.h"
 #include "components/position.h"
 #include "config.h"
@@ -36,6 +38,7 @@ void GameState::check_game_over_system(World& world) {
     }
     if (Player::try_make_player_dead(world)) {
       game_info.status = GameStatus::GAME_OVER;
+      game_info.game_over_timestamp = std::chrono::system_clock::now();
     }
   }
 }
@@ -45,6 +48,17 @@ void GameState::render_game_over_state_system(World& world, Graphic& graphic) {
     if (info.status == GameStatus::GAME_OVER) {
       SDL_RenderTexture(graphic.renderer(), info.texture, &info.src.rect,
                         &info.dest.rect);
+
+      // turn off player dead animation
+      auto now = std::chrono::system_clock::now();
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+          now - info.game_over_timestamp);
+      if (duration.count() > GameConfig::data().player.dead_state.last) {
+        for (auto [src_position, _] :
+             world.query<TexturePosition, PlayerDeadInfo>()) {
+          src_position.hidden = true;
+        }
+      }
     }
   }
 }

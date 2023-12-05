@@ -52,7 +52,8 @@
       "totalSprites": 5,
       "framesDelay": 5,
       "width": 44,
-      "height": 26
+      "height": 26,
+      "last": 1000
     }
   },
   "enemy": {
