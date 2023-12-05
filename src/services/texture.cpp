@@ -8,7 +8,7 @@
 #include "SDL_log.h"
 #include "SDL_render.h"
 
-std::unordered_map<const char*, SDL_Texture*> TextureManager::textures_{};
+std::unordered_map<std::string, SDL_Texture*> TextureManager::textures_{};
 
 auto TextureManager::size() -> std::size_t { return textures_.size(); }
 void TextureManager::clear() {

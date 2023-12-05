@@ -2,6 +2,7 @@
 #define SERVICE_TEXTURE_H
 
 #include <optional>
+#include <string>
 #include <unordered_map>
 
 #include "SDL_render.h"
@@ -20,7 +21,7 @@ class TextureManager {
   static auto get(const char* key) -> std::optional<SDL_Texture*>;
 
  private:
-  static std::unordered_map<const char*, SDL_Texture*> textures_;
+  static std::unordered_map<std::string, SDL_Texture*> textures_;
 };
 
 /* helper functions */
