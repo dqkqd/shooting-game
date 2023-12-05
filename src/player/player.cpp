@@ -31,15 +31,17 @@ void Player::init(World& world, Graphic& graphic) {
 }
 
 void Player::init_dead_player(World& world, Graphic& graphic) {
-  auto* texture = TextureManager::add_from_file_unchecked(
-      graphic.renderer(),
-      "assets/pixel_adventure_assets/Enemies/Turtle/Hit (44x26).png");
+  auto config = GameConfig::data().player.dead_state;
+
+  auto* texture = TextureManager::add_from_file_unchecked(graphic.renderer(),
+                                                          config.image.c_str());
   auto texture_size = get_texture_size(texture);
 
-  auto player_width = texture_size.w / 5.0F;
+  auto player_width = texture_size.w / static_cast<float>(config.total_sprites);
   auto player_height = texture_size.h;
 
-  auto animation = TextureAnimation(5, player_width, player_height, 5);
+  auto animation = TextureAnimation(config.frames_delay, player_width,
+                                    player_height, config.total_sprites);
   auto start_position = RenderPosition{0, 0, player_width, player_height};
 
   auto texture_position = animation.next_position({.hidden = true});

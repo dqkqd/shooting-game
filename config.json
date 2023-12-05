@@ -46,6 +46,13 @@
       "velocityScale": 2.5,
       "maxVelocity": 120,
       "dt": 0.1
+    },
+    "deadState": {
+      "image": "Enemies/Turtle/Hit (44x26).png",
+      "totalSprites": 5,
+      "framesDelay": 5,
+      "width": 44,
+      "height": 26
     }
   },
   "enemy": {
