@@ -23,6 +23,7 @@ class GameState {
 
   static void game_over_system(World& world);
   static void game_over_render_system(World& world, Graphic& graphic);
+  static void game_restart_system(World& world, SDL_Event event);
 };
 
 #endif

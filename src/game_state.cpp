@@ -1,5 +1,7 @@
 #include "game_state.h"
 
+#include "SDL_events.h"
+#include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
 #include "graphic.h"
@@ -43,6 +45,24 @@ void GameState::game_over_render_system(World& world, Graphic& graphic) {
     if (info.status == GameStatus::GAME_OVER) {
       SDL_RenderTexture(graphic.renderer(), info.texture, &info.src.rect,
                         &info.dest.rect);
+    }
+  }
+}
+
+void GameState::game_restart_system(World& world, SDL_Event event) {
+  if (event.type == SDL_EVENT_KEY_DOWN) {
+    for (auto [info] : world.query<GameInfo>()) {
+      if (info.status == GameStatus::GAME_OVER) {
+        for (auto [position, motion, _] :
+             world.query<RenderPosition, ProjectileMotion, PlayerInfo>()) {
+          position.rect.x =
+              static_cast<float>(GameConfig::data().player.position.x);
+          position.rect.y =
+              static_cast<float>(GameConfig::data().player.position.y);
+          info.status = GameStatus::PLAYING;
+          motion.reset();
+        }
+      }
     }
   }
 }
