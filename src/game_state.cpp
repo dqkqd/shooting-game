@@ -31,10 +31,16 @@ void GameState::init(World& world, Graphic& graphic) {
 }
 
 void GameState::game_over_system(World& world) {
-  for (auto [position, _] : world.query<RenderPosition, PlayerInfo>()) {
-    if (Player::should_dead(world, position)) {
-      for (auto [info] : world.query<GameInfo>()) {
-        info.status = GameStatus::GAME_OVER;
+  for (auto [game_info] : world.query<GameInfo>()) {
+    if (game_info.status == GameStatus::GAME_OVER) {
+      continue;
+    }
+    for (auto [src_position, dest_position, player_info] :
+         world.query<TexturePosition, RenderPosition, PlayerInfo>()) {
+      if (Player::should_dead(world, dest_position)) {
+        game_info.status = GameStatus::GAME_OVER;
+        src_position.hidden = true;
+        Player::make_player_dead(world, dest_position, player_info);
       }
     }
   }
@@ -53,15 +59,8 @@ void GameState::game_restart_system(World& world, SDL_Event event) {
   if (event.type == SDL_EVENT_KEY_DOWN) {
     for (auto [info] : world.query<GameInfo>()) {
       if (info.status == GameStatus::GAME_OVER) {
-        for (auto [position, motion, _] :
-             world.query<RenderPosition, ProjectileMotion, PlayerInfo>()) {
-          position.rect.x =
-              static_cast<float>(GameConfig::data().player.position.x);
-          position.rect.y =
-              static_cast<float>(GameConfig::data().player.position.y);
-          info.status = GameStatus::PLAYING;
-          motion.reset();
-        }
+        info.status = GameStatus::PLAYING;
+        Player::restart_player(world);
       }
     }
   }
