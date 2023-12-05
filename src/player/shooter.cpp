@@ -52,23 +52,22 @@ void Shooter::assign_position_system(World& world, SDL_Event event,
   for (auto [position, player_info] :
        world.query<RenderPosition, PlayerInfo>()) {
     for (auto [shooter_info] : world.query<ShooterInfo>()) {
-      if (player_info.status != PlayerStatus::STOPPED) {
+      if (player_info.status == PlayerStatus::STOPPED) {
+        shooter_info.hidden = false;
+
+        auto player_position = camera.get_position_for(position);
+        auto motion = get_projectile_motion(
+            player_position, {event.button.x, event.button.y},
+            GameConfig::data().player.shooter.dt);
+
+        shooter_info.points[0] = player_position.center();
+        for (std::size_t i = 1; i < shooter_info.points.size(); ++i) {
+          auto offset = motion.next_offset();
+          shooter_info.points[i] = {shooter_info.points[i - 1].x + offset.dx,
+                                    shooter_info.points[i - 1].y + offset.dy};
+        }
+      } else {
         shooter_info.hidden = true;
-        continue;
-      }
-
-      shooter_info.hidden = false;
-
-      auto player_position = camera.get_position_for(position);
-      auto motion = get_projectile_motion(player_position,
-                                          {event.button.x, event.button.y},
-                                          GameConfig::data().player.shooter.dt);
-
-      shooter_info.points[0] = player_position.center();
-      for (std::size_t i = 1; i < shooter_info.points.size(); ++i) {
-        auto offset = motion.next_offset();
-        shooter_info.points[i] = {shooter_info.points[i - 1].x + offset.dx,
-                                  shooter_info.points[i - 1].y + offset.dy};
       }
     }
   }
