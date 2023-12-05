@@ -137,16 +137,24 @@ auto Player::should_dead(World& world, RenderPosition& position) -> bool {
   return false;
 }
 
-void Player::make_player_dead(World& world, RenderPosition& position,
-                              PlayerInfo& info) {
-  info.status = PlayerStatus::DEAD;
+auto Player::try_make_player_dead(World& world) -> bool {
+  for (auto [player_src_position, player_position, player_info] :
+       world.query<TexturePosition, RenderPosition, PlayerInfo>()) {
+    if (should_dead(world, player_position)) {
+      player_info.status = PlayerStatus::DEAD;
+      player_src_position.hidden = true;
 
-  for (auto [player_dead_src_position, player_dead_dest_position,
-             player_dead_info] :
-       world.query<TexturePosition, RenderPosition, PlayerDeadInfo>()) {
-    player_dead_src_position.hidden = false;
-    player_dead_dest_position.rect = position.rect;
+      for (auto [player_dead_src_position, player_dead_dest_position,
+                 player_dead_info] :
+           world.query<TexturePosition, RenderPosition, PlayerDeadInfo>()) {
+        player_dead_src_position.hidden = false;
+        player_dead_dest_position.rect = player_position.rect;
+      }
+      return true;
+    }
   }
+
+  return false;
 }
 
 void Player::restart_player(World& world) {

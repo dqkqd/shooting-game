@@ -1,7 +1,6 @@
 #include "game_state.h"
 
 #include "SDL_events.h"
-#include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
 #include "graphic.h"
@@ -35,13 +34,8 @@ void GameState::check_game_over_system(World& world) {
     if (game_info.status == GameStatus::GAME_OVER) {
       continue;
     }
-    for (auto [src_position, dest_position, player_info] :
-         world.query<TexturePosition, RenderPosition, PlayerInfo>()) {
-      if (Player::should_dead(world, dest_position)) {
-        game_info.status = GameStatus::GAME_OVER;
-        src_position.hidden = true;
-        Player::make_player_dead(world, dest_position, player_info);
-      }
+    if (Player::try_make_player_dead(world)) {
+      game_info.status = GameStatus::GAME_OVER;
     }
   }
 }
