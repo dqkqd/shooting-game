@@ -14,7 +14,10 @@ auto TextureAnimation::next_position(const TexturePosition& position)
 
   auto x = (current_sprite_ / frame_delays_) % total_sprites_;
   return TexturePosition{
-      {static_cast<float>(x) * sprite_width_, 0,
-       static_cast<float>(sprite_width_), static_cast<float>(sprite_height_)},
-      position.flip};
+      .rect = {static_cast<float>(x) * sprite_width_, 0,
+               static_cast<float>(sprite_width_),
+               static_cast<float>(sprite_height_)},
+      .flip = position.flip,
+      .hidden = position.hidden,
+  };
 }
