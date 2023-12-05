@@ -68,5 +68,8 @@
         { "x": 1382, "y": 271 }
       ]
     }
+  },
+  "gameState": {
+    "gameOverImage": "game_over.png"
   }
 }

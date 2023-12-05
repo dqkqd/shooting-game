@@ -77,6 +77,10 @@ struct Enemy {
   Rhino rhino;
 };
 
+struct GameState {
+  std::filesystem::path game_over_image;
+};
+
 struct Game {
   Graphic graphic{};
   Level level{};
@@ -87,6 +91,8 @@ struct Game {
   Player player;
 
   Enemy enemy;
+
+  GameState game_state;
 
   static auto from_config(const char* file) -> Game;
 };
@@ -148,6 +154,9 @@ inline void from_json(const json& j, Game& game) {
   for (const auto& elem : j["enemy"]["rhino"]["to"]) {
     game.enemy.rhino.to.emplace_back(Position{elem["x"], elem["y"]});
   }
+
+  game.game_state.game_over_image =
+      game.assets.images_folder / j["gameState"]["gameOverImage"];
 }
 
 };  // namespace config
