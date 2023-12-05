@@ -30,6 +30,24 @@ void Player::init(World& world, Graphic& graphic) {
                           ProjectileMotion(0, 0), PlayerInfo());
 }
 
+void Player::init_dead_player(World& world, Graphic& graphic) {
+  auto* texture = TextureManager::add_from_file_unchecked(
+      graphic.renderer(),
+      "assets/pixel_adventure_assets/Enemies/Turtle/Hit (44x26).png");
+  auto texture_size = get_texture_size(texture);
+
+  auto player_width = texture_size.w / 5.0F;
+  auto player_height = texture_size.h;
+
+  auto animation = TextureAnimation(5, player_width, player_height, 5);
+  auto start_position = RenderPosition{0, 0, player_width, player_height};
+
+  auto texture_position = animation.next_position({.hidden = true});
+  world.spawn_entity_with(std::move(texture), std::move(texture_position),
+                          std::move(start_position), std::move(animation),
+                          PlayerDeadInfo());
+}
+
 void Player::animation_system(World& world) {
   for (auto [query_texture, query_animation] :
        world.query<TexturePosition, TextureAnimation>()) {
@@ -74,7 +92,8 @@ auto advance_by_offset(World& world, RenderPosition& player_position,
 void Player::moving_system(World& world) {
   for (auto [info, position, motion] :
        world.query<PlayerInfo, RenderPosition, ProjectileMotion>()) {
-    if (info.status == PlayerStatus::STOPPED) {
+    if (info.status == PlayerStatus::STOPPED ||
+        info.status == PlayerStatus::DEAD) {
       continue;
     }
 
@@ -116,4 +135,35 @@ auto Player::should_dead(World& world, RenderPosition& position) -> bool {
     }
   }
   return false;
+}
+
+void Player::make_player_dead(World& world, RenderPosition& position,
+                              PlayerInfo& info) {
+  info.status = PlayerStatus::DEAD;
+
+  for (auto [player_dead_src_position, player_dead_dest_position,
+             player_dead_info] :
+       world.query<TexturePosition, RenderPosition, PlayerDeadInfo>()) {
+    player_dead_src_position.hidden = false;
+    player_dead_dest_position.rect = position.rect;
+  }
+}
+
+void Player::restart_player(World& world) {
+  for (auto [src, position, motion, info] :
+       world.query<TexturePosition, RenderPosition, ProjectileMotion,
+                   PlayerInfo>()) {
+    info.status = PlayerStatus::IDLE;
+    src.hidden = false;
+    position.rect.x = static_cast<float>(GameConfig::data().player.position.x);
+    position.rect.y = static_cast<float>(GameConfig::data().player.position.y);
+    motion.reset();
+  }
+
+  for (auto [player_dead_src_position, player_dead_dest_position,
+             player_dead_info] :
+       world.query<TexturePosition, RenderPosition, PlayerDeadInfo>()) {
+    player_dead_src_position.hidden = true;
+    player_dead_dest_position.rect = {};
+  }
 }
