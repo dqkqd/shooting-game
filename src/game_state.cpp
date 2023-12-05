@@ -32,7 +32,7 @@ void GameState::init(World& world, Graphic& graphic) {
 
 void GameState::game_over_system(World& world) {
   for (auto [position, _] : world.query<RenderPosition, PlayerInfo>()) {
-    if (position.rect.y > static_cast<float>(GameConfig::data().level.height)) {
+    if (Player::should_dead(world, position)) {
       for (auto [info] : world.query<GameInfo>()) {
         info.status = GameStatus::GAME_OVER;
       }

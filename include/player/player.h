@@ -27,6 +27,8 @@ class Player {
   static void animation_system(World& world);
   static void moving_system(World& world);
   static void camera_system(World& world, Camera& camera);
+
+  static auto should_dead(World& world, RenderPosition& position) -> bool;
 };
 
 #endif

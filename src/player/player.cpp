@@ -2,7 +2,9 @@
 
 #include "components/animation.h"
 #include "components/physics.h"
+#include "components/position.h"
 #include "config.h"
+#include "enemy/rhino.h"
 #include "services/texture.h"
 
 void Player::init(World& world, Graphic& graphic) {
@@ -100,4 +102,18 @@ void Player::camera_system(World& world, Camera& camera) {
   for (auto [position, _] : world.query<RenderPosition, PlayerInfo>()) {
     camera.center_to(position);
   }
+}
+
+auto Player::should_dead(World& world, RenderPosition& position) -> bool {
+  if (position.rect.y > static_cast<float>(GameConfig::data().level.height)) {
+    return true;
+  }
+
+  for (auto [rhino_position, rhino_info] :
+       world.query<RenderPosition, RhinoInfo>()) {
+    if (position.collide(rhino_position)) {
+      return true;
+    }
+  }
+  return false;
 }
