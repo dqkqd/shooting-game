@@ -68,10 +68,12 @@ void Rhino::moving_system(World& world) {
   }
 }
 
-auto Rhino::make_rhino_dead(World& world) -> bool {
+auto Rhino::try_make_rhino_dead(World& world, RenderInfo& bullet_render_info)
+    -> bool {
   for (auto [texture_info, render_info, info] :
        world.query<TextureInfo, RenderInfo, RhinoInfo>()) {
-    if (info.status == RhinoStatus::ALIVE) {
+    if (info.status == RhinoStatus::ALIVE &&
+        render_info.collide(bullet_render_info)) {
       info.status = RhinoStatus::DEAD;
       texture_info.hidden = true;
 

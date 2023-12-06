@@ -27,7 +27,8 @@ class Rhino {
 
   static void moving_system(World& world);
   static void clear_dead_system(World& world);
-  static auto make_rhino_dead(World& world) -> bool;
+  static auto try_make_rhino_dead(World& world, RenderInfo& bullet_render_info)
+      -> bool;
 };
 
 #endif

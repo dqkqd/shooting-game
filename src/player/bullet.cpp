@@ -43,11 +43,9 @@ void Bullet::moving_system(World& world) {
     render_info.rect.y += offset.dy;
 
     if (utils::out_of_game_screen(render_info) ||
-        collide_with_tiles(world, render_info)) {
+        collide_with_tiles(world, render_info) ||
+        Rhino::try_make_rhino_dead(world, render_info)) {
       make_bullet_disappear(texture_info, info);
-    } else if (utils::collide_with_rhino(world, render_info)) {
-      make_bullet_disappear(texture_info, info);
-      Rhino::make_rhino_dead(world);
     }
   }
 };
