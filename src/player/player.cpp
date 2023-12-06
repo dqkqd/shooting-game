@@ -140,3 +140,12 @@ void Player::restart_player(World& world) {
     render_info.rect = {};
   }
 }
+
+void Player::make_player_win(World& world) {
+  for (auto [info, texture_info, motion] :
+       world.query<PlayerInfo, TextureInfo, ProjectileMotion>()) {
+    info.status = PlayerStatus::WON;
+    texture_info.hidden = true;
+    motion.shutdown();
+  }
+}

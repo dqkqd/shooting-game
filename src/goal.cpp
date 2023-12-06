@@ -35,5 +35,6 @@ void Goal::check_win_system(World& world) {
     for (auto [game_info] : world.query<GameInfo>()) {
       game_info.status = GameStatus::FINISH;
     }
+    Player::make_player_win(world);
   }
 }

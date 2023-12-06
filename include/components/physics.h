@@ -38,6 +38,7 @@ class ProjectileMotion {
   auto next_offset() -> Offset;
   [[nodiscard]] auto movable() const -> bool;
   void reset();
+  void shutdown();
 
   void change_x_direction();
   void change_y_direction();

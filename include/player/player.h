@@ -11,6 +11,7 @@ enum class PlayerStatus {
   STOPPED,
   SELF_SHOOTING,
   DEAD,
+  WON,
 };
 
 struct PlayerDeadInfo {};
@@ -35,6 +36,8 @@ class Player {
   static auto should_dead(World& world, RenderInfo& info) -> bool;
   static auto try_make_player_dead(World& world) -> bool;
   static void restart_player(World& world);
+
+  static void make_player_win(World& world);
 };
 
 #endif

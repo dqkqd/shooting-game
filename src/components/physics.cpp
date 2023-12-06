@@ -51,5 +51,10 @@ void ProjectileMotion::reset() {
   vy_ = 0;
 }
 
+void ProjectileMotion::shutdown() {
+  reset();
+  g_ = 0;
+}
+
 void ProjectileMotion::change_x_direction() { vx_ = -vx_; }
 void ProjectileMotion::change_y_direction() { vy_ = -vy_; }
