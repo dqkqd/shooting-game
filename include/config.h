@@ -49,7 +49,8 @@ struct Position {
   int x;
   int y;
 };
-struct Character {
+
+struct Sprite {
   std::filesystem::path image;
   int total_sprites;
   int frames_delay;
@@ -57,13 +58,11 @@ struct Character {
   int height;
 };
 
-struct PlayerDeadState : public Character {
+struct PlayerDeadState : public Sprite {
   std::int64_t last{};
 };
 
-using PlayerBullet = Character;
-
-struct Player : public Character {
+struct Player : public Sprite {
   struct Shooter {
     std::filesystem::path indicator_image;
     float velocity_scale;
@@ -72,10 +71,10 @@ struct Player : public Character {
   } shooter;
   Position position;
   PlayerDeadState dead_state;
-  PlayerBullet bullet;
+  Sprite bullet;
 };
 
-struct Rhino : public Character {
+struct Rhino : public Sprite {
   float speed;
   std::vector<Position> positions;
   std::vector<Position> from;
