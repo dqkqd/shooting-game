@@ -6,25 +6,15 @@
 #include "config.h"
 #include "enemy/rhino.h"
 #include "services/texture.h"
+#include "utils.h"
 
 void Player::init(World& world, Graphic& graphic) {
   auto config = GameConfig::data().player;
+  auto [texture, texture_position, start_position, animation] =
+      game_common::load_sprite(config, graphic);
 
-  auto* texture = TextureManager::add_from_file_unchecked(graphic.renderer(),
-                                                          config.image.c_str());
-  auto texture_size = get_texture_size(texture);
-
-  auto player_width = texture_size.w / static_cast<float>(config.total_sprites);
-  auto player_height = texture_size.h;
-
-  auto animation = TextureAnimation(config.frames_delay, player_width,
-                                    player_height, config.total_sprites);
-  auto texture_position = animation.next_position({});
-
-  auto start_position = RenderPosition{static_cast<float>(config.position.x),
-                                       static_cast<float>(config.position.y),
-                                       player_width, player_height};
-
+  start_position.rect.x = static_cast<float>(config.position.x);
+  start_position.rect.y = static_cast<float>(config.position.y);
   world.spawn_entity_with(std::move(texture), std::move(texture_position),
                           std::move(start_position), std::move(animation),
                           ProjectileMotion(0, 0), PlayerInfo());

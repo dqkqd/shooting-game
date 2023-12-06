@@ -3,39 +3,30 @@
 #include <asm-generic/errno.h>
 
 #include "SDL_render.h"
-#include "components/animation.h"
 #include "components/position.h"
 #include "config.h"
-#include "services/texture.h"
+#include "utils.h"
 
 void Rhino::init(World& world, Graphic& graphic) {
-  auto& rhino = GameConfig::data().enemy.rhino;
+  auto& config = GameConfig::data().enemy.rhino;
 
-  auto* texture = TextureManager::add_from_file_unchecked(graphic.renderer(),
-                                                          rhino.image.c_str());
-  auto texture_size = get_texture_size(texture);
+  auto [texture, texture_position, start_position_initial, animation] =
+      game_common::load_sprite(config, graphic);
 
-  auto width = texture_size.w / static_cast<float>(rhino.total_sprites);
-  auto height = texture_size.h;
+  for (std::size_t i = 0; i < config.positions.size(); ++i) {
+    auto position = config.positions[i];
+    auto from = SDL_FPoint{static_cast<float>(config.from[i].x),
+                           static_cast<float>(config.from[i].y)};
+    auto to = SDL_FPoint{static_cast<float>(config.to[i].x),
+                         static_cast<float>(config.to[i].y)};
 
-  auto animation =
-      TextureAnimation(rhino.frames_delay, width, height, rhino.total_sprites);
-  auto texture_position = animation.next_position(TexturePosition{});
-
-  for (std::size_t i = 0; i < rhino.positions.size(); ++i) {
-    auto position = rhino.positions[i];
-    auto from = SDL_FPoint{static_cast<float>(rhino.from[i].x),
-                           static_cast<float>(rhino.from[i].y)};
-    auto to = SDL_FPoint{static_cast<float>(rhino.to[i].x),
-                         static_cast<float>(rhino.to[i].y)};
-
-    auto start_position =
-        RenderPosition{static_cast<float>(position.x),
-                       static_cast<float>(position.y), width, height};
+    auto start_position = start_position_initial;
+    start_position.rect.x = static_cast<float>(position.x);
+    start_position.rect.y = static_cast<float>(position.y);
 
     world.spawn_entity_with(std::move(texture), std::move(texture_position),
                             std::move(start_position), std::move(animation),
-                            RhinoInfo{rhino.speed, from, to});
+                            RhinoInfo{config.speed, from, to});
   }
 }
 

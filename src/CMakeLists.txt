@@ -18,6 +18,7 @@ set(SOURCE_FILES
     game_state.cpp
     graphic.cpp
     systems.cpp
+    utils.cpp
 )
 
 include(FetchContent)
