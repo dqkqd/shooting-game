@@ -110,8 +110,7 @@ void Player::camera_system(World& world, Camera& camera) {
 }
 
 auto Player::should_dead(World& world, RenderInfo& render_info) -> bool {
-  if (render_info.rect.y >
-      static_cast<float>(GameConfig::data().level.height)) {
+  if (game_common::out_of_game_screen(render_info)) {
     return true;
   }
 

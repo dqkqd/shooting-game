@@ -22,3 +22,7 @@ auto game_common::load_sprite(const config::Sprite& config, Graphic& graphic)
   return std::make_tuple(std::move(texture), std::move(texture_info),
                          std::move(render_info), std::move(animation));
 }
+
+auto out_of_level(RenderInfo& info) -> bool {
+  return info.rect.y > static_cast<float>(GameConfig::data().level.height);
+}

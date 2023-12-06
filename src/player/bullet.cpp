@@ -16,10 +16,6 @@ void Bullet::init(World& world, Graphic& graphic) {
                           ProjectileMotion(0, 0), BulletInfo());
 }
 
-auto out_of_level(RenderInfo& info) -> bool {
-  return info.rect.y > static_cast<float>(GameConfig::data().level.height);
-}
-
 void make_bullet_disappear(TextureInfo& texture_info, BulletInfo& info) {
   texture_info.hidden = true;
   info.status = BulletStatus::HIDDEN;
@@ -45,7 +41,8 @@ void Bullet::moving_system(World& world) {
     render_info.rect.x += offset.dx;
     render_info.rect.y += offset.dy;
 
-    if (out_of_level(render_info) || collide_with_tiles(world, render_info)) {
+    if (game_common::out_of_game_screen(render_info) ||
+        collide_with_tiles(world, render_info)) {
       make_bullet_disappear(texture_info, info);
     }
   }
