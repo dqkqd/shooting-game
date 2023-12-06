@@ -27,6 +27,25 @@ void Bullet::init(World& world, Graphic& graphic) {
                           ProjectileMotion(0, 0), BulletInfo());
 }
 
+auto out_of_level(RenderPosition& position) -> bool {
+  return position.rect.y > static_cast<float>(GameConfig::data().level.height);
+}
+
+void make_bullet_disappear(TexturePosition& position, BulletInfo& info) {
+  position.hidden = true;
+  info.status = BulletStatus::HIDDEN;
+}
+
+auto collide_with_tiles(World& world, RenderPosition& position) -> bool {
+  for (auto [collidable_tile, _] :  // NOLINT
+       world.query<RenderPosition, Collidable>()) {
+    if (position.collide(collidable_tile)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void Bullet::moving_system(World& world) {
   for (auto [info, src_position, position, motion] :
        world.query<BulletInfo, TexturePosition, RenderPosition,
@@ -38,19 +57,8 @@ void Bullet::moving_system(World& world) {
     position.rect.x += offset.dx;
     position.rect.y += offset.dy;
 
-    if (position.rect.y > static_cast<float>(GameConfig::data().level.height)) {
-      info.status = BulletStatus::HIDDEN;
-      src_position.hidden = true;
-      return;
-    }
-
-    for (auto [collidable_position, _] :
-         world.query<RenderPosition, Collidable>()) {
-      if (position.collide(collidable_position)) {
-        info.status = BulletStatus::HIDDEN;
-        src_position.hidden = true;
-        break;
-      }
+    if (out_of_level(position) || collide_with_tiles(world, position)) {
+      make_bullet_disappear(src_position, info);
     }
   }
 };
