@@ -114,6 +114,7 @@
     }
   },
   "gameState": {
-    "gameOverImage": "game_over.png"
+    "gameOverImage": "game_over.png",
+    "gameFinishImage": "game_finish.png"
   }
 }

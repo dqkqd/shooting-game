@@ -92,6 +92,7 @@ struct Enemy {
 
 struct GameState {
   std::filesystem::path game_over_image;
+  std::filesystem::path game_finish_image;
 };
 
 struct Game {
@@ -204,6 +205,8 @@ inline void from_json(const json& j, Game& game) {
 
   game.game_state.game_over_image =
       game.assets.images_folder / j["gameState"]["gameOverImage"];
+  game.game_state.game_finish_image =
+      game.assets.images_folder / j["gameState"]["gameFinishImage"];
 
   game.goal.image = game.assets.images_folder / j["goal"]["image"];
   j["goal"]["totalSprites"].get_to(game.goal.total_sprites);
