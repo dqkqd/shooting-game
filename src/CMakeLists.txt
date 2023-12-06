@@ -8,6 +8,7 @@ set(SOURCE_FILES
     components/physics.cpp
     components/position.cpp
     enemy/rhino.cpp
+    player/bullet.cpp
     player/player.cpp
     player/shooter.cpp
     services/texture.cpp

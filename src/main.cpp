@@ -4,6 +4,7 @@
 #include "enemy/rhino.h"
 #include "game.h"
 #include "game_state.h"
+#include "player/bullet.h"
 #include "player/player.h"
 #include "player/shooter.h"
 #include "systems.h"
@@ -16,13 +17,14 @@ auto main() -> int {
   auto world = World();
 
   SystemManager<SDL_Event> event_systems;
-  event_systems.add_parallel(Shooter::shoot_system, game.graphic().camera())
+  event_systems.add_sequential(Shooter::shoot_system, game.graphic().camera())
       .add_parallel(Shooter::assign_position_system, game.graphic().camera())
       .add_sequential(GameState::restart_game_system);
 
   SystemManager normal_systems;
   normal_systems.add_parallel(Player::animation_system)
       .add_parallel(Player::moving_system)
+      .add_parallel(Bullet::moving_system)
       .add_parallel(Rhino::moving_system)
       .add_sequential(GameState::check_game_over_system)
       .add_sequential(Player::camera_system, game.graphic().camera())
@@ -36,6 +38,7 @@ auto main() -> int {
   Player::init(world, game.graphic());
   Player::init_dead_player(world, game.graphic());
   Shooter::init(world, game.graphic());
+  Bullet::init(world, game.graphic());
 
   Rhino::init(world, game.graphic());
 
