@@ -68,24 +68,28 @@ void Shooter::assign_position_system(World& world, SDL_Event event,
                                      Camera& camera) {
   for (auto [player_render_info, player_info] :
        world.query<RenderInfo, PlayerInfo>()) {
-    for (auto [shooter_info] : world.query<ShooterInfo>()) {
-      if (player_info.status == PlayerStatus::STOPPED) {
-        shooter_info.hidden = false;
+    for (auto [bullet_render_info, bullet_info] :
+         world.query<RenderInfo, BulletInfo>()) {
+      for (auto [shooter_info] : world.query<ShooterInfo>()) {
+        if (player_info.status == PlayerStatus::STOPPED &&
+            bullet_info.status == BulletStatus::HIDDEN) {
+          shooter_info.hidden = false;
 
-        auto player_render_info_by_camera =
-            camera.get_render_info_for(player_render_info);
-        auto motion = get_projectile_motion(
-            player_render_info_by_camera, {event.button.x, event.button.y},
-            GameConfig::data().player.shooter.dt);
+          auto player_render_info_by_camera =
+              camera.get_render_info_for(player_render_info);
+          auto motion = get_projectile_motion(
+              player_render_info_by_camera, {event.button.x, event.button.y},
+              GameConfig::data().player.shooter.dt);
 
-        shooter_info.points[0] = player_render_info_by_camera.center();
-        for (std::size_t i = 1; i < shooter_info.points.size(); ++i) {
-          auto offset = motion.next_offset();
-          shooter_info.points[i] = {shooter_info.points[i - 1].x + offset.dx,
-                                    shooter_info.points[i - 1].y + offset.dy};
+          shooter_info.points[0] = player_render_info_by_camera.center();
+          for (std::size_t i = 1; i < shooter_info.points.size(); ++i) {
+            auto offset = motion.next_offset();
+            shooter_info.points[i] = {shooter_info.points[i - 1].x + offset.dx,
+                                      shooter_info.points[i - 1].y + offset.dy};
+          }
+        } else {
+          shooter_info.hidden = true;
         }
-      } else {
-        shooter_info.hidden = true;
       }
     }
   }
