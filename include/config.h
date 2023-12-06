@@ -62,6 +62,10 @@ struct SpriteDeadState : public Sprite {
   std::int64_t last{};
 };
 
+struct Goal : public Sprite {
+  Position position;
+};
+
 struct Player : public Sprite {
   struct Shooter {
     std::filesystem::path indicator_image;
@@ -102,6 +106,7 @@ struct Game {
   Enemy enemy;
 
   GameState game_state;
+  Goal goal;
 
   static auto from_config(const char* file) -> Game;
 };
@@ -199,6 +204,15 @@ inline void from_json(const json& j, Game& game) {
 
   game.game_state.game_over_image =
       game.assets.images_folder / j["gameState"]["gameOverImage"];
+
+  game.goal.image = game.assets.images_folder / j["goal"]["image"];
+  j["goal"]["totalSprites"].get_to(game.goal.total_sprites);
+  j["goal"]["framesDelay"].get_to(game.goal.frames_delay);
+  j["goal"]["width"].get_to(game.goal.width);
+  j["goal"]["height"].get_to(game.goal.height);
+  j["goal"]["height"].get_to(game.goal.height);
+  j["goal"]["position"]["x"].get_to(game.goal.position.x);
+  j["goal"]["position"]["y"].get_to(game.goal.position.y);
 }
 
 };  // namespace config

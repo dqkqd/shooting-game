@@ -14,6 +14,7 @@ set(SOURCE_FILES
     services/texture.cpp
     tiles/tilemap.cpp
     camera.cpp
+    goal.cpp
     game.cpp
     game_state.cpp
     graphic.cpp

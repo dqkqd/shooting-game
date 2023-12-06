@@ -4,6 +4,7 @@
 #include "enemy/rhino.h"
 #include "game.h"
 #include "game_state.h"
+#include "goal.h"
 #include "player/bullet.h"
 #include "player/player.h"
 #include "player/shooter.h"
@@ -45,6 +46,8 @@ auto main() -> int {
   Rhino::init_dead_rhino(world, game.graphic());
 
   GameState::init(world, game.graphic());
+
+  Goal::init(world, game.graphic());
 
   game.run(world, event_systems, normal_systems);
 

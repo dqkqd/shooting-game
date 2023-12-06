@@ -5,7 +5,7 @@
     "pixelOffset": 1e-5
   },
   "level": {
-    "width": 2560,
+    "width": 3072,
     "height": 640
   },
   "camera": {
@@ -33,6 +33,14 @@
         "ids": [6, 7, 8, 28, 30, 50, 51, 52]
       }
     ]
+  },
+  "goal": {
+    "image": "Items/Checkpoints/Checkpoint/Checkpoint (Flag Idle)(64x64).png",
+    "totalSprites": 10,
+    "framesDelay": 3,
+    "width": 64,
+    "height": 64,
+    "position": { "x": 3008, "y": 416 }
   },
   "player": {
     "image": "Enemies/Turtle/Idle 2 (44x26).png",
@@ -76,21 +84,24 @@
         { "x": 1056, "y": 399 },
         { "x": 1264, "y": 271 },
         { "x": 1984, "y": 399 },
-        { "x": 2288, "y": 255 }
+        { "x": 2288, "y": 255 },
+        { "x": 2880, "y": 447 }
       ],
       "from": [
         { "x": 832, "y": 463 },
         { "x": 1056, "y": 399 },
         { "x": 1264, "y": 271 },
         { "x": 1984, "y": 399 },
-        { "x": 2288, "y": 255 }
+        { "x": 2288, "y": 255 },
+        { "x": 2880, "y": 447 }
       ],
       "to": [
         { "x": 982, "y": 463 },
         { "x": 1222, "y": 399 },
         { "x": 1382, "y": 271 },
         { "x": 2102, "y": 399 },
-        { "x": 2358, "y": 255 }
+        { "x": 2358, "y": 255 },
+        { "x": 3030, "y": 447 }
       ],
       "deadState": {
         "image": "Enemies/Rino/Hit (52x34).png",
