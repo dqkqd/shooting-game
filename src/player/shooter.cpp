@@ -1,10 +1,12 @@
 #include "player/shooter.h"
 
+#include "SDL_mouse.h"
 #include "camera.h"
 #include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
 #include "graphic.h"
+#include "player/bullet.h"
 #include "player/player.h"
 #include "services/texture.h"
 
@@ -32,17 +34,31 @@ void Shooter::init(World& world, Graphic& graphic) {
 
 void Shooter::shoot_system(World& world, SDL_Event event, Camera& camera) {
   if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-    for (auto [info, position, motion] :
+    for (auto [player_info, player_position, player_motion] :
          world.query<PlayerInfo, RenderPosition, ProjectileMotion>()) {
-      if (info.status == PlayerStatus::SELF_SHOOTING) {
+      if (player_info.status != PlayerStatus::STOPPED) {
         continue;
       }
 
-      info.status = PlayerStatus::SELF_SHOOTING;
+      auto motion = get_projectile_motion(
+          camera.get_position_for(player_position),
+          {event.button.x, event.button.y}, GameConfig::data().physics.dt);
 
-      motion = get_projectile_motion(camera.get_position_for(position),
-                                     {event.button.x, event.button.y},
-                                     GameConfig::data().physics.dt);
+      if (event.button.button == SDL_BUTTON_RIGHT) {
+        player_info.status = PlayerStatus::SELF_SHOOTING;
+        player_motion = motion;
+      } else if (event.button.button == SDL_BUTTON_LEFT) {
+        for (auto [bullet_info, src_position, bullet_position, bullet_motion] :
+             world.query<BulletInfo, TexturePosition, RenderPosition,
+                         ProjectileMotion>()) {
+          if (bullet_info.status != BulletStatus::SHOOT) {
+            bullet_info.status = BulletStatus::SHOOT;
+            src_position.hidden = false;
+            bullet_position = player_position;
+            bullet_motion = motion;
+          }
+        }
+      }
     }
   }
 }
