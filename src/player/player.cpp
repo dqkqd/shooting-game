@@ -1,11 +1,9 @@
 #include "player/player.h"
 
-#include "components/animation.h"
 #include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
 #include "enemy/rhino.h"
-#include "services/texture.h"
 #include "utils.h"
 
 void Player::init(World& world, Graphic& graphic) {
@@ -22,20 +20,10 @@ void Player::init(World& world, Graphic& graphic) {
 
 void Player::init_dead_player(World& world, Graphic& graphic) {
   auto config = GameConfig::data().player.dead_state;
+  auto [texture, texture_info, render_info, animation] =
+      utils::load_sprite(config, graphic);
 
-  auto* texture = TextureManager::add_from_file_unchecked(graphic.renderer(),
-                                                          config.image.c_str());
-  auto texture_size = get_texture_size(texture);
-
-  auto player_width = texture_size.w / static_cast<float>(config.total_sprites);
-  auto player_height = texture_size.h;
-
-  auto animation = TextureAnimation(config.frames_delay, player_width,
-                                    player_height, config.total_sprites);
-  auto texture_info = animation.next_render_info({.hidden = true});
-
-  auto render_info = RenderInfo{0, 0, player_width, player_height};
-
+  texture_info.hidden = true;
   world.spawn_entity_with(std::move(texture), std::move(texture_info),
                           std::move(render_info), std::move(animation),
                           PlayerDeadInfo());
