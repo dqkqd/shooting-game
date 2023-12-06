@@ -4,7 +4,7 @@
 #include "graphic.h"
 #include "services/texture.h"
 
-auto game_common::load_sprite(const config::Sprite& config, Graphic& graphic)
+auto utils::load_sprite(const config::Sprite& config, Graphic& graphic)
     -> std::tuple<SDL_Texture*, TextureInfo, RenderInfo, TextureAnimation> {
   auto* texture = TextureManager::add_from_file_unchecked(graphic.renderer(),
                                                           config.image.c_str());

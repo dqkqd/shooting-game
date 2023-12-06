@@ -11,7 +11,7 @@ void Rhino::init(World& world, Graphic& graphic) {
   auto& config = GameConfig::data().enemy.rhino;
 
   auto [texture, texture_info, render_info_initial, animation] =
-      game_common::load_sprite(config, graphic);
+      utils::load_sprite(config, graphic);
 
   for (std::size_t i = 0; i < config.positions.size(); ++i) {
     auto position = config.positions[i];

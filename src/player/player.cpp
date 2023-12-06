@@ -11,7 +11,7 @@
 void Player::init(World& world, Graphic& graphic) {
   auto config = GameConfig::data().player;
   auto [texture, texture_info, render_info, animation] =
-      game_common::load_sprite(config, graphic);
+      utils::load_sprite(config, graphic);
 
   render_info.rect.x = static_cast<float>(config.position.x);
   render_info.rect.y = static_cast<float>(config.position.y);
@@ -110,7 +110,7 @@ void Player::camera_system(World& world, Camera& camera) {
 }
 
 auto Player::should_dead(World& world, RenderInfo& render_info) -> bool {
-  if (game_common::out_of_game_screen(render_info)) {
+  if (utils::out_of_game_screen(render_info)) {
     return true;
   }
 

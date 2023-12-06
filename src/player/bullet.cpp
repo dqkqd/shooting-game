@@ -8,7 +8,7 @@
 void Bullet::init(World& world, Graphic& graphic) {
   auto config = GameConfig::data().player.bullet;
   auto [texture, texture_info, render_info, animation] =
-      game_common::load_sprite(config, graphic);
+      utils::load_sprite(config, graphic);
 
   texture_info.hidden = true;
   world.spawn_entity_with(std::move(texture), std::move(texture_info),
@@ -41,7 +41,7 @@ void Bullet::moving_system(World& world) {
     render_info.rect.x += offset.dx;
     render_info.rect.y += offset.dy;
 
-    if (game_common::out_of_game_screen(render_info) ||
+    if (utils::out_of_game_screen(render_info) ||
         collide_with_tiles(world, render_info)) {
       make_bullet_disappear(texture_info, info);
     }
