@@ -1,5 +1,6 @@
 #include "systems.h"
 
+#include "components/animation.h"
 #include "components/position.h"
 
 void shared_systems::render_system(World& world, Graphic& graphic) {
@@ -14,3 +15,10 @@ void shared_systems::render_system(World& world, Graphic& graphic) {
                              0, NULL, src.flip);
   }
 };
+
+void shared_systems::animation_system(World& world) {
+  for (auto [texture_info, query_animation] :
+       world.query<TextureInfo, TextureAnimation>()) {
+    texture_info = query_animation.next_render_info(std::move(texture_info));
+  }
+}

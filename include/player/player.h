@@ -29,7 +29,6 @@ class Player {
   static void init(World& world, Graphic& graphic);
   static void init_dead_player(World& world, Graphic& graphic);
 
-  static void animation_system(World& world);
   static void moving_system(World& world);
   static void camera_system(World& world, Camera& camera);
 

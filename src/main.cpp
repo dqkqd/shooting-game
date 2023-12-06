@@ -22,7 +22,7 @@ auto main() -> int {
       .add_sequential(GameState::restart_game_system);
 
   SystemManager normal_systems;
-  normal_systems.add_parallel(Player::animation_system)
+  normal_systems.add_parallel(shared_systems::animation_system)
       .add_parallel(Player::moving_system)
       .add_parallel(Bullet::moving_system)
       .add_parallel(Rhino::moving_system)

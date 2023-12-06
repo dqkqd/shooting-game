@@ -41,13 +41,6 @@ void Player::init_dead_player(World& world, Graphic& graphic) {
                           PlayerDeadInfo());
 }
 
-void Player::animation_system(World& world) {
-  for (auto [texture_info, query_animation] :
-       world.query<TextureInfo, TextureAnimation>()) {
-    texture_info = query_animation.next_render_info(std::move(texture_info));
-  }
-}
-
 auto advance_by_offset(World& world, RenderInfo& render_info, Offset offset)
     -> Collision {
   auto collision = Collision{.x = false, .y = false};

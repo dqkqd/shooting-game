@@ -7,6 +7,7 @@
 namespace shared_systems {
 
 void render_system(World& world, Graphic& graphic);
+void animation_system(World& world);
 
 };  // namespace shared_systems
 
