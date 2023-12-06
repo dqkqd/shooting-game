@@ -2,6 +2,7 @@
 
 #include "components/animation.h"
 #include "components/physics.h"
+#include "components/position.h"
 #include "config.h"
 #include "services/texture.h"
 
@@ -27,13 +28,29 @@ void Bullet::init(World& world, Graphic& graphic) {
 }
 
 void Bullet::moving_system(World& world) {
-  for (auto [info, position, motion] :
-       world.query<BulletInfo, RenderPosition, ProjectileMotion>()) {
+  for (auto [info, src_position, position, motion] :
+       world.query<BulletInfo, TexturePosition, RenderPosition,
+                   ProjectileMotion>()) {
     if (info.status == BulletStatus::HIDDEN) {
       continue;
     }
     auto offset = motion.next_offset();
     position.rect.x += offset.dx;
     position.rect.y += offset.dy;
+
+    if (position.rect.y > static_cast<float>(GameConfig::data().level.height)) {
+      info.status = BulletStatus::HIDDEN;
+      src_position.hidden = true;
+      return;
+    }
+
+    for (auto [collidable_position, _] :
+         world.query<RenderPosition, Collidable>()) {
+      if (position.collide(collidable_position)) {
+        info.status = BulletStatus::HIDDEN;
+        src_position.hidden = true;
+        break;
+      }
+    }
   }
 };
