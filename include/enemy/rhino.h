@@ -9,7 +9,9 @@ enum class RhinoStatus {
   DEAD,
 };
 
-struct RhinoDeadInfo {};
+struct RhinoDeadInfo {
+  std::chrono::time_point<std::chrono::system_clock> last_dead;
+};
 
 struct RhinoInfo {
   float speed;
@@ -24,6 +26,7 @@ class Rhino {
   static void init_dead_rhino(World& world, Graphic& graphic);
 
   static void moving_system(World& world);
+  static void clear_dead_system(World& world);
   static auto make_rhino_dead(World& world) -> bool;
 };
 

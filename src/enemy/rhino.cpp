@@ -77,6 +77,7 @@ auto Rhino::make_rhino_dead(World& world) -> bool {
 
       for (auto [dead_texture_info, dead_render_info, dead_info] :
            world.query<TextureInfo, RenderInfo, RhinoDeadInfo>()) {
+        dead_info.last_dead = std::chrono::system_clock::now();
         dead_texture_info.hidden = false;
         dead_texture_info.flip = texture_info.flip;
         dead_render_info.rect = render_info.rect;
@@ -86,4 +87,16 @@ auto Rhino::make_rhino_dead(World& world) -> bool {
   }
 
   return false;
+}
+
+void Rhino::clear_dead_system(World& world) {
+  for (auto [dead_texture_info, dead_info] :
+       world.query<TextureInfo, RhinoDeadInfo>()) {
+    auto now = std::chrono::system_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now - dead_info.last_dead);
+    if (duration.count() > GameConfig::data().enemy.rhino.dead_state.last) {
+      dead_texture_info.hidden = true;
+    }
+  }
 }
