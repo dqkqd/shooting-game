@@ -3,7 +3,6 @@
 #include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
-#include "enemy/rhino.h"
 #include "utils.h"
 
 void Player::init(World& world, Graphic& graphic) {
@@ -101,14 +100,7 @@ auto Player::should_dead(World& world, RenderInfo& render_info) -> bool {
   if (utils::out_of_game_screen(render_info)) {
     return true;
   }
-
-  for (auto [rhino_render_info, rhino_info] :
-       world.query<RenderInfo, RhinoInfo>()) {
-    if (render_info.collide(rhino_render_info)) {
-      return true;
-    }
-  }
-  return false;
+  return utils::collide_with_rhino(world, render_info);
 }
 
 auto Player::try_make_player_dead(World& world) -> bool {
