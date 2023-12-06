@@ -3,6 +3,7 @@
 #include "components/physics.h"
 #include "components/position.h"
 #include "config.h"
+#include "enemy/rhino.h"
 #include "utils.h"
 
 void Bullet::init(World& world, Graphic& graphic) {
@@ -44,6 +45,9 @@ void Bullet::moving_system(World& world) {
     if (utils::out_of_game_screen(render_info) ||
         collide_with_tiles(world, render_info)) {
       make_bullet_disappear(texture_info, info);
+    } else if (utils::collide_with_rhino(world, render_info)) {
+      make_bullet_disappear(texture_info, info);
+      Rhino::make_rhino_dead(world);
     }
   }
 };

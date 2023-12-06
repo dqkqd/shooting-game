@@ -82,7 +82,15 @@
       "to": [
         { "x": 982, "y": 463 },
         { "x": 1382, "y": 271 }
-      ]
+      ],
+      "deadState": {
+        "image": "Enemies/Rino/Hit (52x34).png",
+        "totalSprites": 5,
+        "framesDelay": 5,
+        "width": 52,
+        "height": 34,
+        "last": 1000
+      }
     }
   },
   "gameState": {

@@ -41,6 +41,7 @@ auto main() -> int {
   Bullet::init(world, game.graphic());
 
   Rhino::init(world, game.graphic());
+  Rhino::init_dead_rhino(world, game.graphic());
 
   GameState::init(world, game.graphic());
 

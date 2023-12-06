@@ -58,7 +58,7 @@ struct Sprite {
   int height;
 };
 
-struct PlayerDeadState : public Sprite {
+struct SpriteDeadState : public Sprite {
   std::int64_t last{};
 };
 
@@ -70,7 +70,7 @@ struct Player : public Sprite {
     float dt;
   } shooter;
   Position position;
-  PlayerDeadState dead_state;
+  SpriteDeadState dead_state;
   Sprite bullet;
 };
 
@@ -79,6 +79,7 @@ struct Rhino : public Sprite {
   std::vector<Position> positions;
   std::vector<Position> from;
   std::vector<Position> to;
+  SpriteDeadState dead_state;
 };
 
 struct Enemy {
@@ -183,6 +184,18 @@ inline void from_json(const json& j, Game& game) {
   for (const auto& elem : j["enemy"]["rhino"]["to"]) {
     game.enemy.rhino.to.emplace_back(Position{elem["x"], elem["y"]});
   }
+  game.enemy.rhino.dead_state.image =
+      game.assets.images_folder / j["enemy"]["rhino"]["deadState"]["image"];
+  j["enemy"]["rhino"]["deadState"]["totalSprites"].get_to(
+      game.enemy.rhino.dead_state.total_sprites);
+  j["enemy"]["rhino"]["deadState"]["framesDelay"].get_to(
+      game.enemy.rhino.dead_state.frames_delay);
+  j["enemy"]["rhino"]["deadState"]["width"].get_to(
+      game.enemy.rhino.dead_state.width);
+  j["enemy"]["rhino"]["deadState"]["height"].get_to(
+      game.enemy.rhino.dead_state.height);
+  j["enemy"]["rhino"]["deadState"]["last"].get_to(
+      game.enemy.rhino.dead_state.last);
 
   game.game_state.game_over_image =
       game.assets.images_folder / j["gameState"]["gameOverImage"];

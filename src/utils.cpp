@@ -31,7 +31,8 @@ auto utils::out_of_game_screen(RenderInfo& info) -> bool {
 auto utils::collide_with_rhino(World& world, RenderInfo& render_info) -> bool {
   for (auto [rhino_render_info, rhino_info] :  // NOLINT
        world.query<RenderInfo, RhinoInfo>()) {
-    if (render_info.collide(rhino_render_info)) {
+    if (rhino_info.status == RhinoStatus::ALIVE &&
+        render_info.collide(rhino_render_info)) {
       return true;
     }
   }
