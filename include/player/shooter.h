@@ -8,7 +8,7 @@
 
 struct ShooterInfo {
   SDL_Texture* indicator_texture = NULL;
-  TexturePosition src_position;
+  TextureInfo texture_info;
   std::array<SDL_FPoint, 50> points{};
   bool hidden = false;
 };

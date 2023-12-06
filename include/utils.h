@@ -8,8 +8,7 @@
 namespace game_common {
 
 auto load_sprite(const config::Sprite& config, Graphic& graphic)
-    -> std::tuple<SDL_Texture*, TexturePosition, RenderPosition,
-                  TextureAnimation>;
+    -> std::tuple<SDL_Texture*, TextureInfo, RenderInfo, TextureAnimation>;
 
 };  // namespace game_common
 

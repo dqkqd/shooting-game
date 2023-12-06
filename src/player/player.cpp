@@ -10,13 +10,13 @@
 
 void Player::init(World& world, Graphic& graphic) {
   auto config = GameConfig::data().player;
-  auto [texture, texture_position, start_position, animation] =
+  auto [texture, texture_info, render_info, animation] =
       game_common::load_sprite(config, graphic);
 
-  start_position.rect.x = static_cast<float>(config.position.x);
-  start_position.rect.y = static_cast<float>(config.position.y);
-  world.spawn_entity_with(std::move(texture), std::move(texture_position),
-                          std::move(start_position), std::move(animation),
+  render_info.rect.x = static_cast<float>(config.position.x);
+  render_info.rect.y = static_cast<float>(config.position.y);
+  world.spawn_entity_with(std::move(texture), std::move(texture_info),
+                          std::move(render_info), std::move(animation),
                           ProjectileMotion(0, 0), PlayerInfo());
 }
 
@@ -32,36 +32,37 @@ void Player::init_dead_player(World& world, Graphic& graphic) {
 
   auto animation = TextureAnimation(config.frames_delay, player_width,
                                     player_height, config.total_sprites);
-  auto start_position = RenderPosition{0, 0, player_width, player_height};
+  auto texture_info = animation.next_render_info({.hidden = true});
 
-  auto texture_position = animation.next_position({.hidden = true});
-  world.spawn_entity_with(std::move(texture), std::move(texture_position),
-                          std::move(start_position), std::move(animation),
+  auto render_info = RenderInfo{0, 0, player_width, player_height};
+
+  world.spawn_entity_with(std::move(texture), std::move(texture_info),
+                          std::move(render_info), std::move(animation),
                           PlayerDeadInfo());
 }
 
 void Player::animation_system(World& world) {
-  for (auto [query_texture, query_animation] :
-       world.query<TexturePosition, TextureAnimation>()) {
-    query_texture = query_animation.next_position(std::move(query_texture));
+  for (auto [texture_info, query_animation] :
+       world.query<TextureInfo, TextureAnimation>()) {
+    texture_info = query_animation.next_render_info(std::move(texture_info));
   }
 }
 
-auto advance_by_offset(World& world, RenderPosition& player_position,
-                       Offset offset) -> Collision {
+auto advance_by_offset(World& world, RenderInfo& render_info, Offset offset)
+    -> Collision {
   auto collision = Collision{.x = false, .y = false};
 
   auto player_position_by_dx =
-      player_position.with_x(player_position.rect.x + offset.dx);
+      render_info.with_x(render_info.rect.x + offset.dx);
   auto player_position_by_dy =
-      player_position.with_y(player_position.rect.y + offset.dy);
+      render_info.with_y(render_info.rect.y + offset.dy);
 
   // checking collisions
-  for (auto [position, _] : world.query<RenderPosition, Collidable>()) {
-    if (!collision.x && player_position_by_dx.collide(position)) {
+  for (auto [tile_render_info, _] : world.query<RenderInfo, Collidable>()) {
+    if (!collision.x && player_position_by_dx.collide(tile_render_info)) {
       collision.x = true;
     }
-    if (!collision.y && player_position_by_dy.collide(position)) {
+    if (!collision.y && player_position_by_dy.collide(tile_render_info)) {
       collision.y = true;
     }
 
@@ -71,19 +72,19 @@ auto advance_by_offset(World& world, RenderPosition& player_position,
   }
 
   if (!collision.x) {
-    player_position.rect.x += offset.dx;
+    render_info.rect.x += offset.dx;
   }
 
   if (!collision.y) {
-    player_position.rect.y += offset.dy;
+    render_info.rect.y += offset.dy;
   }
 
   return collision;
 }
 
 void Player::moving_system(World& world) {
-  for (auto [info, position, motion] :
-       world.query<PlayerInfo, RenderPosition, ProjectileMotion>()) {
+  for (auto [info, render_info, motion] :
+       world.query<PlayerInfo, RenderInfo, ProjectileMotion>()) {
     if (info.status == PlayerStatus::STOPPED ||
         info.status == PlayerStatus::DEAD) {
       continue;
@@ -91,7 +92,7 @@ void Player::moving_system(World& world) {
 
     auto offset = motion.next_offset();
 
-    auto collision = advance_by_offset(world, position, offset);
+    auto collision = advance_by_offset(world, render_info, offset);
 
     if (collision.x) {
       motion.change_x_direction();
@@ -110,19 +111,20 @@ void Player::moving_system(World& world) {
 };
 
 void Player::camera_system(World& world, Camera& camera) {
-  for (auto [position, _] : world.query<RenderPosition, PlayerInfo>()) {
-    camera.center_to(position);
+  for (auto [render_info, _] : world.query<RenderInfo, PlayerInfo>()) {
+    camera.center_to(render_info);
   }
 }
 
-auto Player::should_dead(World& world, RenderPosition& position) -> bool {
-  if (position.rect.y > static_cast<float>(GameConfig::data().level.height)) {
+auto Player::should_dead(World& world, RenderInfo& render_info) -> bool {
+  if (render_info.rect.y >
+      static_cast<float>(GameConfig::data().level.height)) {
     return true;
   }
 
-  for (auto [rhino_position, rhino_info] :
-       world.query<RenderPosition, RhinoInfo>()) {
-    if (position.collide(rhino_position)) {
+  for (auto [rhino_render_info, rhino_info] :
+       world.query<RenderInfo, RhinoInfo>()) {
+    if (render_info.collide(rhino_render_info)) {
       return true;
     }
   }
@@ -130,17 +132,16 @@ auto Player::should_dead(World& world, RenderPosition& position) -> bool {
 }
 
 auto Player::try_make_player_dead(World& world) -> bool {
-  for (auto [player_src_position, player_position, player_info] :
-       world.query<TexturePosition, RenderPosition, PlayerInfo>()) {
-    if (should_dead(world, player_position)) {
-      player_info.status = PlayerStatus::DEAD;
-      player_src_position.hidden = true;
+  for (auto [texture_info, render_info, info] :
+       world.query<TextureInfo, RenderInfo, PlayerInfo>()) {
+    if (should_dead(world, render_info)) {
+      info.status = PlayerStatus::DEAD;
+      texture_info.hidden = true;
 
-      for (auto [player_dead_src_position, player_dead_dest_position,
-                 player_dead_info] :
-           world.query<TexturePosition, RenderPosition, PlayerDeadInfo>()) {
-        player_dead_src_position.hidden = false;
-        player_dead_dest_position.rect = player_position.rect;
+      for (auto [dead_texture_info, dead_render_info, dead_info] :
+           world.query<TextureInfo, RenderInfo, PlayerDeadInfo>()) {
+        dead_texture_info.hidden = false;
+        dead_render_info.rect = render_info.rect;
       }
       return true;
     }
@@ -150,20 +151,20 @@ auto Player::try_make_player_dead(World& world) -> bool {
 }
 
 void Player::restart_player(World& world) {
-  for (auto [src, position, motion, info] :
-       world.query<TexturePosition, RenderPosition, ProjectileMotion,
-                   PlayerInfo>()) {
+  for (auto [texture_info, render_info, motion, info] :
+       world.query<TextureInfo, RenderInfo, ProjectileMotion, PlayerInfo>()) {
     info.status = PlayerStatus::IDLE;
-    src.hidden = false;
-    position.rect.x = static_cast<float>(GameConfig::data().player.position.x);
-    position.rect.y = static_cast<float>(GameConfig::data().player.position.y);
+    texture_info.hidden = false;
+    render_info.rect.x =
+        static_cast<float>(GameConfig::data().player.position.x);
+    render_info.rect.y =
+        static_cast<float>(GameConfig::data().player.position.y);
     motion.reset();
   }
 
-  for (auto [player_dead_src_position, player_dead_dest_position,
-             player_dead_info] :
-       world.query<TexturePosition, RenderPosition, PlayerDeadInfo>()) {
-    player_dead_src_position.hidden = true;
-    player_dead_dest_position.rect = {};
+  for (auto [texture_info, render_info, info] :
+       world.query<TextureInfo, RenderInfo, PlayerDeadInfo>()) {
+    texture_info.hidden = true;
+    render_info.rect = {};
   }
 }

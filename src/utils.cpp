@@ -5,8 +5,7 @@
 #include "services/texture.h"
 
 auto game_common::load_sprite(const config::Sprite& config, Graphic& graphic)
-    -> std::tuple<SDL_Texture*, TexturePosition, RenderPosition,
-                  TextureAnimation> {
+    -> std::tuple<SDL_Texture*, TextureInfo, RenderInfo, TextureAnimation> {
   auto* texture = TextureManager::add_from_file_unchecked(graphic.renderer(),
                                                           config.image.c_str());
   auto size = get_texture_size(texture);
@@ -16,10 +15,10 @@ auto game_common::load_sprite(const config::Sprite& config, Graphic& graphic)
 
   auto animation = TextureAnimation(config.frames_delay, width, height,
                                     config.total_sprites);
-  auto texture_position = animation.next_position({});
+  auto texture_info = animation.next_render_info({});
 
-  auto start_position = RenderPosition{0, 0, width, height};
+  auto render_info = RenderInfo{0, 0, width, height};
 
-  return std::make_tuple(std::move(texture), std::move(texture_position),
-                         std::move(start_position), std::move(animation));
+  return std::make_tuple(std::move(texture), std::move(texture_info),
+                         std::move(render_info), std::move(animation));
 }

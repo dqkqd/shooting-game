@@ -33,7 +33,7 @@ class Player {
   static void moving_system(World& world);
   static void camera_system(World& world, Camera& camera);
 
-  static auto should_dead(World& world, RenderPosition& position) -> bool;
+  static auto should_dead(World& world, RenderInfo& info) -> bool;
   static auto try_make_player_dead(World& world) -> bool;
   static void restart_player(World& world);
 };

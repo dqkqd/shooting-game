@@ -11,13 +11,13 @@ struct Offset {
   float dy;
 };
 
-struct TexturePosition {
+struct TextureInfo {
   SDL_FRect rect{};
   SDL_RendererFlip flip = SDL_FLIP_NONE;
   bool hidden = false;
 };
 
-struct RenderPosition {
+struct RenderInfo {
   SDL_FRect rect;
 
   [[nodiscard]] auto center() const -> SDL_FPoint;
@@ -27,10 +27,10 @@ struct RenderPosition {
   [[nodiscard]] auto bot_right() const -> SDL_FPoint;
   [[nodiscard]] auto points() const -> std::array<SDL_FPoint, 4>;
 
-  [[nodiscard]] auto with_x(float x) const -> RenderPosition;
-  [[nodiscard]] auto with_y(float y) const -> RenderPosition;
+  [[nodiscard]] auto with_x(float x) const -> RenderInfo;
+  [[nodiscard]] auto with_y(float y) const -> RenderInfo;
 
-  [[nodiscard]] auto collide(const RenderPosition& position) const -> bool;
+  [[nodiscard]] auto collide(const RenderInfo& info) const -> bool;
 };
 
 #endif

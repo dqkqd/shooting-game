@@ -26,13 +26,13 @@ auto TileSet::collidable(int tile_id) const -> bool {
                      });
 }
 
-auto TileSet::texture_position(int index) const -> TexturePosition {
+auto TileSet::texture_info(int index) const -> TextureInfo {
   auto w = data_.tile_set.tile_width;
   auto h = data_.tile_set.tile_height;
   auto x = index % data_.tile_set.columns * w;
   auto y = index / data_.tile_set.columns * h;
-  return TexturePosition{{static_cast<float>(x), static_cast<float>(y),
-                          static_cast<float>(w), static_cast<float>(h)}};
+  return TextureInfo{{static_cast<float>(x), static_cast<float>(y),
+                      static_cast<float>(w), static_cast<float>(h)}};
 };
 
 TileMap::TileMap(const char* file) {
@@ -56,26 +56,22 @@ void TileMap::init(World& world, Graphic& graphic) {
       auto tile_id = data_.data[pos];
       auto it = std::prev(tilesets_.upper_bound(tile_id));
 
-      auto src_position =
-          it->second.texture_position(tile_id - it->second.data().gid);
-      auto dest_position = render_position(x, y);
+      auto src = it->second.texture_info(tile_id - it->second.data().gid);
+      auto dest = render_info(x, y);
 
       if (it->second.collidable(tile_id)) {
-        world.spawn_entity_with(std::move(it->second.texture()),
-                                std::move(src_position),
-                                std::move(dest_position), Collidable{});
+        world.spawn_entity_with(std::move(it->second.texture()), std::move(src),
+                                std::move(dest), Collidable{});
       } else {
-        world.spawn_entity_with(std::move(it->second.texture()),
-                                std::move(src_position),
-                                std::move(dest_position));
+        world.spawn_entity_with(std::move(it->second.texture()), std::move(src),
+                                std::move(dest));
       }
     }
   }
 }
 
-auto TileMap::render_position(int x, int y) const -> RenderPosition {
+auto TileMap::render_info(int x, int y) const -> RenderInfo {
   auto w = static_cast<float>(data_.tile_width);
   auto h = static_cast<float>(data_.tile_height);
-  return RenderPosition{static_cast<float>(x) * w, static_cast<float>(y) * h, w,
-                        h};
+  return RenderInfo{static_cast<float>(x) * w, static_cast<float>(y) * h, w, h};
 };

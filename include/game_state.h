@@ -12,8 +12,8 @@ enum class GameStatus {
 
 struct GameInfo {
   SDL_Texture* texture = NULL;
-  TexturePosition src;
-  RenderPosition dest{};
+  TextureInfo texture_info;
+  RenderInfo render_info{};
   GameStatus status = GameStatus::PLAYING;
   std::chrono::time_point<std::chrono::system_clock> game_over_timestamp;
 };

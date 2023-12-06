@@ -14,7 +14,7 @@ class TileSet {
   auto texture() -> SDL_Texture*;
   auto data() -> parser::TileSetInMap;
   [[nodiscard]] auto collidable(int tile_id) const -> bool;
-  [[nodiscard]] auto texture_position(int index) const -> TexturePosition;
+  [[nodiscard]] auto texture_info(int index) const -> TextureInfo;
 
  private:
   parser::TileSetInMap data_;
@@ -26,7 +26,7 @@ class TileMap {
   explicit TileMap(const char* file);
 
   void init(World& world, Graphic& graphic);
-  [[nodiscard]] auto render_position(int x, int y) const -> RenderPosition;
+  [[nodiscard]] auto render_info(int x, int y) const -> RenderInfo;
 
  private:
   parser::TileMap data_;

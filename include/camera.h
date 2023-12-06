@@ -8,9 +8,9 @@ class Camera {
  public:
   Camera(int width, int height);
 
-  void center_to(const RenderPosition &position);
-  [[nodiscard]] auto get_position_for(const RenderPosition &position) const
-      -> RenderPosition;
+  void center_to(const RenderInfo &info);
+  [[nodiscard]] auto get_render_info_for(const RenderInfo &info) const
+      -> RenderInfo;
 
  private:
   SDL_FRect pos_;

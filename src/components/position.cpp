@@ -5,37 +5,37 @@
 
 #include "SDL_rect.h"
 
-auto RenderPosition::center() const -> SDL_FPoint {
+auto RenderInfo::center() const -> SDL_FPoint {
   return {.x = rect.x + rect.w / 2, .y = rect.y + rect.h / 2};
 }
 
-auto RenderPosition::top_left() const -> SDL_FPoint {
+auto RenderInfo::top_left() const -> SDL_FPoint {
   return {.x = rect.x, .y = rect.y};
 }
-auto RenderPosition::top_right() const -> SDL_FPoint {
+auto RenderInfo::top_right() const -> SDL_FPoint {
   return {.x = rect.x + rect.w, .y = rect.y};
 }
-auto RenderPosition::bot_left() const -> SDL_FPoint {
+auto RenderInfo::bot_left() const -> SDL_FPoint {
   return {.x = rect.x, .y = rect.y + rect.h};
 }
-auto RenderPosition::bot_right() const -> SDL_FPoint {
+auto RenderInfo::bot_right() const -> SDL_FPoint {
   return {.x = rect.x + rect.w, .y = rect.y + rect.h};
 }
-auto RenderPosition::points() const -> std::array<SDL_FPoint, 4> {
+auto RenderInfo::points() const -> std::array<SDL_FPoint, 4> {
   return {top_left(), top_right(), bot_left(), bot_right()};
 }
 
-auto RenderPosition::with_x(float x) const -> RenderPosition {
+auto RenderInfo::with_x(float x) const -> RenderInfo {
   return {x, rect.y, rect.w, rect.h};
 }
-auto RenderPosition::with_y(float y) const -> RenderPosition {
+auto RenderInfo::with_y(float y) const -> RenderInfo {
   return {rect.x, y, rect.w, rect.h};
 }
 
-auto RenderPosition::collide(const RenderPosition& position) const -> bool {
+auto RenderInfo::collide(const RenderInfo& info) const -> bool {
   auto edge_points = points();
   return std::any_of(edge_points.begin(), edge_points.end(),
-                     [&position](SDL_FPoint& point) {
-                       return SDL_PointInRectFloat(&point, &position.rect);
+                     [&info](SDL_FPoint& point) {
+                       return SDL_PointInRectFloat(&point, &info.rect);
                      });
 }

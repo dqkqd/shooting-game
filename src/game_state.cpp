@@ -17,16 +17,15 @@ void GameState::init(World& world, Graphic& graphic) {
 
   auto camera_config = GameConfig::data().camera;
 
-  auto texture_position =
-      TexturePosition{{0, 0, texture_size.w, texture_size.h}};
-  auto render_position = RenderPosition{
+  auto texture_info = TextureInfo{{0, 0, texture_size.w, texture_size.h}};
+  auto render_info = RenderInfo{
       (static_cast<float>(camera_config.width) - texture_size.w) / 2.0F,
       (static_cast<float>(camera_config.height) - texture_size.h) / 2.0F,
       texture_size.w, texture_size.h};
   world.spawn_entity_with(GameInfo{
       .texture = std::move(texture),
-      .src = std::move(texture_position),
-      .dest = std::move(render_position),
+      .texture_info = std::move(texture_info),
+      .render_info = std::move(render_info),
       .status = GameStatus::PLAYING,
   });
 }
@@ -46,17 +45,17 @@ void GameState::check_game_over_system(World& world) {
 void GameState::render_game_over_state_system(World& world, Graphic& graphic) {
   for (auto [info] : world.query<GameInfo>()) {
     if (info.status == GameStatus::GAME_OVER) {
-      SDL_RenderTexture(graphic.renderer(), info.texture, &info.src.rect,
-                        &info.dest.rect);
+      SDL_RenderTexture(graphic.renderer(), info.texture,
+                        &info.texture_info.rect, &info.render_info.rect);
 
       // turn off player dead animation
       auto now = std::chrono::system_clock::now();
       auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
           now - info.game_over_timestamp);
       if (duration.count() > GameConfig::data().player.dead_state.last) {
-        for (auto [src_position, _] :
-             world.query<TexturePosition, PlayerDeadInfo>()) {
-          src_position.hidden = true;
+        for (auto [texture_info, _] :
+             world.query<TextureInfo, PlayerDeadInfo>()) {
+          texture_info.hidden = true;
         }
       }
     }

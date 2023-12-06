@@ -10,7 +10,7 @@
 void Rhino::init(World& world, Graphic& graphic) {
   auto& config = GameConfig::data().enemy.rhino;
 
-  auto [texture, texture_position, start_position_initial, animation] =
+  auto [texture, texture_info, render_info_initial, animation] =
       game_common::load_sprite(config, graphic);
 
   for (std::size_t i = 0; i < config.positions.size(); ++i) {
@@ -20,37 +20,37 @@ void Rhino::init(World& world, Graphic& graphic) {
     auto to = SDL_FPoint{static_cast<float>(config.to[i].x),
                          static_cast<float>(config.to[i].y)};
 
-    auto start_position = start_position_initial;
-    start_position.rect.x = static_cast<float>(position.x);
-    start_position.rect.y = static_cast<float>(position.y);
+    auto render_info = render_info_initial;
+    render_info.rect.x = static_cast<float>(position.x);
+    render_info.rect.y = static_cast<float>(position.y);
 
-    world.spawn_entity_with(std::move(texture), std::move(texture_position),
-                            std::move(start_position), std::move(animation),
+    world.spawn_entity_with(std::move(texture), std::move(texture_info),
+                            std::move(render_info), std::move(animation),
                             RhinoInfo{config.speed, from, to});
   }
 }
 
 void Rhino::moving_system(World& world) {
-  for (auto [info, texture_pos, position] :
-       world.query<RhinoInfo, TexturePosition, RenderPosition>()) {
-    position.rect.x += info.speed;
+  for (auto [info, texture_info, render_info] :
+       world.query<RhinoInfo, TextureInfo, RenderInfo>()) {
+    render_info.rect.x += info.speed;
 
     auto change_direction = false;
 
-    if (position.rect.x > info.to.x) {
-      position.rect.x = info.to.x;
+    if (render_info.rect.x > info.to.x) {
+      render_info.rect.x = info.to.x;
       change_direction = true;
-    } else if (position.rect.x < info.from.x) {
-      position.rect.x = info.from.x;
+    } else if (render_info.rect.x < info.from.x) {
+      render_info.rect.x = info.from.x;
       change_direction = true;
     }
 
     if (change_direction) {
       info.speed = -info.speed;
       if (info.speed < 0) {
-        texture_pos.flip = SDL_FLIP_NONE;
+        texture_info.flip = SDL_FLIP_NONE;
       } else {
-        texture_pos.flip = SDL_FLIP_HORIZONTAL;
+        texture_info.flip = SDL_FLIP_HORIZONTAL;
       }
     }
   }
