@@ -54,7 +54,8 @@ void Shooter::shoot_system(World& world, SDL_Event event, Camera& camera) {
           if (bullet_info.status != BulletStatus::SHOOT) {
             bullet_info.status = BulletStatus::SHOOT;
             src_position.hidden = false;
-            bullet_position = player_position;
+            bullet_position.rect.x = player_position.rect.x;
+            bullet_position.rect.y = player_position.rect.y;
             bullet_motion = motion;
           }
         }
