@@ -118,5 +118,6 @@
   "gameState": {
     "gameOverImage": "game_over.png",
     "gameFinishImage": "game_finish.png"
-  }
+  },
+  "guideImage": "guide.png"
 }

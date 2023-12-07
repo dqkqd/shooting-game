@@ -113,12 +113,14 @@ struct Game {
 
   GameState game_state;
   Goal goal;
+  std::string guide_image;
 
   static auto from_config(const char* file) -> Game;
 };
 
 inline void from_json(const json& j, Game& game) {
   j["gameTitle"].get_to(game.game_title);
+  j["guideImage"].get_to(game.guide_image);
 
   j["graphic"]["width"].get_to(game.graphic.width);
   j["graphic"]["height"].get_to(game.graphic.height);
@@ -233,6 +235,9 @@ inline void from_json(const json& j, Game& game) {
   j["goal"]["height"].get_to(game.goal.height);
   j["goal"]["position"]["x"].get_to(game.goal.position.x);
   j["goal"]["position"]["y"].get_to(game.goal.position.y);
+
+  game.guide_image =
+      game.assets.images_folder + '/' + j["guideImage"].get<std::string>();
 }
 
 };  // namespace config
