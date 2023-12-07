@@ -18,6 +18,7 @@ set(SOURCE_FILES
     game.cpp
     game_state.cpp
     graphic.cpp
+    guide.cpp
     systems.cpp
     utils.cpp
 )

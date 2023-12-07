@@ -5,6 +5,7 @@
 #include "game.h"
 #include "game_state.h"
 #include "goal.h"
+#include "guide.h"
 #include "player/bullet.h"
 #include "player/player.h"
 #include "player/shooter.h"
@@ -34,8 +35,7 @@ auto main() -> int {
       .add_sequential(Shooter::indicator_render_system, game.graphic())
       .add_sequential(GameState::render_game_state_system, game.graphic())
       .add_sequential(Rhino::clear_dead_system)
-      .add_sequential(Goal::check_win_system)
-      .add_sequential(shared_systems::init_guide, game.graphic());
+      .add_sequential(Goal::check_win_system);
 
   TileMap tile_map(GameConfig::data().tile_map.background.c_str());
   tile_map.init(world, game.graphic());
@@ -51,6 +51,8 @@ auto main() -> int {
   GameState::init(world, game.graphic());
 
   Goal::init(world, game.graphic());
+
+  Guide::init(world, game.graphic());
 
   game.run(world, event_systems, normal_systems);
 

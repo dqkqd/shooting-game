@@ -6,7 +6,6 @@
 
 namespace shared_systems {
 
-void init_guide(World& world, Graphic& graphic);
 void render_system(World& world, Graphic& graphic);
 void animation_system(World& world);
 
