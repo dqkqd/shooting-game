@@ -66,6 +66,10 @@ struct Goal : public Sprite {
   Position position;
 };
 
+struct Bullet : public Sprite {
+  float scale{};
+};
+
 struct Player : public Sprite {
   struct Shooter {
     std::string indicator_image;
@@ -75,7 +79,7 @@ struct Player : public Sprite {
   } shooter;
   Position position;
   SpriteDeadState dead_state;
-  Sprite bullet;
+  Bullet bullet;
 };
 
 struct Rhino : public Sprite {
@@ -169,6 +173,7 @@ inline void from_json(const json& j, Game& game) {
   j["player"]["bullet"]["framesDelay"].get_to(game.player.bullet.frames_delay);
   j["player"]["bullet"]["width"].get_to(game.player.bullet.width);
   j["player"]["bullet"]["height"].get_to(game.player.bullet.height);
+  j["player"]["bullet"]["scale"].get_to(game.player.bullet.scale);
 
   game.player.shooter.indicator_image =
       game.assets.images_folder + '/' +

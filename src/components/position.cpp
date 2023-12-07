@@ -32,6 +32,13 @@ auto RenderInfo::with_y(float y) const -> RenderInfo {
   return {rect.x, y, rect.w, rect.h};
 }
 
+auto RenderInfo::scale(float s) const -> RenderInfo {
+  auto c = center();
+  auto w = rect.w * s;
+  auto h = rect.h * s;
+  return {c.x - w / 2, c.y - h / 2, w, h};
+}
+
 auto RenderInfo::collide(const RenderInfo& info) const -> bool {
   auto edge_points = points();
   return std::any_of(edge_points.begin(), edge_points.end(),

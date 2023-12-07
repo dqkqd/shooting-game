@@ -73,7 +73,8 @@ auto Rhino::try_make_rhino_dead(World& world, RenderInfo& bullet_render_info)
   for (auto [texture_info, render_info, info] :
        world.query<TextureInfo, RenderInfo, RhinoInfo>()) {
     if (info.status == RhinoStatus::ALIVE &&
-        render_info.collide(bullet_render_info)) {
+        render_info.collide(
+            bullet_render_info.scale(GameConfig::data().player.bullet.scale))) {
       info.status = RhinoStatus::DEAD;
       texture_info.hidden = true;
 

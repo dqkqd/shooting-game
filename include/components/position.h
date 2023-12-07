@@ -30,6 +30,7 @@ struct RenderInfo {
   [[nodiscard]] auto with_x(float x) const -> RenderInfo;
   [[nodiscard]] auto with_y(float y) const -> RenderInfo;
 
+  [[nodiscard]] auto scale(float s) const -> RenderInfo;
   [[nodiscard]] auto collide(const RenderInfo& info) const -> bool;
 };
 
