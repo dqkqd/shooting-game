@@ -52,7 +52,7 @@
     "positions": [{ "x": 240, "y": 400 }],
     "shooter": {
       "indicatorImage": "Traps/Saw/Chain.png",
-      "velocityScale": 2.5,
+      "velocityScale": 2.7,
       "maxVelocity": 120,
       "dt": 0.1
     },
