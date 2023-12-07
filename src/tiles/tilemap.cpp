@@ -9,7 +9,8 @@
 TileSet::TileSet(parser::TileSetInMap data) : data_{std::move(data)} {};
 
 void TileSet::init(Graphic& graphic) {
-  auto source = GameConfig::data().assets.config_folder / data_.tile_set.image;
+  auto source =
+      GameConfig::data().assets.config_folder + '/' + data_.tile_set.image;
   texture_ = TextureManager::add_from_file_unchecked(graphic.renderer(),
                                                      source.c_str());
 }

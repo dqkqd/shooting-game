@@ -46,7 +46,7 @@ inline void from_json(const json& j, TileSetInMap& tile_set_in_map) {
   j.at("firstgid").get_to(tile_set_in_map.gid);
   j.at("source").get_to(tile_set_in_map.source);
 
-  std::ifstream f(GameConfig::data().assets.config_folder /
+  std::ifstream f(GameConfig::data().assets.config_folder + '/' +
                   tile_set_in_map.source);
   json data = json::parse(f);
   tile_set_in_map.tile_set = data.template get<TileSet>();

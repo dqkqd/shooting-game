@@ -31,9 +31,9 @@ struct Physics {
 };
 
 struct Assets {
-  std::filesystem::path folder;
-  std::filesystem::path config_folder;
-  std::filesystem::path images_folder;
+  std::string folder;
+  std::string config_folder;
+  std::string images_folder;
 };
 
 struct CollidableTiles {
@@ -41,7 +41,7 @@ struct CollidableTiles {
   std::set<int> ids;
 };
 struct TileMap {
-  std::filesystem::path background;
+  std::string background;
   std::vector<CollidableTiles> collidables;
 };
 
@@ -51,7 +51,7 @@ struct Position {
 };
 
 struct Sprite {
-  std::filesystem::path image;
+  std::string image;
   int total_sprites;
   int frames_delay;
   int width;
@@ -68,7 +68,7 @@ struct Goal : public Sprite {
 
 struct Player : public Sprite {
   struct Shooter {
-    std::filesystem::path indicator_image;
+    std::string indicator_image;
     float velocity_scale;
     float max_velocity;
     float dt;
@@ -91,8 +91,8 @@ struct Enemy {
 };
 
 struct GameState {
-  std::filesystem::path game_over_image;
-  std::filesystem::path game_finish_image;
+  std::string game_over_image;
+  std::string game_finish_image;
 };
 
 struct Game {
@@ -128,25 +128,29 @@ inline void from_json(const json& j, Game& game) {
 
   j["assets"]["folder"].get_to(game.assets.folder);
   game.assets.config_folder =
-      game.assets.folder / j["assets"]["config"]["folder"];
+      game.assets.folder + '/' +
+      j["assets"]["config"]["folder"].get<std::string>();
   game.assets.images_folder =
-      game.assets.folder / j["assets"]["images"]["folder"];
+      game.assets.folder + '/' +
+      j["assets"]["images"]["folder"].get<std::string>();
 
-  game.tile_map.background =
-      game.assets.config_folder / j["tileMap"]["background"];
+  game.tile_map.background = game.assets.config_folder + '/' +
+                             j["tileMap"]["background"].get<std::string>();
   for (const auto& elem : j["tileMap"]["collidables"]) {
     game.tile_map.collidables.emplace_back(
         CollidableTiles{.gid = elem["gid"], .ids = elem["ids"]});
   }
 
-  game.player.image = game.assets.images_folder / j["player"]["image"];
+  game.player.image =
+      game.assets.images_folder + '/' + j["player"]["image"].get<std::string>();
   j["player"]["totalSprites"].get_to(game.player.total_sprites);
   j["player"]["framesDelay"].get_to(game.player.frames_delay);
   j["player"]["width"].get_to(game.player.width);
   j["player"]["height"].get_to(game.player.height);
 
   game.player.dead_state.image =
-      game.assets.images_folder / j["player"]["deadState"]["image"];
+      game.assets.images_folder + '/' +
+      j["player"]["deadState"]["image"].get<std::string>();
   j["player"]["deadState"]["totalSprites"].get_to(
       game.player.dead_state.total_sprites);
   j["player"]["deadState"]["framesDelay"].get_to(
@@ -155,8 +159,8 @@ inline void from_json(const json& j, Game& game) {
   j["player"]["deadState"]["height"].get_to(game.player.dead_state.height);
   j["player"]["deadState"]["last"].get_to(game.player.dead_state.last);
 
-  game.player.bullet.image =
-      game.assets.images_folder / j["player"]["bullet"]["image"];
+  game.player.bullet.image = game.assets.images_folder + '/' +
+                             j["player"]["bullet"]["image"].get<std::string>();
   j["player"]["bullet"]["totalSprites"].get_to(
       game.player.bullet.total_sprites);
   j["player"]["bullet"]["framesDelay"].get_to(game.player.bullet.frames_delay);
@@ -164,7 +168,8 @@ inline void from_json(const json& j, Game& game) {
   j["player"]["bullet"]["height"].get_to(game.player.bullet.height);
 
   game.player.shooter.indicator_image =
-      game.assets.images_folder / j["player"]["shooter"]["indicatorImage"];
+      game.assets.images_folder + '/' +
+      j["player"]["shooter"]["indicatorImage"].get<std::string>();
   j["player"]["shooter"]["velocityScale"].get_to(
       game.player.shooter.velocity_scale);
   j["player"]["shooter"]["maxVelocity"].get_to(
@@ -174,8 +179,8 @@ inline void from_json(const json& j, Game& game) {
     game.player.position = Position{elem["x"], elem["y"]};
   }
 
-  game.enemy.rhino.image =
-      game.assets.images_folder / j["enemy"]["rhino"]["image"];
+  game.enemy.rhino.image = game.assets.images_folder + '/' +
+                           j["enemy"]["rhino"]["image"].get<std::string>();
   j["enemy"]["rhino"]["totalSprites"].get_to(game.enemy.rhino.total_sprites);
   j["enemy"]["rhino"]["framesDelay"].get_to(game.enemy.rhino.frames_delay);
   j["enemy"]["rhino"]["width"].get_to(game.enemy.rhino.width);
@@ -191,7 +196,8 @@ inline void from_json(const json& j, Game& game) {
     game.enemy.rhino.to.emplace_back(Position{elem["x"], elem["y"]});
   }
   game.enemy.rhino.dead_state.image =
-      game.assets.images_folder / j["enemy"]["rhino"]["deadState"]["image"];
+      game.assets.images_folder + '/' +
+      j["enemy"]["rhino"]["deadState"]["image"].get<std::string>();
   j["enemy"]["rhino"]["deadState"]["totalSprites"].get_to(
       game.enemy.rhino.dead_state.total_sprites);
   j["enemy"]["rhino"]["deadState"]["framesDelay"].get_to(
@@ -204,11 +210,14 @@ inline void from_json(const json& j, Game& game) {
       game.enemy.rhino.dead_state.last);
 
   game.game_state.game_over_image =
-      game.assets.images_folder / j["gameState"]["gameOverImage"];
+      game.assets.images_folder + '/' +
+      j["gameState"]["gameOverImage"].get<std::string>();
   game.game_state.game_finish_image =
-      game.assets.images_folder / j["gameState"]["gameFinishImage"];
+      game.assets.images_folder + '/' +
+      j["gameState"]["gameFinishImage"].get<std::string>();
 
-  game.goal.image = game.assets.images_folder / j["goal"]["image"];
+  game.goal.image =
+      game.assets.images_folder + '/' + j["goal"]["image"].get<std::string>();
   j["goal"]["totalSprites"].get_to(game.goal.total_sprites);
   j["goal"]["framesDelay"].get_to(game.goal.frames_delay);
   j["goal"]["width"].get_to(game.goal.width);
