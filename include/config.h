@@ -96,6 +96,7 @@ struct GameState {
 };
 
 struct Game {
+  std::string game_title;
   Graphic graphic{};
   Level level{};
   Camera camera{};
@@ -113,6 +114,8 @@ struct Game {
 };
 
 inline void from_json(const json& j, Game& game) {
+  j["gameTitle"].get_to(game.game_title);
+
   j["graphic"]["width"].get_to(game.graphic.width);
   j["graphic"]["height"].get_to(game.graphic.height);
   j["graphic"]["pixelOffset"].get_to(game.graphic.pixel_offset);

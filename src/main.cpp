@@ -12,7 +12,8 @@
 #include "tiles/tilemap.h"
 
 auto main() -> int {
-  auto game = Game("Hello", GameConfig::data().graphic.width,
+  auto title = GameConfig::data().game_title;
+  auto game = Game(std::move(title), GameConfig::data().graphic.width,
                    GameConfig::data().graphic.height);
 
   auto world = World();
